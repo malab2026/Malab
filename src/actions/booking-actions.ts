@@ -1,0 +1,235 @@
+'use server'
+
+import prisma from "@/lib/prisma"
+import { auth } from "@/auth"
+import { revalidatePath } from "next/cache"
+import { redirect } from "next/navigation"
+import { writeFile } from "fs/promises"
+import path from "path"
+import { z } from "zod"
+import * as fs from "fs"
+
+const SlotSchema = z.object({
+    date: z.string(),
+    startTime: z.string(),
+    duration: z.coerce.number().min(1).max(3),
+})
+
+const MultiBookingSchema = z.object({
+    fieldId: z.string(),
+    slots: z.array(SlotSchema).min(1),
+})
+
+export async function createBooking(prevState: any, formData: FormData) {
+    const logPath = path.join(process.cwd(), 'booking_log.txt')
+    fs.appendFileSync(logPath, `[${new Date().toISOString()}] ACTION START\n`)
+
+    try {
+        const session = await auth()
+        if (!session || !session.user) {
+            fs.appendFileSync(logPath, `[${new Date().toISOString()}] No Session\n`)
+            return { message: "You must be logged in to book." }
+        }
+
+        const isOwner = session.user.role === 'owner' || session.user.role === 'admin'
+        const file = formData.get("receipt") as File
+
+        // Receipt is required for regular users, but not for owners/admins blocking a slot
+        if (!isOwner && (!file || file.size === 0)) {
+            return { message: "Please upload a receipt." }
+        }
+
+        const slotsJson = formData.get("slots") as string
+        fs.appendFileSync(logPath, `[${new Date().toISOString()}] Slots JSON: ${slotsJson}\n`)
+
+        let parsedSlots = []
+        try {
+            parsedSlots = JSON.parse(slotsJson || '[]')
+        } catch (e: any) {
+            fs.appendFileSync(logPath, `[${new Date().toISOString()}] JSON Parse Error: ${e.message}\n`)
+            return { message: "Invalid booking data format." }
+        }
+
+        // Fallback for single slot if JSON is empty but form fields exist
+        if (parsedSlots.length === 0) {
+            const date = formData.get("date") as string
+            const startTime = formData.get("startTime") as string
+            const duration = formData.get("duration")
+            if (date && startTime) {
+                parsedSlots.push({ date, startTime, duration: Number(duration) || 1 })
+                fs.appendFileSync(logPath, `[${new Date().toISOString()}] Using fallback single slot\n`)
+            }
+        }
+
+        const validatedFields = MultiBookingSchema.safeParse({
+            fieldId: formData.get("fieldId"),
+            slots: parsedSlots
+        })
+
+        if (!validatedFields.success) {
+            fs.appendFileSync(logPath, `[${new Date().toISOString()}] Validation Failed: ${validatedFields.error.message}\n`)
+            return { message: "Validation failed for some slots." }
+        }
+
+        const { fieldId, slots } = validatedFields.data
+        const bookingData: any[] = []
+
+        for (const slot of slots) {
+            const startDateTime = new Date(`${slot.date}T${slot.startTime}:00`)
+            const endDateTime = new Date(startDateTime.getTime() + slot.duration * 60 * 60 * 1000)
+
+            if (isNaN(startDateTime.getTime())) {
+                return { message: "Invalid date or time." }
+            }
+
+            const conflict = await prisma.booking.findFirst({
+                where: {
+                    fieldId,
+                    status: { not: "REJECTED" },
+                    OR: [
+                        { startTime: { lt: endDateTime }, endTime: { gt: startDateTime } },
+                    ],
+                },
+            })
+
+            if (conflict) {
+                fs.appendFileSync(logPath, `[${new Date().toISOString()}] Conflict at ${slot.date} ${slot.startTime}\n`)
+                return { message: `Slot at ${slot.startTime} on ${slot.date} is already taken.` }
+            }
+
+            bookingData.push({
+                userId: session.user.id,
+                fieldId,
+                startTime: startDateTime,
+                endTime: endDateTime,
+                status: isOwner ? "CONFIRMED" : "PENDING"
+            })
+        }
+
+        let receiptUrl = null
+        if (file && file.size > 0) {
+            const buffer = Buffer.from(await file.arrayBuffer())
+            const filename = Date.now() + "_" + file.name.replaceAll(" ", "_")
+            try {
+                await writeFile(path.join(process.cwd(), "public/uploads/" + filename), buffer)
+                receiptUrl = `/uploads/${filename}`
+            } catch (error) {
+                return { message: "Failed to upload receipt." }
+            }
+        }
+
+        await prisma.$transaction(async (tx) => {
+            for (const data of bookingData) {
+                await tx.booking.create({
+                    data: {
+                        ...data,
+                        receiptUrl
+                    }
+                })
+            }
+        })
+        fs.appendFileSync(logPath, `[${new Date().toISOString()}] Transaction Success: Created ${bookingData.length} bookings\n`)
+    } catch (e: any) {
+        if (e.message?.includes('NEXT_REDIRECT')) throw e;
+        fs.appendFileSync(logPath, `[${new Date().toISOString()}] Global Error: ${e.message}\n`)
+        return { message: "An error occurred while creating your booking." }
+    }
+
+    revalidatePath('/dashboard')
+    revalidatePath('/owner')
+    redirect('/dashboard')
+}
+
+export async function cancelBooking(bookingId: string) {
+    const session = await auth()
+    if (!session || !session.user) return { message: "Unauthorized" }
+
+    try {
+        const booking = await prisma.booking.findUnique({
+            where: { id: bookingId }
+        })
+
+        if (!booking || booking.userId !== session.user.id) {
+            return { message: "Booking not found or unauthorized" }
+        }
+
+        if (booking.status !== "PENDING") {
+            return { message: "Only pending bookings can be cancelled" }
+        }
+
+        await prisma.booking.delete({
+            where: { id: bookingId }
+        })
+
+        revalidatePath('/dashboard')
+        return { success: true }
+    } catch (e) {
+        return { message: "Database Error" }
+    }
+}
+
+export async function updateBooking(bookingId: string, prevState: any, formData: FormData) {
+    const session = await auth()
+    if (!session || !session.user) return { message: "Unauthorized" }
+
+    const validatedFields = SlotSchema.safeParse({
+        date: formData.get("date"),
+        startTime: formData.get("startTime"),
+        duration: formData.get("duration"),
+    })
+
+    if (!validatedFields.success) {
+        return { message: "Invalid Inputs." }
+    }
+
+    const { date, startTime, duration } = validatedFields.data
+    const startDateTime = new Date(`${date}T${startTime}:00`)
+    const endDateTime = new Date(startDateTime.getTime() + duration * 60 * 60 * 1000)
+
+    try {
+        const booking = await prisma.booking.findUnique({
+            where: { id: bookingId }
+        })
+
+        if (!booking || booking.userId !== session.user.id) {
+            return { message: "Booking not found or unauthorized" }
+        }
+
+        if (booking.status !== "PENDING") {
+            return { message: "Only pending bookings can be edited" }
+        }
+
+        // Check for conflicts excluding current booking
+        const conflict = await prisma.booking.findFirst({
+            where: {
+                fieldId: booking.fieldId,
+                id: { not: bookingId },
+                status: { not: "REJECTED" },
+                OR: [
+                    {
+                        startTime: { lt: endDateTime },
+                        endTime: { gt: startDateTime },
+                    },
+                ],
+            },
+        })
+
+        if (conflict) {
+            return { message: "This time slot is already booked." }
+        }
+
+        await prisma.booking.update({
+            where: { id: bookingId },
+            data: {
+                startTime: startDateTime,
+                endTime: endDateTime,
+            }
+        })
+
+        revalidatePath('/dashboard')
+    } catch (e) {
+        return { message: "Database Error" }
+    }
+
+    redirect('/dashboard')
+}
