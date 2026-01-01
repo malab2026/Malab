@@ -4,14 +4,12 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import prisma from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 import { z } from "zod"
+import { authConfig } from "./auth.config"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+    ...authConfig,
     adapter: PrismaAdapter(prisma) as any,
-    secret: process.env.AUTH_SECRET || "fc3637cfe6eb516c141655079a4de541",
-    session: { strategy: "jwt" },
-    pages: {
-        signIn: "/login",
-    },
+    secret: process.env.AUTH_SECRET,
     providers: [
         Credentials({
             name: "Credentials",
@@ -36,25 +34,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     if (passwordsMatch) return user;
                 }
 
-                console.log("Invalid credentials");
                 return null;
             },
         }),
     ],
-    callbacks: {
-        async jwt({ token, user }) {
-            if (user) {
-                token.role = user.role;
-                token.id = user.id;
-            }
-            return token;
-        },
-        async session({ session, token }) {
-            if (session.user) {
-                session.user.role = token.role as string;
-                session.user.id = token.id as string;
-            }
-            return session;
-        },
-    },
 })
