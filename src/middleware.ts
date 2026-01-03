@@ -11,7 +11,7 @@ export default auth((req) => {
     const isLoginPage = req.nextUrl.pathname.startsWith('/login')
 
     if (isOnAdmin) {
-        if (isLoggedIn && req.auth?.user.role === 'admin') return null
+        if (isLoggedIn && req.auth?.user?.role === 'admin') return null
         return NextResponse.redirect(new URL('/', req.nextUrl))
     }
 

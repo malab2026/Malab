@@ -18,12 +18,12 @@ export async function Navbar() {
                             <Link href="/dashboard">
                                 <Button variant="ghost">Dashboard</Button>
                             </Link>
-                            {session.user.role === 'admin' && (
+                            {session.user?.role === 'admin' && (
                                 <Link href="/admin">
                                     <Button variant="ghost">Admin</Button>
                                 </Link>
                             )}
-                            {session.user.role === 'owner' && (
+                            {session.user?.role === 'owner' && (
                                 <Link href="/owner">
                                     <Button variant="ghost">Owner Dashboard</Button>
                                 </Link>
