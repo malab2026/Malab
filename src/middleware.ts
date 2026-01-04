@@ -12,12 +12,12 @@ export default auth((req) => {
     const isOnAdmin = req.nextUrl.pathname.startsWith('/admin')
     const isLoginPage = req.nextUrl.pathname.startsWith('/login')
 
-    if (isOnAdmin) {
-        console.log("[Middleware] Checking Admin Access. LoggedIn:", isLoggedIn, "Role:", req.auth?.user?.role);
-        if (isLoggedIn && req.auth?.user?.role === 'admin') return null
-        console.log("[Middleware] Access Denied. Redirecting to /");
-        return NextResponse.redirect(new URL('/', req.nextUrl))
-    }
+    // if (isOnAdmin) {
+    //     console.log("[Middleware] Checking Admin Access. LoggedIn:", isLoggedIn, "Role:", req.auth?.user?.role);
+    //     if (isLoggedIn && req.auth?.user?.role === 'admin') return null
+    //     console.log("[Middleware] Access Denied. Redirecting to /");
+    //     return NextResponse.redirect(new URL('/', req.nextUrl))
+    // }
 
     if (isOnDashboard) {
         if (isLoggedIn) return null

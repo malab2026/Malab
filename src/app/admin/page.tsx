@@ -18,7 +18,21 @@ export default async function AdminPage() {
     const session = await auth()
 
     if (!session?.user || session.user.role !== 'admin') {
-        redirect("/")
+        return (
+            <div className="p-10 text-center">
+                <h1 className="text-2xl font-bold text-red-600">Access Denied (Debug Mode)</h1>
+                <p className="mt-4">You are logged in as:</p>
+                <code className="block bg-gray-100 p-4 mt-2 rounded">
+                    Email: {session?.user?.email || "None"}<br />
+                    Role: {session?.user?.role || "Undefined"}<br />
+                    ID: {session?.user?.id || "None"}
+                </code>
+                <p className="mt-4 text-sm text-gray-500">Please screenshot this and send it to support.</p>
+                <div className="mt-6">
+                    <a href="/api/auth/signout" className="text-blue-600 underline">Sign Out</a>
+                </div>
+            </div>
+        )
     }
 
     const pendingBookings = await prisma.booking.findMany({
