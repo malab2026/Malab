@@ -21,13 +21,12 @@ const MultiBookingSchema = z.object({
 })
 
 export async function createBooking(prevState: any, formData: FormData) {
-    const logPath = path.join(process.cwd(), 'booking_log.txt')
-    fs.appendFileSync(logPath, `[${new Date().toISOString()}] ACTION START\n`)
+    console.log(`[${new Date().toISOString()}] ACTION START`)
 
     try {
         const session = await auth()
         if (!session || !session.user) {
-            fs.appendFileSync(logPath, `[${new Date().toISOString()}] No Session\n`)
+            console.log(`[${new Date().toISOString()}] No Session`)
             return { message: "You must be logged in to book." }
         }
 
@@ -40,13 +39,13 @@ export async function createBooking(prevState: any, formData: FormData) {
         }
 
         const slotsJson = formData.get("slots") as string
-        fs.appendFileSync(logPath, `[${new Date().toISOString()}] Slots JSON: ${slotsJson}\n`)
+        console.log(`[${new Date().toISOString()}] Slots JSON: ${slotsJson}`)
 
         let parsedSlots = []
         try {
             parsedSlots = JSON.parse(slotsJson || '[]')
         } catch (e: any) {
-            fs.appendFileSync(logPath, `[${new Date().toISOString()}] JSON Parse Error: ${e.message}\n`)
+            console.log(`[${new Date().toISOString()}] JSON Parse Error: ${e.message}`)
             return { message: "Invalid booking data format." }
         }
 
@@ -57,7 +56,7 @@ export async function createBooking(prevState: any, formData: FormData) {
             const duration = formData.get("duration")
             if (date && startTime) {
                 parsedSlots.push({ date, startTime, duration: Number(duration) || 1 })
-                fs.appendFileSync(logPath, `[${new Date().toISOString()}] Using fallback single slot\n`)
+                console.log(`[${new Date().toISOString()}] Using fallback single slot`)
             }
         }
 
@@ -67,7 +66,7 @@ export async function createBooking(prevState: any, formData: FormData) {
         })
 
         if (!validatedFields.success) {
-            fs.appendFileSync(logPath, `[${new Date().toISOString()}] Validation Failed: ${validatedFields.error.message}\n`)
+            console.log(`[${new Date().toISOString()}] Validation Failed: ${validatedFields.error.message}`)
             return { message: "Validation failed for some slots." }
         }
 
@@ -93,7 +92,7 @@ export async function createBooking(prevState: any, formData: FormData) {
             })
 
             if (conflict) {
-                fs.appendFileSync(logPath, `[${new Date().toISOString()}] Conflict at ${slot.date} ${slot.startTime}\n`)
+                console.log(`[${new Date().toISOString()}] Conflict at ${slot.date} ${slot.startTime}`)
                 return { message: `Slot at ${slot.startTime} on ${slot.date} is already taken.` }
             }
 
@@ -128,10 +127,10 @@ export async function createBooking(prevState: any, formData: FormData) {
                 })
             }
         })
-        fs.appendFileSync(logPath, `[${new Date().toISOString()}] Transaction Success: Created ${bookingData.length} bookings\n`)
+        console.log(`[${new Date().toISOString()}] Transaction Success: Created ${bookingData.length} bookings`)
     } catch (e: any) {
         if (e.message?.includes('NEXT_REDIRECT')) throw e;
-        fs.appendFileSync(logPath, `[${new Date().toISOString()}] Global Error: ${e.message}\n`)
+        console.log(`[${new Date().toISOString()}] Global Error: ${e.message}`)
         return { message: "An error occurred while creating your booking." }
     }
 
