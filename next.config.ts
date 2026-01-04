@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
   // Ensure proper serverless function configuration
   experimental: {
     serverActions: {
-      bodySizeLimit: '2mb',
+      bodySizeLimit: '5mb',
     },
   },
 };

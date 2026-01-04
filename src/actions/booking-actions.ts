@@ -107,13 +107,18 @@ export async function createBooking(prevState: any, formData: FormData) {
 
         let receiptUrl = null
         if (file && file.size > 0) {
-            const buffer = Buffer.from(await file.arrayBuffer())
-            const filename = Date.now() + "_" + file.name.replaceAll(" ", "_")
             try {
-                await writeFile(path.join(process.cwd(), "public/uploads/" + filename), buffer)
-                receiptUrl = `/uploads/${filename}`
+                const buffer = Buffer.from(await file.arrayBuffer())
+                if (buffer.length > 4 * 1024 * 1024) { // 4MB limit check before encoding
+                    return { message: "File is too large (max 4MB)." }
+                }
+                const base64String = buffer.toString('base64')
+                const mimeType = file.type || 'image/jpeg' // Default fallback
+                receiptUrl = `data:${mimeType};base64,${base64String}`
+                console.log(`[${new Date().toISOString()}] Generated Base64 Receipt (size: ${receiptUrl.length})`)
             } catch (error) {
-                return { message: "Failed to upload receipt." }
+                console.log(`[${new Date().toISOString()}] Receipt Processing Error: ${error}`)
+                return { message: "Failed to process receipt." }
             }
         }
 
