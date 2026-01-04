@@ -29,6 +29,9 @@ export default function Home() {
               </Button>
             </Link>
           </div>
+          <div className="pt-4 text-gray-400">
+            Already have an account? <Link href="/login" className="text-green-400 hover:text-green-300 underline">Login here</Link>
+          </div>
         </div>
       </section>
 
