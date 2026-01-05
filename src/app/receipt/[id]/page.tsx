@@ -38,9 +38,8 @@ export default async function ReceiptPage({ params }: { params: { id: string } }
                 </div>
 
                 <div className="relative w-full h-[80vh] bg-gray-50 rounded border flex items-center justify-center overflow-hidden">
-                    {/* Use standard img tag for Base64 Data URIs to ensure compatibility */}
                     <img
-                        src={booking.receiptUrl}
+                        src={`/api/receipt-image/${booking.id}`}
                         alt="Receipt"
                         className="max-w-full max-h-full object-contain"
                     />
