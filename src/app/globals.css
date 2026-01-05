@@ -134,15 +134,15 @@
 
   body {
     @apply bg-background text-foreground;
-    /* Grass Background with Light Overlay */
-    background-image: linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3)), url('/bg-grass.png');
+    /* Darkened Soccer Grass - Clearer & Full Screen */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url('/bg-grass.png');
     background-repeat: repeat;
-    background-size: 512px;
+    background-size: 800px;
     background-attachment: fixed;
   }
 }
 
-/* Dark Mode Grass (Darker Overlay) */
+/* Dark Mode Grass (Very Dark / Night Stadium) */
 .dark body {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/bg-grass.png');
+  background-image: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), url('/bg-grass.png');
 }

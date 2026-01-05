@@ -6,7 +6,7 @@ export async function Navbar() {
     const session = await auth()
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-black/5 backdrop-blur-md transition-all">
             <div className="container flex h-16 items-center justify-between">
                 <Link href="/" className="flex items-center space-x-2 font-bold text-xl">
                     ⚽ Malaeb
