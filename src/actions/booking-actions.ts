@@ -20,6 +20,37 @@ const MultiBookingSchema = z.object({
     slots: z.array(SlotSchema).min(1),
 })
 
+export async function checkAvailability(fieldId: string, slots: any[]) {
+    try {
+        for (const slot of slots) {
+            const startDateTime = new Date(`${slot.date}T${slot.startTime}:00`)
+            const endDateTime = new Date(startDateTime.getTime() + slot.duration * 60 * 60 * 1000)
+
+            if (isNaN(startDateTime.getTime())) {
+                return { success: false, message: "Invalid date or time." }
+            }
+
+            const conflict = await prisma.booking.findFirst({
+                where: {
+                    fieldId,
+                    status: { not: "REJECTED" },
+                    OR: [
+                        { startTime: { lt: endDateTime }, endTime: { gt: startDateTime } },
+                    ],
+                },
+            })
+
+            if (conflict) {
+                return { success: false, message: `Slot at ${slot.startTime} on ${slot.date} is already taken.` }
+            }
+        }
+        return { success: true }
+    } catch (e) {
+        return { success: false, message: "Error checking availability." }
+    }
+}
+
+
 export async function createBooking(prevState: any, formData: FormData) {
     console.log(`[${new Date().toISOString()}] ACTION START`)
 
