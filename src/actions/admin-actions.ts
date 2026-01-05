@@ -77,20 +77,20 @@ export async function createField(prevState: any, formData: FormData) {
     }
 
     // Handle Image Upload
-    const buffer = Buffer.from(await file.arrayBuffer())
-    const filename = "field_" + Date.now() + "_" + file.name.replaceAll(" ", "_")
-
+    // Handle Image Upload (Base64)
+    let imageUrl = '';
     try {
-        await writeFile(
-            path.join(process.cwd(), "public/uploads/" + filename),
-            buffer
-        )
+        const buffer = Buffer.from(await file.arrayBuffer())
+        if (buffer.length > 4 * 1024 * 1024) {
+            return { message: "Image too large (max 4MB)", success: false }
+        }
+        const base64String = buffer.toString('base64')
+        const mimeType = file.type || 'image/jpeg'
+        imageUrl = `data:${mimeType};base64,${base64String}`
     } catch (error) {
-        console.error("Error uploading file", error)
-        return { message: "Failed to upload image.", success: false }
+        console.error("Error processing image", error)
+        return { message: "Failed to process image.", success: false }
     }
-
-    const imageUrl = `/uploads/${filename}`
 
     try {
         await prisma.field.create({
@@ -139,18 +139,17 @@ export async function updateField(fieldId: string, prevState: any, formData: For
 
     // Handle Image Upload if a new file is provided
     if (file && file.size > 0) {
-        const buffer = Buffer.from(await file.arrayBuffer())
-        const filename = "field_" + Date.now() + "_" + file.name.replaceAll(" ", "_")
-
         try {
-            await writeFile(
-                path.join(process.cwd(), "public/uploads/" + filename),
-                buffer
-            )
-            imageUrl = `/uploads/${filename}`
+            const buffer = Buffer.from(await file.arrayBuffer())
+            if (buffer.length > 4 * 1024 * 1024) {
+                return { message: "Image too large (max 4MB)", success: false }
+            }
+            const base64String = buffer.toString('base64')
+            const mimeType = file.type || 'image/jpeg'
+            imageUrl = `data:${mimeType};base64,${base64String}`
         } catch (error) {
-            console.error("Error uploading file", error)
-            return { message: "Failed to upload image.", success: false }
+            console.error("Error processing image", error)
+            return { message: "Failed to process image.", success: false }
         }
     }
 
