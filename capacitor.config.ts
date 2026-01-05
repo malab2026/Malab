@@ -5,9 +5,8 @@ const config: CapacitorConfig = {
   appName: 'Malaeb',
   webDir: 'out',
   server: {
-    // Replace with your Vercel URL once deployed
-    // url: 'https://your-app.vercel.app',
-    cleartext: false
+    url: 'https://malab-theta.vercel.app',
+    cleartext: true
   }
 };
 
