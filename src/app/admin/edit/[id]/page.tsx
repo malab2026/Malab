@@ -26,7 +26,7 @@ export default async function EditFieldPage({ params }: { params: { id: string }
     })
 
     return (
-        <main className="min-h-screen bg-gray-50 pb-10">
+        <main className="min-h-screen pb-10">
             <Navbar />
             <div className="container mx-auto py-10 px-4">
                 <EditFieldForm field={field} owners={owners} />

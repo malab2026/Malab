@@ -38,7 +38,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
                     </div>
                 </div>
 
-                <div className="relative w-full h-[80vh] bg-gray-50 rounded border flex items-center justify-center overflow-hidden">
+                <div className="relative w-full h-[80vh] bg-white/90 rounded border flex items-center justify-center overflow-hidden">
                     <img
                         src={`/api/receipt-image/${booking.id}`}
                         alt="Receipt"

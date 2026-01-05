@@ -27,7 +27,7 @@ export default async function OwnerPage() {
     }) as any[]
 
     return (
-        <main className="min-h-screen bg-gray-50 pb-10">
+        <main className="min-h-screen pb-10">
             <Navbar />
             <div className="container mx-auto py-10 px-4">
                 <div className="flex justify-between items-center mb-8">
