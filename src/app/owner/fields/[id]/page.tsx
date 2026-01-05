@@ -18,7 +18,14 @@ export default async function OwnerFieldDetailsPage({ params }: { params: Promis
 
     const field = await prisma.field.findUnique({
         where: { id },
-        include: {
+        select: {
+            id: true,
+            name: true,
+            pricePerHour: true,
+            address: true,
+            locationUrl: true,
+            description: true,
+            ownerId: true,
             bookings: {
                 orderBy: { startTime: 'desc' },
                 include: { user: { select: { name: true, phone: true } } }

@@ -15,6 +15,15 @@ export default async function FieldDetailsPage({ params }: { params: Promise<{ i
     }
     const field = await prisma.field.findUnique({
         where: { id },
+        select: {
+            id: true,
+            name: true,
+            pricePerHour: true,
+            address: true,
+            locationUrl: true,
+            description: true,
+            ownerId: true,
+        }
     })
 
     if (!field) {
@@ -31,7 +40,7 @@ export default async function FieldDetailsPage({ params }: { params: Promise<{ i
                     <div className="space-y-6">
                         <div className="relative h-[400px] w-full rounded-xl overflow-hidden shadow-lg">
                             <Image
-                                src={field.imageUrl || '/placeholder.jpg'}
+                                src={`/api/field-image/${field.id}`}
                                 alt={field.name}
                                 fill
                                 className="object-cover"
