@@ -35,40 +35,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-white px-4">
-        <div className="container mx-auto grid md:grid-cols-3 gap-8">
-          <FeatureCard
-            title="Easy Booking"
-            description="Select your preferred time slots and book instantly."
-            icon="📅"
-          />
-          <FeatureCard
-            title="Secure Payments"
-            description="Pay via InstaPay and upload your receipt safely."
-            icon="🔒"
-          />
-          <FeatureCard
-            title="Instant Confirmation"
-            description="Get notified as soon as your booking is approved."
-            icon="⚡"
-          />
-        </div>
-      </section>
-
-      <footer className="py-6 text-center text-gray-500 text-sm bg-gray-50">
-        © 2025 Malaeb Booking. All rights reserved.
-      </footer>
     </main>
-  )
-}
-
-function FeatureCard({ title, description, icon }: { title: string, description: string, icon: string }) {
-  return (
-    <div className="p-6 rounded-xl border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow">
-      <div className="text-4xl mb-4">{icon}</div>
-      <h3 className="font-semibold text-xl mb-2">{title}</h3>
-      <p className="text-gray-500">{description}</p>
-    </div>
   )
 }
