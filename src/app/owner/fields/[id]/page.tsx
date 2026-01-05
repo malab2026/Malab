@@ -128,25 +128,40 @@ export default async function OwnerFieldDetailsPage({ params }: { params: Promis
                                     'use server'
                                     const date = formData.get('date') as string
                                     const hour = Number(formData.get('hour'))
-                                    if (date && hour) {
-                                        await blockSlot(field.id, date, hour)
+                                    const duration = Number(formData.get('duration'))
+                                    if (date && hour && duration) {
+                                        await blockSlot(field.id, date, hour, duration)
                                     }
                                 }} className="space-y-4">
                                     <div className="space-y-2">
                                         <label className="text-xs font-semibold">Date</label>
                                         <Input type="date" name="date" required min={new Date().toISOString().split('T')[0]} />
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-semibold">Hour (24h format)</label>
-                                        <select
-                                            name="hour"
-                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                            required
-                                        >
-                                            {Array.from({ length: 24 }).map((_, i) => (
-                                                <option key={i} value={i}>{i}:00</option>
-                                            ))}
-                                        </select>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-semibold">Start Hour</label>
+                                            <select
+                                                name="hour"
+                                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                                required
+                                            >
+                                                {Array.from({ length: 24 }).map((_, i) => (
+                                                    <option key={i} value={i}>{i}:00</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-semibold">Duration (Hours)</label>
+                                            <select
+                                                name="duration"
+                                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                                required
+                                            >
+                                                {[1, 2, 3, 4, 5, 6, 7, 8].map((d) => (
+                                                    <option key={d} value={d}>{d} {d === 1 ? 'Hour' : 'Hours'}</option>
+                                                ))}
+                                            </select>
+                                        </div>
                                     </div>
                                     <Button type="submit" className="w-full bg-orange-600 hover:bg-orange-700">Block Slot</Button>
                                 </form>

@@ -38,7 +38,7 @@ export async function updateOwnerBookingStatus(bookingId: string, status: "CONFI
     }
 }
 
-export async function blockSlot(fieldId: string, date: string, hour: number) {
+export async function blockSlot(fieldId: string, date: string, hour: number, duration: number = 1) {
     const session = await auth()
 
     if (!session || (session.user.role !== 'owner' && session.user.role !== 'admin')) {
@@ -57,7 +57,7 @@ export async function blockSlot(fieldId: string, date: string, hour: number) {
         startTime.setHours(hour, 0, 0, 0)
 
         const endTime = new Date(startTime)
-        endTime.setHours(hour + 1)
+        endTime.setHours(hour + duration)
 
         await prisma.booking.create({
             data: {
