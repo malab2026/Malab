@@ -3,12 +3,13 @@ import prisma from "@/lib/prisma"
 import { notFound, redirect } from "next/navigation"
 import Image from "next/image"
 
-export default async function ReceiptPage({ params }: { params: { id: string } }) {
+export default async function ReceiptPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params
     const session = await auth()
     if (!session) redirect("/login")
 
     const booking = await prisma.booking.findUnique({
-        where: { id: params.id },
+        where: { id },
         include: { field: true }
     })
 

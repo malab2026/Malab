@@ -4,15 +4,16 @@ import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params
     const session = await auth()
     if (!session) {
         return new NextResponse("Unauthorized", { status: 401 })
     }
 
     const booking = await prisma.booking.findUnique({
-        where: { id: params.id },
+        where: { id },
         include: { field: true }
     })
 
