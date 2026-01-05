@@ -25,6 +25,14 @@ export default async function FieldsPage({
                 { address: { contains: query } }
             ]
         },
+        select: {
+            id: true,
+            name: true,
+            description: true,
+            address: true,
+            pricePerHour: true,
+            // imageUrl is EXCLUDED here to keep payload small
+        },
         orderBy: { createdAt: "desc" }
     })
 
@@ -40,9 +48,9 @@ export default async function FieldsPage({
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {fields.map((field: any) => (
                         <Card key={field.id} className="overflow-hidden flex flex-col hover:shadow-lg transition-shadow">
-                            <div className="relative h-48 w-full">
+                            <div className="relative h-48 w-full bg-gray-200">
                                 <Image
-                                    src={field.imageUrl || '/placeholder.jpg'}
+                                    src={`/api/field-image/${field.id}`}
                                     alt={field.name}
                                     fill
                                     className="object-cover"

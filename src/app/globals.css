@@ -137,12 +137,22 @@
     /* Darkened Soccer Grass - Clearer & Full Screen */
     background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url('/bg-grass.png');
     background-repeat: repeat;
-    background-size: 800px;
-    background-attachment: fixed;
+    background-size: 600px;
+    background-attachment: scroll;
+    /* Scroll is much faster on mobile than fixed */
+
+    @media (min-width: 1024px) {
+      background-attachment: fixed;
+    }
   }
 }
 
 /* Dark Mode Grass (Very Dark / Night Stadium) */
 .dark body {
   background-image: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), url('/bg-grass.png');
+  background-attachment: scroll;
+
+  @media (min-width: 1024px) {
+    background-attachment: fixed;
+  }
 }

@@ -19,7 +19,15 @@ export default async function DashboardPage() {
 
     const bookings = await prisma.booking.findMany({
         where: { userId: session.user.id },
-        include: { field: true },
+        include: {
+            field: {
+                select: {
+                    id: true,
+                    name: true,
+                    // imageUrl excluded
+                }
+            }
+        },
         orderBy: { createdAt: 'desc' }
     })
 
@@ -38,9 +46,9 @@ export default async function DashboardPage() {
                 <div className="space-y-4">
                     {bookings.map((booking: any) => (
                         <Card key={booking.id} className="flex flex-col md:flex-row items-center overflow-hidden">
-                            <div className="relative w-full md:w-48 h-32 md:h-auto shrink-0">
+                            <div className="relative w-full md:w-48 h-32 md:h-auto shrink-0 bg-gray-200">
                                 <Image
-                                    src={booking.field.imageUrl || '/placeholder.jpg'}
+                                    src={`/api/field-image/${booking.field.id}`}
                                     alt={booking.field.name}
                                     fill
                                     className="object-cover"
