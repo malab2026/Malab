@@ -61,7 +61,7 @@ export default async function DashboardPage() {
                                 </div>
                                 {booking.receiptUrl && (
                                     <div className="mt-4 flex flex-wrap items-center gap-4">
-                                        <Link href={booking.receiptUrl} target="_blank" className="text-blue-600 hover:underline text-sm font-medium">
+                                        <Link href={`/receipt/${booking.id}`} target="_blank" className="text-blue-600 hover:underline text-sm font-medium">
                                             View Receipt
                                         </Link>
 

@@ -245,7 +245,7 @@ function BookingCard({ booking, isAdmin = false }: { booking: any, isAdmin?: boo
                     <p className="text-sm text-gray-600">Phone: {booking.user.phone || 'N/A'}</p>
                     {booking.receiptUrl && (
                         <div className="mt-1">
-                            <Link href={booking.receiptUrl} target="_blank" className="text-blue-600 hover:underline text-xs">
+                            <Link href={`/receipt/${booking.id}`} target="_blank" className="text-blue-600 hover:underline text-xs">
                                 View Receipt Full
                             </Link>
                         </div>

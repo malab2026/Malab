@@ -88,7 +88,7 @@ export default async function OwnerFieldDetailsPage({ params }: { params: Promis
                                                         <>
                                                             {booking.receiptUrl && (
                                                                 <Button variant="outline" size="sm" asChild className="border-blue-200 text-blue-700 hover:bg-blue-50">
-                                                                    <a href={booking.receiptUrl} target="_blank">View Receipt</a>
+                                                                    <a href={`/receipt/${booking.id}`} target="_blank">View Receipt</a>
                                                                 </Button>
                                                             )}
                                                             <form action={async () => {
