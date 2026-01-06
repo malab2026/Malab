@@ -31,14 +31,15 @@ jobs:
           pod install
           xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos -derivedDataPath ../../build build CODE_SIGNING_ALLOWED=NO
 
-      - name: Zip App Package
+      - name: Package IPA
         run: |
-          # The app should be in build/Build/Products/Release-iphoneos/App.app
-          cd build/Build/Products/Release-iphoneos
-          zip -r ../../../../App-Package.zip App.app
+          # Create the required Payload structure for a valid .ipa file
+          mkdir Payload
+          cp -r build/Build/Products/Release-iphoneos/App.app Payload/
+          zip -vr App.ipa Payload/
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ios-app-package
-          path: App-Package.zip
+          name: App-IPA
+          path: App.ipa
