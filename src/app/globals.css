@@ -87,8 +87,8 @@
     radial-gradient(at 0% 100%, hsla(220, 60%, 96%, 1) 0px, transparent 50%);
 
   /* Safe Area for Mobile Notch */
-  --safe-area-inset-top: env(safe-area-inset-top);
-  --safe-area-inset-bottom: env(safe-area-inset-bottom);
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .dark {
