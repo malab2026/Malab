@@ -1,0 +1,28 @@
+workflows:
+  ios-build:
+    name: iOS Build
+    max_build_duration: 60
+    instance_type: mac_mini_m1
+    environment:
+      node: latest
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Install dependencies
+        script: npm install --legacy-peer-deps
+      - name: Build Web App
+        script: npm run build
+      - name: Sync Capacitor
+        script: npx cap sync ios
+      - name: Build iOS App
+        script: |
+          cd ios/App
+          pod install
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos build CODE_SIGNING_ALLOWED=NO
+    artifacts:
+      - ios/App/build/Release-iphoneos/*.ipa
+      - ios/App/build/Release-iphoneos/*.app
+    publishing:
+      email:
+        recipients:
+          - admin@example.com
