@@ -85,6 +85,10 @@
     radial-gradient(at 100% 0%, hsla(210, 80%, 94%, 1) 0px, transparent 50%),
     radial-gradient(at 100% 100%, hsla(150, 60%, 96%, 1) 0px, transparent 50%),
     radial-gradient(at 0% 100%, hsla(220, 60%, 96%, 1) 0px, transparent 50%);
+
+  /* Safe Area for Mobile Notch */
+  --safe-area-inset-top: env(safe-area-inset-top);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom);
 }
 
 .dark {
@@ -139,6 +143,8 @@
     background-repeat: repeat;
     background-size: 600px;
     background-attachment: scroll;
+    padding-top: var(--safe-area-inset-top);
+    padding-bottom: var(--safe-area-inset-bottom);
     /* Scroll is much faster on mobile than fixed */
 
     @media (min-width: 1024px) {
