@@ -26,9 +26,9 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
         return Array.from({ length: 7 }).map((_, i) => addDays(viewDate, i))
     }, [viewDate])
 
-    // Generate hours from 8 AM to 1 AM (next day)
+    // Generate hours from 8 AM to 2 AM (next day)
     const hours = useMemo(() => {
-        return Array.from({ length: 18 }).map((_, i) => {
+        return Array.from({ length: 19 }).map((_, i) => {
             const h = (i + 8) % 24
             return `${h.toString().padStart(2, '0')}:00`
         })
@@ -71,38 +71,38 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
         <div className="space-y-4">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={goToToday} className="flex items-center gap-1">
+                    <Button variant="outline" size="sm" onClick={goToToday} className="flex items-center gap-1 border-green-200 text-green-700 hover:bg-green-50">
                         <CalendarIcon className="h-4 w-4" />
                         Today
                     </Button>
                     <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => navigateWeek('prev')}>
+                        <Button variant="ghost" size="icon" onClick={() => navigateWeek('prev')} className="text-gray-500">
                             <ChevronLeft className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => navigateWeek('next')}>
+                        <Button variant="ghost" size="icon" onClick={() => navigateWeek('next')} className="text-gray-500">
                             <ChevronRight className="h-4 w-4" />
                         </Button>
                     </div>
-                    <span className="font-semibold text-lg ml-2">
+                    <span className="font-bold text-gray-700 ml-2">
                         {format(weekDays[0], 'MMM d')} - {format(weekDays[6], 'MMM d, yyyy')}
                     </span>
                 </div>
             </div>
 
-            <div className="overflow-x-auto border rounded-xl bg-white shadow-sm">
-                <div className="min-w-[600px]">
+            <div className="overflow-x-auto border border-gray-100 rounded-2xl bg-white shadow-sm">
+                <div className="min-w-[700px]">
                     {/* Header Row */}
                     <div className="grid grid-cols-8 border-b bg-gray-50/50">
-                        <div className="p-2 border-r text-xs font-medium text-gray-500 flex items-center justify-center">Time</div>
+                        <div className="p-3 border-r text-[10px] font-black text-gray-400 flex items-center justify-center uppercase tracking-widest">Time</div>
                         {weekDays.map((day, i) => (
                             <div key={i} className={cn(
-                                "p-2 text-center border-r last:border-r-0",
-                                isSameDay(day, new Date()) && "bg-green-50"
+                                "p-3 text-center border-r last:border-r-0",
+                                isSameDay(day, new Date()) && "bg-green-50/50"
                             )}>
-                                <div className="text-xs text-gray-500 uppercase font-bold">{format(day, 'EEE')}</div>
+                                <div className="text-[10px] text-gray-400 uppercase font-black tracking-wider mb-0.5">{format(day, 'EEE')}</div>
                                 <div className={cn(
-                                    "text-sm font-bold",
-                                    isSameDay(day, new Date()) ? "text-green-600" : "text-gray-900"
+                                    "text-xs font-black",
+                                    isSameDay(day, new Date()) ? "text-green-600" : "text-gray-800"
                                 )}>
                                     {format(day, 'd MMM')}
                                 </div>
@@ -111,10 +111,10 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
                     </div>
 
                     {/* Slots Grid */}
-                    <div className="max-h-[500px] overflow-y-auto">
+                    <div className="max-h-[600px] overflow-y-auto">
                         {hours.map((time) => (
-                            <div key={time} className="grid grid-cols-8 border-b last:border-b-0 hover:bg-gray-50/30 transition-colors">
-                                <div className="p-2 border-r text-xs font-semibold text-gray-400 flex items-center justify-center bg-gray-50/30">
+                            <div key={time} className="grid grid-cols-8 border-b last:border-b-0">
+                                <div className="p-2 border-r text-[11px] font-bold text-gray-400 flex items-center justify-center bg-gray-50/30">
                                     {time}
                                 </div>
                                 {weekDays.map((day, i) => {
@@ -127,19 +127,13 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
                                             key={i}
                                             onClick={() => !past && handleSlotClick(day, time)}
                                             className={cn(
-                                                "p-1 border-r last:border-r-0 h-12 cursor-pointer transition-all flex items-center justify-center",
-                                                booked ? "bg-red-50 cursor-not-allowed" :
-                                                    selected ? "bg-green-600 shadow-inner" :
-                                                        past ? "bg-gray-100/50 cursor-default" : "hover:bg-green-50/50",
+                                                "p-1 border-r last:border-r-0 h-10 cursor-pointer transition-all duration-200",
+                                                booked ? "bg-red-600 cursor-not-allowed" :
+                                                    selected ? "bg-green-600 ring-2 ring-inset ring-green-700" :
+                                                        past ? "bg-gray-100/80 cursor-default" : "bg-green-50/60 hover:bg-green-100/80",
                                             )}
                                         >
-                                            {booked ? (
-                                                <div className="text-[10px] font-bold text-red-600 uppercase tracking-tighter">Booked</div>
-                                            ) : selected ? (
-                                                <div className="text-[10px] font-bold text-white uppercase tracking-tighter">Selected</div>
-                                            ) : (
-                                                <div className="w-2 h-2 rounded-full bg-green-200 opacity-0 group-hover:opacity-100" />
-                                            )}
+                                            {/* No text inside, just color squares */}
                                         </div>
                                     )
                                 })}
@@ -149,22 +143,22 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
                 </div>
             </div>
 
-            <div className="flex gap-4 text-xs font-medium text-gray-500 px-1 mt-2">
-                <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 rounded bg-white border shadow-sm"></div>
-                    <span>Available</span>
+            <div className="flex flex-wrap gap-4 text-[11px] font-bold text-gray-500 px-1 mt-3">
+                <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded bg-green-50/60 border border-green-100 shadow-sm"></div>
+                    <span className="uppercase tracking-tight">Available</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 rounded bg-green-600"></div>
-                    <span>Selected</span>
+                <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded bg-green-600 ring-1 ring-green-700"></div>
+                    <span className="uppercase tracking-tight">Your Selection</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 rounded bg-red-50 border border-red-100"></div>
-                    <span>Booked</span>
+                <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded bg-red-600"></div>
+                    <span className="uppercase tracking-tight">Occupied</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 rounded bg-gray-100 border border-gray-200"></div>
-                    <span>Past</span>
+                <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded bg-gray-100 border border-gray-200"></div>
+                    <span className="uppercase tracking-tight">Past</span>
                 </div>
             </div>
         </div>
