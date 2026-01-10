@@ -50,6 +50,30 @@ export async function checkAvailability(fieldId: string, slots: any[]) {
     }
 }
 
+export async function getFieldBookings(fieldId: string, startDate: string, endDate: string) {
+    try {
+        const bookings = await prisma.booking.findMany({
+            where: {
+                fieldId,
+                status: { not: "REJECTED" },
+                startTime: {
+                    gte: new Date(`${startDate}T00:00:00`),
+                    lte: new Date(`${endDate}T23:59:59`),
+                },
+            },
+            select: {
+                id: true,
+                startTime: true,
+                endTime: true,
+                status: true,
+            },
+        })
+        return { success: true, bookings }
+    } catch (e) {
+        return { success: false, message: "Error fetching bookings." }
+    }
+}
+
 
 export async function createBooking(prevState: any, formData: FormData) {
     console.log(`[${new Date().toISOString()}] ACTION START`)

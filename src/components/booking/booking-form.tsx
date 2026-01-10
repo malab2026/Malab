@@ -7,15 +7,14 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
-import { Trash2, PlusCircle, Timer, Calendar, ChevronRight, ChevronLeft, CheckCircle2 } from "lucide-react"
+import { Trash2, Timer, Calendar, ChevronRight, ChevronLeft, CheckCircle2, AlertCircle } from "lucide-react"
+import { WeeklySchedule } from "./weekly-schedule"
 
-export function BookingForm({ field, userRole }: { field: any, userRole: string }) {
+export function BookingForm({ field, userRole, initialBookings = [] }: { field: any, userRole: string, initialBookings?: any[] }) {
     const [step, setStep] = useState(1)
     const [slots, setSlots] = useState<any[]>([])
-    const [currentDate, setCurrentDate] = useState(new Date().toISOString().split('T')[0])
-    const [currentTime, setCurrentTime] = useState("")
-    const [currentDuration, setCurrentDuration] = useState(1)
 
+    // Receipt state and other existing states
     const [state, dispatch] = useActionState(createBooking, null)
     const [isChecking, setIsChecking] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -24,21 +23,16 @@ export function BookingForm({ field, userRole }: { field: any, userRole: string 
     const isOwner = userRole === 'owner' || userRole === 'admin'
 
     const totalPrice = useMemo(() => {
-        let basePrice = slots.reduce((acc, slot) => acc + (field.pricePerHour * slot.duration), 0)
-        // If no slots added yet, but current picker has values, show that price as preview
-        if (slots.length === 0 && currentDate && currentTime) {
-            basePrice = field.pricePerHour * currentDuration
-        }
-        return basePrice
-    }, [slots, field.pricePerHour, currentDate, currentTime, currentDuration])
+        return slots.reduce((acc, slot) => acc + (field.pricePerHour * slot.duration), 0)
+    }, [slots, field.pricePerHour])
 
-    const handleAddSlot = () => {
-        if (!currentDate || !currentTime) return
-        const exists = slots.find(s => s.date === currentDate && s.startTime === currentTime)
-        if (exists) return
-        setSlots([...slots, { date: currentDate, startTime: currentTime, duration: currentDuration }])
-        setCurrentTime("")
+    const handleSlotSelect = (slot: any) => {
+        setSlots(prev => [...prev, slot])
         setError(null)
+    }
+
+    const handleSlotRemove = (date: string, startTime: string) => {
+        setSlots(prev => prev.filter(s => !(s.date === date && s.startTime === startTime)))
     }
 
     const removeSlot = (index: number) => {
@@ -47,27 +41,19 @@ export function BookingForm({ field, userRole }: { field: any, userRole: string 
 
     const handleNextStep = async () => {
         setError(null)
-        const slotsToValidate = slots.length > 0
-            ? slots
-            : (currentDate && currentTime ? [{ date: currentDate, startTime: currentTime, duration: currentDuration }] : [])
-
-        if (slotsToValidate.length === 0) {
-            setError("Please select at least one time slot.")
+        if (slots.length === 0) {
+            setError("Please select at least one time slot from the schedule.")
             return
         }
 
         setIsChecking(true)
-        const result = await checkAvailability(field.id, slotsToValidate)
+        const result = await checkAvailability(field.id, slots)
         setIsChecking(false)
 
         if (result.success) {
-            if (slots.length === 0 && currentDate && currentTime) {
-                // Auto-add the current selection if not added to list
-                setSlots([{ date: currentDate, startTime: currentTime, duration: currentDuration }])
-            }
             setStep(2)
         } else {
-            setError(result.message || "Slots are not available.")
+            setError(result.message || "Some selected slots are no longer available.")
         }
     }
 
@@ -91,74 +77,34 @@ export function BookingForm({ field, userRole }: { field: any, userRole: string 
 
             {step === 1 && (
                 <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                    {/* Slot Picker */}
-                    <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-4">
-                        <div className="grid gap-4 md:grid-cols-2">
-                            <div className="space-y-2">
-                                <Label htmlFor="date">Date</Label>
-                                <Input
-                                    type="date"
-                                    id="date"
-                                    name="date"
-                                    value={currentDate}
-                                    min={new Date().toISOString().split('T')[0]}
-                                    onChange={(e) => setCurrentDate(e.target.value)}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="startTime">Start Time</Label>
-                                <Input
-                                    type="time"
-                                    id="startTime"
-                                    name="startTime"
-                                    value={currentTime}
-                                    onChange={(e) => setCurrentTime(e.target.value)}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex items-end gap-4">
-                            <div className="flex-1 space-y-2">
-                                <Label htmlFor="duration">Duration</Label>
-                                <select
-                                    id="duration"
-                                    name="duration"
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                    value={currentDuration}
-                                    onChange={(e) => setCurrentDuration(Number(e.target.value))}
-                                >
-                                    <option value="1">1 Hour</option>
-                                    <option value="2">2 Hours</option>
-                                    <option value="3">3 Hours</option>
-                                </select>
-                            </div>
-                            <Button
-                                type="button"
-                                onClick={handleAddSlot}
-                                variant="outline"
-                                className="bg-white text-green-700 hover:bg-green-50 border-green-200"
-                            >
-                                <PlusCircle className="mr-2 h-4 w-4" />
-                                Add Another
-                            </Button>
-                        </div>
+                    <div className="space-y-2">
+                        <Label className="text-sm font-bold text-gray-700 flex items-center gap-2 mb-2">
+                            <Calendar className="h-4 w-4 text-green-600" />
+                            Select Available Slots
+                        </Label>
+                        <WeeklySchedule
+                            existingBookings={initialBookings}
+                            selectedSlots={slots}
+                            onSlotSelect={handleSlotSelect}
+                            onSlotRemove={handleSlotRemove}
+                        />
                     </div>
 
-                    {/* Selected Slots List (only if multiple added) */}
+                    {/* Selected Slots List */}
                     {slots.length > 0 && (
                         <div className="space-y-3">
-                            <h3 className="text-sm font-semibold text-gray-700 px-1">Selected Slots</h3>
-                            <div className="grid gap-3">
+                            <h3 className="text-sm font-bold text-gray-700 px-1">Selected ({slots.length})</h3>
+                            <div className="grid gap-2 max-h-[200px] overflow-y-auto pr-1">
                                 {slots.map((slot, index) => (
-                                    <div key={index} className="flex items-center justify-between p-3 bg-white border rounded-lg shadow-sm">
+                                    <div key={index} className="flex items-center justify-between p-2.5 bg-green-50 border border-green-100 rounded-lg shadow-sm">
                                         <div className="flex gap-4 items-center">
-                                            <div className="flex items-center text-sm text-gray-600">
-                                                <Calendar className="mr-1.5 h-4 w-4 text-green-600" />
+                                            <div className="flex items-center text-xs font-semibold text-green-800">
+                                                <Calendar className="mr-1.5 h-3.5 w-3.5" />
                                                 {slot.date}
                                             </div>
-                                            <div className="flex items-center text-sm text-gray-600">
-                                                <Timer className="mr-1.5 h-4 w-4 text-green-600" />
-                                                {slot.startTime} ({slot.duration}h)
+                                            <div className="flex items-center text-xs font-semibold text-green-800">
+                                                <Timer className="mr-1.5 h-3.5 w-3.5" />
+                                                {slot.startTime}
                                             </div>
                                         </div>
                                         <Button
@@ -166,9 +112,9 @@ export function BookingForm({ field, userRole }: { field: any, userRole: string 
                                             variant="ghost"
                                             size="icon"
                                             onClick={() => removeSlot(index)}
-                                            className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                                            className="h-7 w-7 text-green-700 hover:text-red-600 hover:bg-red-50"
                                         >
-                                            <Trash2 className="h-4 w-4" />
+                                            <Trash2 className="h-3.5 w-3.5" />
                                         </Button>
                                     </div>
                                 ))}
@@ -176,10 +122,12 @@ export function BookingForm({ field, userRole }: { field: any, userRole: string 
                         </div>
                     )}
 
-                    <Card className="bg-green-50 border-green-100">
-                        <CardContent className="pt-6">
-                            <div className="flex justify-between items-center text-lg font-bold text-green-900">
-                                <span>Estimated Total:</span>
+                    <Card className="bg-green-600 border-green-700 shadow-md">
+                        <CardContent className="py-4">
+                            <div className="flex justify-between items-center text-lg font-bold text-white">
+                                <span className="flex items-center gap-2">
+                                    Total Price:
+                                </span>
                                 <span>{totalPrice} EGP</span>
                             </div>
                         </CardContent>
@@ -187,8 +135,8 @@ export function BookingForm({ field, userRole }: { field: any, userRole: string 
 
                     <Button
                         type="button"
-                        className="w-full h-12 text-base font-semibold bg-green-600 hover:bg-green-700"
-                        disabled={isChecking}
+                        className="w-full h-12 text-base font-bold bg-green-600 hover:bg-green-700 shadow-lg"
+                        disabled={isChecking || slots.length === 0}
                         onClick={handleNextStep}
                     >
                         {isChecking ? "Checking availability..." : (
