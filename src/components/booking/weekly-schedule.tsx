@@ -127,10 +127,10 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
                                             key={i}
                                             onClick={() => !past && handleSlotClick(day, time)}
                                             className={cn(
-                                                "p-1 border-r last:border-r-0 h-10 cursor-pointer transition-all duration-200",
+                                                "p-1 border-r last:border-r-0 h-10 cursor-pointer transition-all duration-150 border-b border-gray-100",
                                                 booked ? "bg-red-600 cursor-not-allowed" :
-                                                    selected ? "bg-green-600 ring-2 ring-inset ring-green-700" :
-                                                        past ? "bg-gray-100/80 cursor-default" : "bg-green-50/60 hover:bg-green-100/80",
+                                                    selected ? "bg-green-900 shadow-inner ring-1 ring-inset ring-black/20" :
+                                                        past ? "bg-gray-100 cursor-default" : "bg-green-400/30 hover:bg-green-400/50",
                                             )}
                                         >
                                             {/* No text inside, just color squares */}
@@ -143,22 +143,22 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
                 </div>
             </div>
 
-            <div className="flex flex-wrap gap-4 text-[11px] font-bold text-gray-500 px-1 mt-3">
+            <div className="flex flex-wrap gap-4 text-[10px] font-black text-gray-400 px-1 mt-3 uppercase tracking-widest">
                 <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded bg-green-50/60 border border-green-100 shadow-sm"></div>
-                    <span className="uppercase tracking-tight">Available</span>
+                    <div className="w-4 h-4 rounded bg-green-400/30 border border-green-200"></div>
+                    <span>Available</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded bg-green-600 ring-1 ring-green-700"></div>
-                    <span className="uppercase tracking-tight">Your Selection</span>
+                    <div className="w-4 h-4 rounded bg-green-900 border border-black/20"></div>
+                    <span>Your Selection</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-4 h-4 rounded bg-red-600"></div>
-                    <span className="uppercase tracking-tight">Occupied</span>
+                    <span>Occupied</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-4 h-4 rounded bg-gray-100 border border-gray-200"></div>
-                    <span className="uppercase tracking-tight">Past</span>
+                    <span>Past</span>
                 </div>
             </div>
         </div>
