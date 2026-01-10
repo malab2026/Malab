@@ -24,6 +24,7 @@ export default async function FieldDetailsPage({ params }: { params: Promise<{ i
             address: true,
             locationUrl: true,
             description: true,
+            cancellationPolicy: true,
             ownerId: true,
         }
     })
@@ -81,7 +82,16 @@ export default async function FieldDetailsPage({ params }: { params: Promise<{ i
 
                             <div className="mt-8 border-t pt-6">
                                 <h3 className="text-lg font-bold text-gray-800 mb-3">About this Field</h3>
-                                <p className="text-gray-600 leading-relaxed">{field.description}</p>
+                                <p className="text-gray-600 leading-relaxed mb-6">{field.description}</p>
+
+                                <div className="p-5 bg-orange-50 border border-orange-100 rounded-xl">
+                                    <h4 className="text-orange-900 font-bold mb-2 flex items-center gap-2">
+                                        🛡️ Cancellation Policy
+                                    </h4>
+                                    <p className="text-orange-800/80 text-sm leading-relaxed whitespace-pre-line font-medium">
+                                        {field.cancellationPolicy}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import Image from "next/image"
+import { CancellationRequestButton } from "@/components/booking/cancellation-request-button"
 
 export const dynamic = 'force-dynamic'
 
@@ -72,24 +73,16 @@ export default async function DashboardPage() {
                                         <Link href={`/receipt/${booking.id}`} target="_blank" className="text-blue-600 hover:underline text-sm font-medium">
                                             View Receipt
                                         </Link>
-
-                                        {booking.status === 'PENDING' && (
-                                            <div className="flex gap-2">
-                                                <Button variant="outline" size="sm" asChild>
-                                                    <Link href={`/dashboard/edit/${booking.id}`}>Edit</Link>
-                                                </Button>
-                                                <form action={async () => {
-                                                    'use server'
-                                                    const { cancelBooking } = await import("@/actions/booking-actions")
-                                                    await cancelBooking(booking.id)
-                                                }}>
-                                                    <Button variant="destructive" size="sm" type="submit">Cancel</Button>
-                                                </form>
-                                            </div>
-                                        )}
                                     </div>
                                 )}
-                                {!booking.receiptUrl && booking.status === 'PENDING' && (
+
+                                {booking.status === 'CONFIRMED' && (
+                                    <div className="mt-4">
+                                        <CancellationRequestButton bookingId={booking.id} />
+                                    </div>
+                                )}
+
+                                {booking.status === 'PENDING' && (
                                     <div className="mt-4 flex gap-2">
                                         <Button variant="outline" size="sm" asChild>
                                             <Link href={`/dashboard/edit/${booking.id}`}>Edit</Link>
@@ -101,6 +94,13 @@ export default async function DashboardPage() {
                                         }}>
                                             <Button variant="destructive" size="sm" type="submit">Cancel</Button>
                                         </form>
+                                    </div>
+                                )}
+
+                                {booking.status === 'CANCEL_REQUESTED' && (
+                                    <div className="mt-4 p-4 bg-orange-50 rounded-xl border border-orange-100 flex items-center gap-3">
+                                        <span className="animate-pulse flex h-3 w-3 rounded-full bg-orange-400"></span>
+                                        <p className="text-sm font-medium text-orange-800">Cancellation request pending review...</p>
                                     </div>
                                 )}
                             </div>
@@ -124,10 +124,12 @@ function StatusBadge({ status }: { status: string }) {
         PENDING: "bg-yellow-100 text-yellow-800 hover:bg-yellow-100",
         CONFIRMED: "bg-green-100 text-green-800 hover:bg-green-100",
         REJECTED: "bg-red-100 text-red-800 hover:bg-red-100",
+        CANCEL_REQUESTED: "bg-orange-100 text-orange-800 hover:bg-orange-100",
+        CANCELLED: "bg-gray-100 text-gray-800 hover:bg-gray-100",
     }
     return (
         <Badge className={styles[status as keyof typeof styles] || ""}>
-            {status}
+            {status.replace('_', ' ')}
         </Badge>
     )
 }

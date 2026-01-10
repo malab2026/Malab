@@ -13,6 +13,7 @@ export const dynamic = 'force-dynamic'
 
 import { AddFieldForm } from "@/components/admin/add-field-form"
 import { CreateOwnerForm } from "@/components/admin/create-owner-form"
+import { ProcessCancellationDialog } from "@/components/admin/process-cancellation-dialog"
 
 export default async function AdminPage() {
     const session = await auth()
@@ -23,6 +24,12 @@ export default async function AdminPage() {
 
     const pendingBookings = await prisma.booking.findMany({
         where: { status: 'PENDING' },
+        include: { field: true, user: true },
+        orderBy: { createdAt: 'desc' }
+    })
+
+    const cancelRequests = await prisma.booking.findMany({
+        where: { status: 'CANCEL_REQUESTED' },
         include: { field: true, user: true },
         orderBy: { createdAt: 'desc' }
     })
@@ -205,6 +212,23 @@ export default async function AdminPage() {
                         </div>
                     </section>
 
+                    {/* Cancellation Requests Section */}
+                    <section>
+                        <div className="flex items-center gap-2 mb-4">
+                            <h2 className="text-2xl font-semibold text-orange-600">Cancellation Requests</h2>
+                            <Badge variant="destructive" className="bg-orange-600">{cancelRequests.length}</Badge>
+                        </div>
+
+                        <div className="space-y-4">
+                            {cancelRequests.map((booking: any) => (
+                                <BookingCard key={booking.id} booking={booking} isAdmin isCancelRequest />
+                            ))}
+                            {cancelRequests.length === 0 && (
+                                <p className="text-gray-500 italic">No cancellation requests.</p>
+                            )}
+                        </div>
+                    </section>
+
                     {/* Recent History Section */}
                     <section>
                         <h2 className="text-2xl font-semibold mb-4">Recent Actvity</h2>
@@ -220,9 +244,9 @@ export default async function AdminPage() {
     )
 }
 
-function BookingCard({ booking, isAdmin = false }: { booking: any, isAdmin?: boolean }) {
+function BookingCard({ booking, isAdmin = false, isCancelRequest = false }: { booking: any, isAdmin?: boolean, isCancelRequest?: boolean }) {
     return (
-        <Card className="flex flex-col md:flex-row items-center overflow-hidden">
+        <Card className="flex flex-col md:flex-row items-center overflow-hidden border-l-4 border-l-transparent data-[cancel=true]:border-l-orange-500" data-cancel={isCancelRequest}>
             <div className="relative w-full md:w-32 h-24 shrink-0 bg-gray-200">
                 {booking.receiptUrl ? (
                     <Image
@@ -243,6 +267,11 @@ function BookingCard({ booking, isAdmin = false }: { booking: any, isAdmin?: boo
                     </p>
                     <p className="text-sm">User: <span className="font-medium">{booking.user.name}</span> ({booking.user.email})</p>
                     <p className="text-sm text-gray-600">Phone: {booking.user.phone || 'N/A'}</p>
+                    {isCancelRequest && booking.cancellationReason && (
+                        <p className="text-xs mt-2 p-2 bg-orange-50 text-orange-800 rounded border border-orange-100 italic">
+                            Reason: {booking.cancellationReason}
+                        </p>
+                    )}
                     {booking.receiptUrl && (
                         <div className="mt-1">
                             <Link href={`/receipt/${booking.id}`} target="_blank" className="text-blue-600 hover:underline text-xs">
@@ -271,6 +300,12 @@ function BookingCard({ booking, isAdmin = false }: { booking: any, isAdmin?: boo
                             </form>
                         </div>
                     )}
+
+                    {isAdmin && isCancelRequest && (
+                        <div className="ml-4">
+                            <ProcessCancellationDialog booking={booking} />
+                        </div>
+                    )}
                 </div>
             </div>
         </Card>
@@ -282,10 +317,13 @@ function StatusBadge({ status }: { status: string }) {
         PENDING: "bg-yellow-100 text-yellow-800",
         CONFIRMED: "bg-green-100 text-green-800",
         REJECTED: "bg-red-100 text-red-800",
+        CANCEL_REQUESTED: "bg-orange-100 text-orange-800",
+        CANCEL_APPROVED: "bg-gray-100 text-gray-800",
+        CANCELLED: "bg-gray-100 text-gray-800",
     }
     return (
-        <Badge className={styles[status as keyof typeof styles] || "" + " hover:none"}>
-            {status}
+        <Badge className={(styles[status as keyof typeof styles] || "") + " hover:none shadow-none border-0"}>
+            {status.replace('_', ' ')}
         </Badge>
     )
 }

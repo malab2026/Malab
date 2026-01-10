@@ -24,6 +24,8 @@ export const viewport = {
   viewportFit: "cover",
 };
 
+import { Toaster } from "sonner";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -35,6 +37,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   );

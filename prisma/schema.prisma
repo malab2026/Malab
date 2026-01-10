@@ -21,28 +21,32 @@ model User {
 }
 
 model Field {
-  id           String    @id @default(cuid())
-  name         String
-  pricePerHour Float
-  description  String?
-  address      String?
-  locationUrl  String?
-  imageUrl     String?
-  ownerId      String?
-  createdAt    DateTime  @default(now())
-  bookings     Booking[]
-  owner        User?     @relation("OwnerFields", fields: [ownerId], references: [id])
+  id                 String    @id @default(cuid())
+  name               String
+  pricePerHour       Float
+  description        String?
+  address            String?
+  locationUrl        String?
+  imageUrl           String?
+  cancellationPolicy String?   @default("No cancellation policy specified.")
+  ownerId            String?
+  createdAt          DateTime  @default(now())
+  bookings           Booking[]
+  owner              User?     @relation("OwnerFields", fields: [ownerId], references: [id])
 }
 
 model Booking {
-  id         String   @id @default(cuid())
-  userId     String
-  fieldId    String
-  startTime  DateTime
-  endTime    DateTime
-  status     String   @default("PENDING")
-  receiptUrl String?
-  createdAt  DateTime @default(now())
-  field      Field    @relation(fields: [fieldId], references: [id])
-  user       User     @relation(fields: [userId], references: [id])
+  id                    String    @id @default(cuid())
+  userId                String
+  fieldId               String
+  startTime             DateTime
+  endTime               DateTime
+  status                String    @default("PENDING") // PENDING, CONFIRMED, REJECTED, CANCEL_REQUESTED, CANCELLED
+  receiptUrl            String?
+  cancellationReason    String?
+  refundAmount          Float?
+  cancellationAdminNote String?
+  createdAt             DateTime  @default(now())
+  field                 Field     @relation(fields: [fieldId], references: [id])
+  user                  User      @relation(fields: [userId], references: [id])
 }

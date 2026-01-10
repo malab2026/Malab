@@ -14,6 +14,7 @@ const FieldSchema = z.object({
     address: z.string().optional(),
     locationUrl: z.string().url().optional().or(z.literal('')),
     description: z.string().optional(),
+    cancellationPolicy: z.string().optional(),
     ownerId: z.string().optional().or(z.literal('')),
     newManagerName: z.string().optional(),
     newManagerEmail: z.string().email().optional().or(z.literal('')),
@@ -37,6 +38,7 @@ export async function createField(prevState: any, formData: FormData) {
         address: formData.get("address"),
         locationUrl: formData.get("locationUrl"),
         description: formData.get("description"),
+        cancellationPolicy: formData.get("cancellationPolicy"),
         ownerId: formData.get("ownerId"),
         newManagerName: formData.get("newManagerName"),
         newManagerEmail: formData.get("newManagerEmail"),
@@ -48,7 +50,7 @@ export async function createField(prevState: any, formData: FormData) {
     }
 
     const {
-        name, price, address, locationUrl, description,
+        name, price, address, locationUrl, description, cancellationPolicy,
         ownerId, newManagerName, newManagerEmail, newManagerPassword
     } = validatedFields.data
 
@@ -100,6 +102,7 @@ export async function createField(prevState: any, formData: FormData) {
                 address: address || null,
                 locationUrl: locationUrl || null,
                 description: description || null,
+                cancellationPolicy: cancellationPolicy || "No cancellation policy specified.",
                 imageUrl,
                 ownerId: finalOwnerId,
             }
@@ -126,6 +129,7 @@ export async function updateField(fieldId: string, prevState: any, formData: For
         address: formData.get("address"),
         locationUrl: formData.get("locationUrl"),
         description: formData.get("description"),
+        cancellationPolicy: formData.get("cancellationPolicy"),
         ownerId: formData.get("ownerId"),
     })
 
@@ -133,7 +137,7 @@ export async function updateField(fieldId: string, prevState: any, formData: For
         return { message: "Invalid Inputs", success: false }
     }
 
-    const { name, price, address, locationUrl, description, ownerId } = validatedFields.data
+    const { name, price, address, locationUrl, description, cancellationPolicy, ownerId } = validatedFields.data
     const file = formData.get("image") as File
     let imageUrl = undefined
 
@@ -162,6 +166,7 @@ export async function updateField(fieldId: string, prevState: any, formData: For
                 address: address || null,
                 locationUrl: locationUrl || null,
                 description: description || null,
+                cancellationPolicy: cancellationPolicy || null,
                 ...(imageUrl && { imageUrl }),
                 ownerId: ownerId || null,
             }
@@ -269,6 +274,38 @@ export async function updateUserRole(userId: string, role: string) {
         })
         revalidatePath('/admin')
         return { message: "User role updated successfully", success: true }
+    } catch (e) {
+        console.error(e)
+        return { message: "Database Error", success: false }
+    }
+}
+
+export async function processCancellationRequest(
+    bookingId: string,
+    action: "APPROVE" | "REJECT",
+    refundAmount?: number,
+    adminNote?: string
+) {
+    const session = await auth()
+    if (!session || session.user.role !== 'admin') {
+        return { message: "Unauthorized", success: false }
+    }
+
+    try {
+        const status = action === "APPROVE" ? "CANCELLED" : "CONFIRMED"
+
+        await prisma.booking.update({
+            where: { id: bookingId },
+            data: {
+                status,
+                refundAmount: refundAmount || 0,
+                cancellationAdminNote: adminNote || null
+            }
+        })
+
+        revalidatePath('/admin')
+        revalidatePath('/dashboard')
+        return { message: `Cancellation ${action.toLowerCase()}d successfully`, success: true }
     } catch (e) {
         console.error(e)
         return { message: "Database Error", success: false }

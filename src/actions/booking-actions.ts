@@ -292,3 +292,37 @@ export async function updateBooking(bookingId: string, prevState: any, formData:
 
     redirect('/dashboard')
 }
+
+export async function requestCancellation(bookingId: string, reason: string) {
+    const session = await auth()
+    if (!session) return { message: "Unauthorized", success: false }
+
+    try {
+        const booking = await prisma.booking.findUnique({
+            where: { id: bookingId }
+        })
+
+        if (!booking || booking.userId !== session.user.id) {
+            return { message: "Booking not found", success: false }
+        }
+
+        if (booking.status === "CANCELLED" || booking.status === "CANCEL_REQUESTED") {
+            return { message: "Cancellation already requested or processed", success: false }
+        }
+
+        await prisma.booking.update({
+            where: { id: bookingId },
+            data: {
+                status: "CANCEL_REQUESTED",
+                cancellationReason: reason
+            }
+        })
+
+        revalidatePath('/dashboard')
+        revalidatePath('/admin')
+        return { message: "Cancellation request sent successfully", success: true }
+    } catch (e) {
+        console.error(e)
+        return { message: "Database Error", success: false }
+    }
+}

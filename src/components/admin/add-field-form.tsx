@@ -49,6 +49,16 @@ export function AddFieldForm({ owners }: { owners: any[] }) {
                         <Input id="description" name="description" placeholder="Good lighting, 5-a-side..." />
                     </div>
 
+                    <div className="space-y-2">
+                        <Label htmlFor="cancellationPolicy">Cancellation Policy</Label>
+                        <textarea
+                            id="cancellationPolicy"
+                            name="cancellationPolicy"
+                            placeholder="e.g. Full refund if cancelled 24 hours before..."
+                            className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        />
+                    </div>
+
                     <div className="space-y-4 pt-4 border-t">
                         <h3 className="text-sm font-semibold text-gray-700">Manager Access</h3>
                         <div className="space-y-2">
@@ -67,21 +77,21 @@ export function AddFieldForm({ owners }: { owners: any[] }) {
                             </select>
                         </div>
                         <div className="bg-gray-50 p-4 rounded-lg space-y-3 border border-dashed border-gray-300">
-                             <p className="text-xs text-gray-500 font-medium">-- OR -- Create New Manager Account</p>
-                             <div className="space-y-2">
-                                 <Label htmlFor="newManagerName">Manager Full Name</Label>
-                                 <Input id="newManagerName" name="newManagerName" placeholder="Management Name" />
-                             </div>
-                             <div className="grid grid-cols-2 gap-2">
-                                 <div className="space-y-2">
-                                     <Label htmlFor="newManagerEmail">Manager Email</Label>
-                                     <Input id="newManagerEmail" name="newManagerEmail" type="email" placeholder="manager@example.com" />
-                                 </div>
-                                 <div className="space-y-2">
-                                     <Label htmlFor="newManagerPassword">Temp Password</Label>
-                                     <Input id="newManagerPassword" name="newManagerPassword" type="password" placeholder="******" />
-                                 </div>
-                             </div>
+                            <p className="text-xs text-gray-500 font-medium">-- OR -- Create New Manager Account</p>
+                            <div className="space-y-2">
+                                <Label htmlFor="newManagerName">Manager Full Name</Label>
+                                <Input id="newManagerName" name="newManagerName" placeholder="Management Name" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="newManagerEmail">Manager Email</Label>
+                                    <Input id="newManagerEmail" name="newManagerEmail" type="email" placeholder="manager@example.com" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="newManagerPassword">Temp Password</Label>
+                                    <Input id="newManagerPassword" name="newManagerPassword" type="password" placeholder="******" />
+                                </div>
+                            </div>
                         </div>
                     </div>
 
