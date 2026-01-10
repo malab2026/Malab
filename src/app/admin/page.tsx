@@ -22,42 +22,78 @@ export default async function AdminPage() {
         redirect("/")
     }
 
-    const pendingBookings = await prisma.booking.findMany({
-        where: { status: 'PENDING' },
-        include: { field: true, user: true },
-        orderBy: { createdAt: 'desc' }
-    })
-
-    const cancelRequests = await prisma.booking.findMany({
-        where: { status: 'CANCEL_REQUESTED' },
-        include: { field: true, user: true },
-        orderBy: { createdAt: 'desc' }
-    })
-
-    const historyBookings = await prisma.booking.findMany({
-        where: { status: { not: 'PENDING' } },
-        include: { field: true, user: true },
-        orderBy: { createdAt: 'desc' },
-        take: 10
-    })
-
-    const fields = await prisma.field.findMany({
-        orderBy: { createdAt: 'desc' },
-        include: {
-            _count: { select: { bookings: true } },
-            owner: { select: { name: true, email: true } }
-        }
-    })
-
-    const owners = await prisma.user.findMany({
-        where: { role: 'owner' },
-        select: { id: true, name: true, email: true }
-    })
-
-    const users = await prisma.user.findMany({
-        orderBy: { createdAt: 'desc' },
-        select: { id: true, name: true, email: true, role: true, createdAt: true }
-    })
+    const [
+        pendingBookings,
+        cancelRequests,
+        historyBookings,
+        fields,
+        owners,
+        users
+    ] = await Promise.all([
+        prisma.booking.findMany({
+            where: { status: 'PENDING' },
+            select: {
+                id: true,
+                startTime: true,
+                endTime: true,
+                status: true,
+                cancellationReason: true,
+                createdAt: true,
+                field: { select: { id: true, name: true } },
+                user: { select: { id: true, name: true, email: true, phone: true } }
+            },
+            orderBy: { createdAt: 'desc' }
+        }),
+        prisma.booking.findMany({
+            where: { status: 'CANCEL_REQUESTED' },
+            select: {
+                id: true,
+                startTime: true,
+                endTime: true,
+                status: true,
+                cancellationReason: true,
+                createdAt: true,
+                field: { select: { id: true, name: true } },
+                user: { select: { id: true, name: true, email: true, phone: true } }
+            },
+            orderBy: { createdAt: 'desc' }
+        }),
+        prisma.booking.findMany({
+            where: { status: { not: 'PENDING' } },
+            select: {
+                id: true,
+                startTime: true,
+                endTime: true,
+                status: true,
+                cancellationReason: true,
+                createdAt: true,
+                field: { select: { id: true, name: true } },
+                user: { select: { id: true, name: true, email: true, phone: true } }
+            },
+            orderBy: { createdAt: 'desc' },
+            take: 10
+        }),
+        prisma.field.findMany({
+            orderBy: { createdAt: 'desc' },
+            select: {
+                id: true,
+                name: true,
+                pricePerHour: true,
+                address: true,
+                locationUrl: true,
+                _count: { select: { bookings: true } },
+                owner: { select: { name: true, email: true } }
+            }
+        }),
+        prisma.user.findMany({
+            where: { role: 'owner' },
+            select: { id: true, name: true, email: true }
+        }),
+        prisma.user.findMany({
+            orderBy: { createdAt: 'desc' },
+            select: { id: true, name: true, email: true, role: true, createdAt: true }
+        })
+    ])
 
     return (
         <main className="min-h-screen pb-10">
@@ -150,9 +186,9 @@ export default async function AdminPage() {
                             <div className="lg:col-span-2 grid sm:grid-cols-2 gap-4">
                                 {fields.map(field => (
                                     <Card key={field.id} className="overflow-hidden">
-                                        <div className="relative h-32 w-full">
+                                        <div className="relative h-32 w-full bg-gray-100">
                                             <Image
-                                                src={field.imageUrl || '/placeholder.jpg'}
+                                                src={`/api/field-image/${field.id}`}
                                                 alt={field.name}
                                                 fill
                                                 className="object-cover"
@@ -247,17 +283,17 @@ export default async function AdminPage() {
 function BookingCard({ booking, isAdmin = false, isCancelRequest = false }: { booking: any, isAdmin?: boolean, isCancelRequest?: boolean }) {
     return (
         <Card className="flex flex-col md:flex-row items-center overflow-hidden border-l-4 border-l-transparent data-[cancel=true]:border-l-orange-500" data-cancel={isCancelRequest}>
-            <div className="relative w-full md:w-32 h-24 shrink-0 bg-gray-200">
-                {booking.receiptUrl ? (
-                    <Image
-                        src={booking.receiptUrl}
-                        alt="Receipt"
-                        fill
-                        className="object-cover"
-                    />
-                ) : (
-                    <div className="flex items-center justify-center h-full text-xs text-gray-500">No Receipt</div>
-                )}
+            <div className="relative w-full md:w-32 h-24 shrink-0 bg-gray-100">
+                <Image
+                    src={`/api/receipt-image/${booking.id}`}
+                    alt="Receipt"
+                    fill
+                    className="object-cover"
+                    onError={(e) => {
+                        // Handle cases where there might be no receipt smoothly
+                        (e.target as HTMLImageElement).style.display = 'none'
+                    }}
+                />
             </div>
             <div className="flex-1 p-4 grid md:grid-cols-2 gap-4 w-full">
                 <div>
