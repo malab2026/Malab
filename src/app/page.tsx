@@ -88,35 +88,37 @@ export default async function Home() {
         {/* My Bookings Section (Only if logged in) */}
         {session && userBookings.length > 0 && (
           <section className="space-y-6">
-            <div className="flex items-center gap-4">
-              <span className="h-8 w-2 bg-green-500 rounded-full"></span>
-              <h2 className="text-3xl font-black text-gray-900 tracking-tight">الحجوزات المسبقة</h2>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <span className="h-8 w-2 bg-green-500 rounded-full"></span>
+                <h2 className="text-3xl font-black text-gray-900 tracking-tight">My Recent Bookings</h2>
+              </div>
+              <Button variant="outline" className="border-green-200 text-green-700 font-bold hover:bg-green-50" asChild>
+                <Link href="/dashboard">View Full History →</Link>
+              </Button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {userBookings.slice(0, 3).map((booking: any) => (
-                <Card key={booking.id} className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all">
-                  <div className="relative h-32 w-full">
+                <Card key={booking.id} className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all rounded-2xl group">
+                  <div className="relative h-40 w-full overflow-hidden">
                     <Image
                       src={`/api/field-image/${booking.field.id}`}
                       alt={booking.field.name}
                       fill
-                      className="object-cover"
+                      className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />
-                    <div className="absolute top-2 right-2">
+                    <div className="absolute top-3 right-3">
                       <StatusBadge status={booking.status} />
                     </div>
                   </div>
-                  <CardContent className="p-4 bg-white">
-                    <h3 className="font-bold text-lg">{booking.field.name}</h3>
-                    <p className="text-sm text-gray-500 font-medium">
-                      {new Date(booking.startTime).toLocaleDateString()} at {new Date(booking.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </p>
-                  </CardContent>
-                  <CardFooter className="p-4 pt-0 bg-white">
-                    <Button variant="ghost" className="w-full text-green-600 font-bold hover:text-green-700 hover:bg-green-50 p-0 h-auto" asChild>
-                      <Link href="/dashboard">View All Bookings →</Link>
-                    </Button>
-                  </CardFooter>
+                  <div className="p-4 bg-white border-t">
+                    <h3 className="font-bold text-lg text-gray-900">{booking.field.name}</h3>
+                    <div className="flex items-center gap-2 mt-1 text-sm text-gray-500 font-medium">
+                      <span>📅 {new Date(booking.startTime).toLocaleDateString()}</span>
+                      <span>•</span>
+                      <span>⏰ {new Date(booking.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    </div>
+                  </div>
                 </Card>
               ))}
             </div>
@@ -128,7 +130,7 @@ export default async function Home() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <span className="h-8 w-2 bg-green-500 rounded-full"></span>
-              <h2 className="text-3xl font-black text-gray-900 tracking-tight">الملاعب المتاحة</h2>
+              <h2 className="text-3xl font-black text-gray-900 tracking-tight">Available Fields</h2>
             </div>
             <Link href="/fields" className="text-sm font-bold text-green-600 hover:underline">View All</Link>
           </div>
