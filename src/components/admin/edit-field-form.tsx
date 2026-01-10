@@ -61,6 +61,17 @@ export function EditFieldForm({ field, owners }: { field: any, owners: any[] }) 
                     </div>
 
                     <div className="space-y-2">
+                        <Label htmlFor="cancellationPolicy">Cancellation Policy</Label>
+                        <textarea
+                            id="cancellationPolicy"
+                            name="cancellationPolicy"
+                            defaultValue={field.cancellationPolicy || ''}
+                            placeholder="e.g. Full refund if cancelled 24 hours before..."
+                            className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        />
+                    </div>
+
+                    <div className="space-y-2">
                         <Label htmlFor="ownerId">Assign Owner</Label>
                         <select
                             id="ownerId"
