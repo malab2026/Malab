@@ -76,7 +76,7 @@ export async function authenticate(
 
         if (user?.role === 'admin') return { redirectUrl: '/admin' }
         if (user?.role === 'owner') return { redirectUrl: '/owner' }
-        return { redirectUrl: '/dashboard' }
+        return { redirectUrl: '/' }
 
     } catch (error) {
         if (error instanceof AuthError) {

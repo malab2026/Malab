@@ -87,12 +87,21 @@ export default async function Home() {
 
         {/* Fields Section - NOW AT THE TOP */}
         <section className="space-y-8">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <span className="h-10 w-2 bg-green-500 rounded-full shadow-[0_0_15px_rgba(34,197,94,0.5)]"></span>
               <h2 className="text-4xl font-black text-white md:text-gray-900 tracking-tight drop-shadow-sm md:drop-shadow-none">Available Fields</h2>
             </div>
-            <Link href="/fields" className="text-sm font-bold text-white md:text-green-600 hover:underline bg-green-600/20 md:bg-transparent px-3 py-1 rounded-full backdrop-blur-sm md:backdrop-none">View All</Link>
+            <div className="flex items-center gap-3">
+              {session && (
+                <Link href="/dashboard">
+                  <Button variant="outline" className="rounded-full border-2 border-green-500 text-green-600 font-black hover:bg-green-500 hover:text-white transition-all px-6 py-6 border-0 bg-white/10 md:bg-white shadow-xl">
+                    MY BOOKINGS ⚽
+                  </Button>
+                </Link>
+              )}
+              <Link href="/fields" className="text-sm font-bold text-white md:text-green-600 hover:underline bg-green-600/20 md:bg-transparent px-4 py-2 rounded-full backdrop-blur-sm md:backdrop-none border md:border-0 border-white/20">View All</Link>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
