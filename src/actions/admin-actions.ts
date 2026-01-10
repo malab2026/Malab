@@ -183,7 +183,7 @@ export async function updateField(fieldId: string, prevState: any, formData: For
 }
 
 
-export async function updateBookingStatus(bookingId: string, status: "CONFIRMED" | "REJECTED") {
+export async function updateBookingStatus(bookingId: string, status: "CONFIRMED" | "REJECTED", formData: FormData) {
     const session = await auth()
 
     if (!session || session.user.role !== 'admin') {
@@ -261,7 +261,7 @@ export async function createOwnerAccount(prevState: any, formData: FormData) {
     }
 }
 
-export async function updateUserRole(userId: string, role: string) {
+export async function updateUserRole(userId: string, role: string, formData: FormData) {
     const session = await auth()
     if (!session || session.user.role !== 'admin') {
         return { message: "Unauthorized", success: false }

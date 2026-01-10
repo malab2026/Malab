@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import Image from "next/image"
-import { updateBookingStatus } from "@/actions/admin-actions"
+import { updateBookingStatus, updateUserRole } from "@/actions/admin-actions"
 
 export const dynamic = 'force-dynamic'
 
@@ -32,55 +32,23 @@ export default async function AdminPage() {
     ] = await Promise.all([
         prisma.booking.findMany({
             where: { status: 'PENDING' },
-            select: {
-                id: true,
-                startTime: true,
-                endTime: true,
-                status: true,
-                cancellationReason: true,
-                createdAt: true,
-                field: { select: { id: true, name: true, pricePerHour: true } },
-                user: { select: { id: true, name: true, email: true, phone: true } }
-            },
+            include: { field: true, user: true },
             orderBy: { createdAt: 'desc' }
         }),
         prisma.booking.findMany({
             where: { status: 'CANCEL_REQUESTED' },
-            select: {
-                id: true,
-                startTime: true,
-                endTime: true,
-                status: true,
-                cancellationReason: true,
-                createdAt: true,
-                field: { select: { id: true, name: true, pricePerHour: true } },
-                user: { select: { id: true, name: true, email: true, phone: true } }
-            },
+            include: { field: true, user: true },
             orderBy: { createdAt: 'desc' }
         }),
         prisma.booking.findMany({
             where: { status: { not: 'PENDING' } },
-            select: {
-                id: true,
-                startTime: true,
-                endTime: true,
-                status: true,
-                cancellationReason: true,
-                createdAt: true,
-                field: { select: { id: true, name: true, pricePerHour: true } },
-                user: { select: { id: true, name: true, email: true, phone: true } }
-            },
+            include: { field: true, user: true },
             orderBy: { createdAt: 'desc' },
             take: 10
         }),
         prisma.field.findMany({
             orderBy: { createdAt: 'desc' },
-            select: {
-                id: true,
-                name: true,
-                pricePerHour: true,
-                address: true,
-                locationUrl: true,
+            include: {
                 _count: { select: { bookings: true } },
                 owner: { select: { name: true, email: true } }
             }
@@ -93,7 +61,7 @@ export default async function AdminPage() {
             orderBy: { createdAt: 'desc' },
             select: { id: true, name: true, email: true, role: true, createdAt: true }
         })
-    ])
+    ]) as any
 
     return (
         <main className="min-h-screen pb-10">
@@ -134,7 +102,7 @@ export default async function AdminPage() {
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y">
-                                                {users.map(user => (
+                                                {users.map((user: any) => (
                                                     <tr key={user.id} className="bg-white hover:bg-gray-50">
                                                         <td className="px-6 py-4">
                                                             <div className="font-semibold">{user.name}</div>
@@ -147,20 +115,12 @@ export default async function AdminPage() {
                                                         </td>
                                                         <td className="px-6 py-4 text-right">
                                                             {user.role === 'user' && (
-                                                                <form action={async () => {
-                                                                    'use server'
-                                                                    const { updateUserRole } = await import("@/actions/admin-actions")
-                                                                    await updateUserRole(user.id, 'owner')
-                                                                }}>
+                                                                <form action={updateUserRole.bind(null, user.id, 'owner') as any}>
                                                                     <Button size="sm" variant="outline">Promote to Owner</Button>
                                                                 </form>
                                                             )}
                                                             {user.role === 'owner' && (
-                                                                <form action={async () => {
-                                                                    'use server'
-                                                                    const { updateUserRole } = await import("@/actions/admin-actions")
-                                                                    await updateUserRole(user.id, 'user')
-                                                                }}>
+                                                                <form action={updateUserRole.bind(null, user.id, 'user') as any}>
                                                                     <Button size="sm" variant="ghost" className="text-red-600">Demote to User</Button>
                                                                 </form>
                                                             )}
@@ -184,7 +144,7 @@ export default async function AdminPage() {
                                 <AddFieldForm owners={owners} />
                             </div>
                             <div className="lg:col-span-2 grid sm:grid-cols-2 gap-4">
-                                {fields.map(field => (
+                                {fields.map((field: any) => (
                                     <Card key={field.id} className="overflow-hidden">
                                         <div className="relative h-32 w-full bg-gray-100">
                                             <Image
@@ -283,17 +243,14 @@ export default async function AdminPage() {
 function BookingCard({ booking, isAdmin = false, isCancelRequest = false }: { booking: any, isAdmin?: boolean, isCancelRequest?: boolean }) {
     return (
         <Card className="flex flex-col md:flex-row items-center overflow-hidden border-l-4 border-l-transparent data-[cancel=true]:border-l-orange-500" data-cancel={isCancelRequest}>
-            <div className="relative w-full md:w-32 h-24 shrink-0 bg-gray-100">
+            <div className="relative w-full md:w-32 h-24 shrink-0 bg-gray-100 flex items-center justify-center text-xs text-gray-400">
                 <Image
                     src={`/api/receipt-image/${booking.id}`}
                     alt="Receipt"
                     fill
                     className="object-cover"
-                    onError={(e) => {
-                        // Handle cases where there might be no receipt smoothly
-                        (e.target as HTMLImageElement).style.display = 'none'
-                    }}
                 />
+                <span>No Receipt</span>
             </div>
             <div className="flex-1 p-4 grid md:grid-cols-2 gap-4 w-full">
                 <div>
@@ -322,16 +279,10 @@ function BookingCard({ booking, isAdmin = false, isCancelRequest = false }: { bo
 
                     {isAdmin && booking.status === 'PENDING' && (
                         <div className="flex gap-2 ml-4">
-                            <form action={async () => {
-                                'use server'
-                                await updateBookingStatus(booking.id, 'CONFIRMED')
-                            }}>
+                            <form action={updateBookingStatus.bind(null, booking.id, 'CONFIRMED') as any}>
                                 <Button size="sm" className="bg-green-600 hover:bg-green-700">Confirm</Button>
                             </form>
-                            <form action={async () => {
-                                'use server'
-                                await updateBookingStatus(booking.id, 'REJECTED')
-                            }}>
+                            <form action={updateBookingStatus.bind(null, booking.id, 'REJECTED') as any}>
                                 <Button size="sm" variant="destructive">Reject</Button>
                             </form>
                         </div>
