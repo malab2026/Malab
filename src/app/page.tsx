@@ -119,7 +119,9 @@ export default async function Home() {
                     <div className="absolute bottom-8 left-8 right-8">
                       <h3 className="text-3xl font-black text-white tracking-tight">{field.name}</h3>
                       <div className="flex items-center gap-2 text-gray-300 text-sm font-bold mt-2">
-                        <span className="bg-white/10 px-2 py-0.5 rounded">📍 {field.address.split(',')[0]}</span>
+                        {field.address && (
+                          <span className="bg-white/10 px-2 py-0.5 rounded">📍 {field.address.split(',')[0]}</span>
+                        )}
                       </div>
                     </div>
                   </div>
