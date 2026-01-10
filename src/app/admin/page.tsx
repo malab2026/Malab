@@ -39,7 +39,7 @@ export default async function AdminPage() {
                 status: true,
                 cancellationReason: true,
                 createdAt: true,
-                field: { select: { id: true, name: true } },
+                field: { select: { id: true, name: true, pricePerHour: true } },
                 user: { select: { id: true, name: true, email: true, phone: true } }
             },
             orderBy: { createdAt: 'desc' }
@@ -53,7 +53,7 @@ export default async function AdminPage() {
                 status: true,
                 cancellationReason: true,
                 createdAt: true,
-                field: { select: { id: true, name: true } },
+                field: { select: { id: true, name: true, pricePerHour: true } },
                 user: { select: { id: true, name: true, email: true, phone: true } }
             },
             orderBy: { createdAt: 'desc' }
@@ -67,7 +67,7 @@ export default async function AdminPage() {
                 status: true,
                 cancellationReason: true,
                 createdAt: true,
-                field: { select: { id: true, name: true } },
+                field: { select: { id: true, name: true, pricePerHour: true } },
                 user: { select: { id: true, name: true, email: true, phone: true } }
             },
             orderBy: { createdAt: 'desc' },
