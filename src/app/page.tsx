@@ -150,7 +150,7 @@ export default async function Home() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <span className="h-8 w-2 bg-gray-300 rounded-full"></span>
-                <h2 className="text-3xl font-black text-gray-900 tracking-tight">الحجوزات المسبقة</h2>
+                <h2 className="text-3xl font-black text-gray-900 tracking-tight">Booking History</h2>
               </div>
               <Button variant="outline" className="rounded-full border-2 border-green-500 text-green-600 font-black hover:bg-green-500 hover:text-white transition-all px-6" asChild>
                 <Link href="/dashboard">MY FULL HISTORY →</Link>
