@@ -83,92 +83,56 @@ export default async function Home() {
         </div>
       </section>
 
-      <div className="container mx-auto -mt-20 relative z-30 px-4 space-y-12 pb-20">
+      <div className="container mx-auto -mt-20 relative z-30 px-4 space-y-16 pb-20">
 
-        {/* My Bookings Section (Only if logged in) */}
-        {session && userBookings.length > 0 && (
-          <section className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <span className="h-8 w-2 bg-green-500 rounded-full"></span>
-                <h2 className="text-3xl font-black text-gray-900 tracking-tight">My Recent Bookings</h2>
-              </div>
-              <Button variant="outline" className="border-green-200 text-green-700 font-bold hover:bg-green-50" asChild>
-                <Link href="/dashboard">View Full History →</Link>
-              </Button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {userBookings.slice(0, 3).map((booking: any) => (
-                <Card key={booking.id} className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all rounded-2xl group">
-                  <div className="relative h-40 w-full overflow-hidden">
-                    <Image
-                      src={`/api/field-image/${booking.field.id}`}
-                      alt={booking.field.name}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute top-3 right-3">
-                      <StatusBadge status={booking.status} />
-                    </div>
-                  </div>
-                  <div className="p-4 bg-white border-t">
-                    <h3 className="font-bold text-lg text-gray-900">{booking.field.name}</h3>
-                    <div className="flex items-center gap-2 mt-1 text-sm text-gray-500 font-medium">
-                      <span>📅 {new Date(booking.startTime).toLocaleDateString()}</span>
-                      <span>•</span>
-                      <span>⏰ {new Date(booking.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Fields Section */}
-        <section className="space-y-6">
+        {/* Fields Section - NOW AT THE TOP */}
+        <section className="space-y-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <span className="h-8 w-2 bg-green-500 rounded-full"></span>
-              <h2 className="text-3xl font-black text-gray-900 tracking-tight">Available Fields</h2>
+              <span className="h-10 w-2 bg-green-500 rounded-full shadow-[0_0_15px_rgba(34,197,94,0.5)]"></span>
+              <h2 className="text-4xl font-black text-white md:text-gray-900 tracking-tight drop-shadow-sm md:drop-shadow-none">Available Fields</h2>
             </div>
-            <Link href="/fields" className="text-sm font-bold text-green-600 hover:underline">View All</Link>
+            <Link href="/fields" className="text-sm font-bold text-white md:text-green-600 hover:underline bg-green-600/20 md:bg-transparent px-3 py-1 rounded-full backdrop-blur-sm md:backdrop-none">View All</Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {sortedFields.map((field: any) => (
-              <Card key={field.id} className="group overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-300 rounded-3xl">
-                <div className="relative h-64 w-full">
-                  <Image
-                    src={`/api/field-image/${field.id}`}
-                    alt={field.name}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+              <Card key={field.id} className="group overflow-hidden border-0 shadow-2xl hover:shadow-green-100 transition-all duration-500 rounded-[2.5rem] bg-white">
+                <Link href={`/fields/${field.id}`}>
+                  <div className="relative h-72 w-full overflow-hidden">
+                    <Image
+                      src={`/api/field-image/${field.id}`}
+                      alt={field.name}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
 
-                  {bookedFieldIds.has(field.id) && (
-                    <div className="absolute top-4 left-4">
-                      <Badge className="bg-green-500/90 text-white border-0 font-bold backdrop-blur-md">
-                        Booked Before
-                      </Badge>
+                    {bookedFieldIds.has(field.id) && (
+                      <div className="absolute top-6 left-6 animate-pulse">
+                        <Badge className="bg-green-500 text-white border-0 font-black px-4 py-1.5 rounded-full shadow-lg backdrop-blur-md">
+                          YOU BOOKED THIS BEFORE ⚽
+                        </Badge>
+                      </div>
+                    )}
+
+                    <div className="absolute bottom-8 left-8 right-8">
+                      <h3 className="text-3xl font-black text-white tracking-tight">{field.name}</h3>
+                      <div className="flex items-center gap-2 text-gray-300 text-sm font-bold mt-2">
+                        <span className="bg-white/10 px-2 py-0.5 rounded">📍 {field.address.split(',')[0]}</span>
+                      </div>
                     </div>
-                  )}
-
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <h3 className="text-2xl font-black text-white">{field.name}</h3>
-                    <p className="text-gray-300 text-sm font-medium line-clamp-1 mt-1">{field.address}</p>
                   </div>
-                </div>
-                <CardContent className="p-6 bg-white">
+                </Link>
+                <CardContent className="p-8">
                   <div className="flex justify-between items-center">
                     <div>
-                      <p className="text-3xl font-black text-green-600">{field.pricePerHour} EGP</p>
-                      <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Per Hour</p>
+                      <p className="text-4xl font-black text-green-600">{field.pricePerHour} <span className="text-sm text-gray-400">EGP</span></p>
+                      <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] mt-1">Rate Per Hour</p>
                     </div>
                     <Link href={`/fields/${field.id}`}>
-                      <Button className="rounded-2xl px-6 py-6 bg-green-600 hover:bg-green-700 font-bold shadow-lg shadow-green-200 transition-all active:scale-95">
-                        Book Now
+                      <Button className="rounded-2xl h-14 px-8 bg-green-600 hover:bg-green-700 font-black text-lg shadow-[0_10px_20px_rgba(34,197,94,0.3)] transition-all active:scale-95 border-0">
+                        BOOK
                       </Button>
                     </Link>
                   </div>
@@ -177,6 +141,47 @@ export default async function Home() {
             ))}
           </div>
         </section>
+
+        {/* My Bookings Section - NOW UNDER FIELDS */}
+        {session && userBookings.length > 0 && (
+          <section className="space-y-6 pt-10 border-t border-gray-100">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <span className="h-8 w-2 bg-gray-300 rounded-full"></span>
+                <h2 className="text-3xl font-black text-gray-900 tracking-tight">الحجوزات المسبقة</h2>
+              </div>
+              <Button variant="outline" className="rounded-full border-2 border-green-500 text-green-600 font-black hover:bg-green-500 hover:text-white transition-all px-6" asChild>
+                <Link href="/dashboard">MY FULL HISTORY →</Link>
+              </Button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {userBookings.slice(0, 3).map((booking: any) => (
+                <Card key={booking.id} className="overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all rounded-3xl group bg-white/50 backdrop-blur-sm">
+                  <div className="relative h-40 w-full overflow-hidden">
+                    <Image
+                      src={`/api/field-image/${booking.field.id}`}
+                      alt={booking.field.name}
+                      fill
+                      className="object-cover opacity-80 group-hover:opacity-100 transition-all duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gray-900/10" />
+                    <div className="absolute top-4 right-4">
+                      <StatusBadge status={booking.status} />
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <h3 className="font-black text-xl text-gray-800">{booking.field.name}</h3>
+                    <div className="flex items-center gap-3 mt-3 text-sm text-gray-500 font-bold bg-gray-50 p-2 rounded-xl">
+                      <span>📅 {new Date(booking.startTime).toLocaleDateString()}</span>
+                      <span className="text-gray-300">|</span>
+                      <span>⏰ {new Date(booking.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </main>
   )
