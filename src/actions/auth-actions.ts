@@ -87,6 +87,10 @@ export async function authenticate(
                     return { message: 'Something went wrong.' }
             }
         }
-        throw error
     }
+}
+
+export async function handleSignOut() {
+    const { signOut } = await import("@/auth")
+    await signOut({ redirectTo: '/login' })
 }
