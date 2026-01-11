@@ -13,8 +13,7 @@ export async function Navbar() {
         <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/20 backdrop-blur-xl transition-all pt-[var(--safe-area-inset-top)]">
             <div className="container flex h-16 items-center justify-between">
                 <Link href="/" className="flex items-center space-x-2 font-black text-2xl text-white tracking-tight">
-                    <Image src="/logo.png" alt="MALA3EBNA" width={40} height={40} className="rounded-lg shadow-lg" />
-                    <span>MALA3EBNA</span>
+                    <Image src="/logo.png" alt="MALA3EBNA" width={120} height={120} className="rounded-lg shadow-lg" />
                 </Link>
 
                 <nav className="flex items-center gap-3">
