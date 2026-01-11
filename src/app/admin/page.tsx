@@ -33,23 +33,55 @@ export default async function AdminPage() {
     ] = await Promise.all([
         prisma.booking.findMany({
             where: { status: 'PENDING' },
-            include: { field: true, user: true },
+            select: {
+                id: true,
+                startTime: true,
+                endTime: true,
+                status: true,
+                cancellationReason: true,
+                createdAt: true,
+                field: { select: { id: true, name: true, pricePerHour: true } },
+                user: { select: { id: true, name: true, email: true, phone: true } }
+            },
             orderBy: { createdAt: 'desc' }
         }),
         prisma.booking.findMany({
             where: { status: 'CANCEL_REQUESTED' },
-            include: { field: true, user: true },
+            select: {
+                id: true,
+                startTime: true,
+                endTime: true,
+                status: true,
+                cancellationReason: true,
+                createdAt: true,
+                field: { select: { id: true, name: true, pricePerHour: true } },
+                user: { select: { id: true, name: true, email: true, phone: true } }
+            },
             orderBy: { createdAt: 'desc' }
         }),
         prisma.booking.findMany({
             where: { status: { not: 'PENDING' } },
-            include: { field: true, user: true },
+            select: {
+                id: true,
+                startTime: true,
+                endTime: true,
+                status: true,
+                cancellationReason: true,
+                createdAt: true,
+                field: { select: { id: true, name: true, pricePerHour: true } },
+                user: { select: { id: true, name: true, email: true, phone: true } }
+            },
             orderBy: { createdAt: 'desc' },
             take: 10
         }),
         prisma.field.findMany({
             orderBy: { createdAt: 'desc' },
-            include: {
+            select: {
+                id: true,
+                name: true,
+                pricePerHour: true,
+                address: true,
+                locationUrl: true,
                 _count: { select: { bookings: true } },
                 owner: { select: { name: true, email: true } }
             }
