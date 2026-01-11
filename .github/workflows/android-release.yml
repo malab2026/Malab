@@ -1,0 +1,92 @@
+name: Android Release
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'android/**'
+      - 'src/**'
+      - 'public/**'
+      - 'capacitor.config.ts'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Create .env file
+        run: |
+          echo "DATABASE_URL=postgresql://placeholder" > .env
+          echo "NEXTAUTH_SECRET=placeholder-secret-for-build" >> .env
+          echo "NEXTAUTH_URL=https://malab-theta.vercel.app" >> .env
+
+      - name: Build Web Assets
+        run: npm run build
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Build Android APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease
+
+      - name: Sign APK
+        run: |
+          # For now, we'll use the unsigned APK
+          # In production, you should sign it with your keystore
+          cp android/app/build/outputs/apk/release/app-release-unsigned.apk app-release.apk
+
+      - name: Get Version
+        id: version
+        run: echo "version=$(date +'%Y.%m.%d-%H%M')" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: MALA3EBNA v${{ steps.version.outputs.version }}
+          body: |
+            ## 📱 MALA3EBNA - Android Release
+            
+            ### ✨ What's New
+            - Latest updates from main branch
+            - Bug fixes and improvements
+            
+            ### 📥 Download
+            Download the APK file below and install on your Android device.
+            
+            ### 📋 Installation Steps
+            1. Download `app-release.apk`
+            2. Open the file from your Downloads folder
+            3. Allow installation from unknown sources if prompted
+            4. Tap Install
+            
+            ---
+            🏟️ Built with ❤️ for football lovers
+          files: |
+            app-release.apk
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
