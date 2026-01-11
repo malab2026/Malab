@@ -1,0 +1,103 @@
+name: iOS Release (Unsigned)
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'ios/**'
+      - 'src/**'
+      - 'public/**'
+      - 'capacitor.config.ts'
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Create .env file
+        run: |
+          echo "DATABASE_URL=postgresql://placeholder" > .env
+          echo "NEXTAUTH_SECRET=placeholder-secret-for-build" >> .env
+          echo "NEXTAUTH_URL=https://placeholder.com" >> .env
+
+      - name: Build Web Assets
+        run: npm run build
+
+      - name: Sync Capacitor
+        run: npx cap sync ios
+
+      - name: Install CocoaPods
+        run: |
+          cd ios/App
+          pod install --repo-update
+
+      - name: Build Unsigned Archive
+        run: |
+          cd ios/App
+          xcodebuild clean archive \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath ../../build/App.xcarchive \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Package Unsigned IPA
+        run: |
+          mkdir Payload
+          # Extract the app from the archive
+          cp -r build/App.xcarchive/Products/Applications/App.app Payload/
+          # Zip it into an IPA
+          zip -r App-Unsigned.ipa Payload
+
+      - name: Get Version
+        id: version
+        run: echo "version=$(date +'%Y.%m.%d-%H%M')" >> $GITHUB_OUTPUT
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ios-v${{ steps.version.outputs.version }}
+          name: MALA3EBNA iOS (Unsigned) v${{ steps.version.outputs.version }}
+          body: |
+            ## 🍎 MALA3EBNA - iOS Release (Unsigned)
+            
+            ⚠️ **IMPORTANT: READ BEFORE DOWNLOADING**
+            
+            This is an **Unsigned IPA**. You CANNOT install this directly on your iPhone just by downloading it. Apple blocks this.
+            
+            ### 🛠️ How to Install
+            To install this file, you must use a Sideloading tool on your PC or Mac:
+            
+            1. **AltStore** (Recommended)
+            2. **Sideloadly**
+            3. **TrollStore** (if compatible)
+            
+            These tools will use your own free Apple ID to sign the app for 7 days.
+            
+            ### 📥 Download
+            Download `App-Unsigned.ipa` below.
+            
+            ---
+            🏟️ Built with ❤️ for football lovers
+          files: |
+            App-Unsigned.ipa
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
