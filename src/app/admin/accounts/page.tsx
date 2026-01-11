@@ -20,7 +20,7 @@ export default async function AdminAccountsPage({
     })
 
     return (
-        <main className="min-h-screen pb-10 bg-gray-50">
+        <main className="min-h-screen pb-10">
             <Navbar />
             <div className="container mx-auto py-10 px-4">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
