@@ -60,16 +60,24 @@ export default function DownloadPage() {
                                 </div>
                             </CardHeader>
                             <CardContent className="pt-6 space-y-4">
-                                <p className="text-gray-600 font-medium">قريباً على App Store</p>
+                                <p className="text-gray-600 font-medium">للتركيب على iPhone (يحتاج كمبيوتر)</p>
                                 <Button
-                                    className="w-full bg-gray-400 text-white font-bold text-lg h-14 cursor-not-allowed"
-                                    disabled
+                                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg h-14 shadow-lg"
+                                    asChild
                                 >
-                                    🔒 Coming Soon
+                                    <a href="https://github.com/malab2026/Malab/releases/latest/download/App-Unsigned.ipa" download>
+                                        📥 Download IPA
+                                    </a>
                                 </Button>
                                 <div className="text-xs text-gray-500 space-y-1 bg-blue-50 p-3 rounded-lg">
-                                    <p className="font-bold text-blue-700">ℹ️ ملحوظة:</p>
-                                    <p>التطبيق قيد المراجعة على App Store. هيكون متاح قريب جداً!</p>
+                                    <p className="font-bold text-blue-700">⚠️ تنبيه هام:</p>
+                                    <p>الملف ده <b>Unsigned</b> (غير موقع).</p>
+                                    <p className="font-bold mt-2">عشان تثبته محتاج:</p>
+                                    <ul className="list-disc list-inside space-y-1">
+                                        <li>جهاز كمبيوتر (Windwos/Mac)</li>
+                                        <li>برنامج <b>AltStore</b> أو <b>Sideloadly</b></li>
+                                        <li>حساب Apple ID الخاص بيك</li>
+                                    </ul>
                                 </div>
                             </CardContent>
                         </Card>
