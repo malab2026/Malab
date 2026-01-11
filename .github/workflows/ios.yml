@@ -1,0 +1,71 @@
+name: iOS Build
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Create .env file
+        run: |
+          echo "DATABASE_URL=postgresql://placeholder" > .env
+          echo "NEXTAUTH_SECRET=placeholder-secret-for-build" >> .env
+          echo "NEXTAUTH_URL=https://placeholder.com" >> .env
+
+      - name: Build Web Assets
+        run: npm run build
+        
+      - name: Sync Capacitor
+        run: npx cap sync ios
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+          bundler-cache: false
+
+      - name: Install CocoaPods
+        run: |
+          cd ios/App
+          pod install --repo-update
+
+      - name: Build iOS App (Simulator)
+        run: |
+          cd ios/App
+          xcodebuild clean build \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            -derivedDataPath ../../build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=NO
+
+      - name: Build Summary
+        if: success()
+        run: |
+          echo "✅ iOS build completed successfully!"
+          echo "📱 App: MALA3EBNA"
+          echo "🎨 Platform: iOS Simulator"
+          echo "⚙️  Configuration: Debug"
