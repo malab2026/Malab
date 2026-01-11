@@ -102,7 +102,12 @@ export default async function AdminPage() {
 
             <div className="container mx-auto py-10 px-4">
                 <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+                    <div className="flex items-center gap-4">
+                        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+                        <Button asChild variant="outline" className="bg-white">
+                            <Link href="/admin/accounts">💰 View Accounts</Link>
+                        </Button>
+                    </div>
                     <div className="flex gap-4 text-sm">
                         <div className="bg-white px-4 py-2 rounded shadow-sm border">
                             <span className="text-gray-500">Total Users:</span> <span className="font-bold">{users.length}</span>

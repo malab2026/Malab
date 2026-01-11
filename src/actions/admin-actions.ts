@@ -331,3 +331,84 @@ export async function deleteField(fieldId: string) {
         return { message: "Failed to delete field. It might have active bookings.", success: false }
     }
 }
+
+export async function getFinancialReport(filters: { startDate?: string, endDate?: string, fieldId?: string }) {
+    const session = await auth()
+    if (!session || session.user.role !== 'admin') {
+        throw new Error("Unauthorized")
+    }
+
+    const { startDate, endDate, fieldId } = filters
+
+    const where: any = {
+        status: { in: ['CONFIRMED', 'CANCELLED'] }
+    }
+
+    if (fieldId) {
+        where.fieldId = fieldId
+    }
+
+    if (startDate || endDate) {
+        where.startTime = {}
+        if (startDate) where.startTime.gte = new Date(`${startDate}T00:00:00`)
+        if (endDate) where.startTime.lte = new Date(`${endDate}T23:59:59`)
+    }
+
+    const bookings = await prisma.booking.findMany({
+        where,
+        select: {
+            id: true,
+            startTime: true,
+            endTime: true,
+            status: true,
+            refundAmount: true,
+            field: {
+                select: {
+                    id: true,
+                    name: true,
+                    pricePerHour: true
+                }
+            }
+        },
+        orderBy: { startTime: 'desc' }
+    })
+
+    const report: any = {
+        totalGross: 0,
+        totalRefunds: 0,
+        totalNet: 0,
+        totalBookings: bookings.length,
+        fieldBreakdown: {} as Record<string, any>
+    }
+
+    bookings.forEach(booking => {
+        const durationHours = (booking.endTime.getTime() - booking.startTime.getTime()) / (1000 * 60 * 60)
+        const gross = durationHours * booking.field.pricePerHour
+        const refund = booking.refundAmount || 0
+        const net = gross - refund
+
+        report.totalGross += gross
+        report.totalRefunds += refund
+        report.totalNet += net
+
+        if (!report.fieldBreakdown[booking.field.id]) {
+            report.fieldBreakdown[booking.field.id] = {
+                name: booking.field.name,
+                bookings: 0,
+                hours: 0,
+                gross: 0,
+                refunds: 0,
+                net: 0
+            }
+        }
+
+        const fb = report.fieldBreakdown[booking.field.id]
+        fb.bookings += 1
+        fb.hours += durationHours
+        fb.gross += gross
+        fb.refunds += refund
+        fb.net += net
+    })
+
+    return report
+}
