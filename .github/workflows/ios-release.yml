@@ -44,15 +44,15 @@ jobs:
           cd ios/App
           pod install --repo-update
 
-      - name: Build Unsigned Archive
+      - name: Build Unsigned App
         run: |
           cd ios/App
-          xcodebuild clean archive \
+          xcodebuild clean build \
             -workspace App.xcworkspace \
             -scheme App \
             -configuration Release \
             -sdk iphoneos \
-            -archivePath ../../build/App.xcarchive \
+            -derivedDataPath ../../build \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
@@ -60,8 +60,8 @@ jobs:
       - name: Package Unsigned IPA
         run: |
           mkdir Payload
-          # Extract the app from the archive
-          cp -r build/App.xcarchive/Products/Applications/App.app Payload/
+          # Copy the built app to the Payload directory
+          cp -r build/Build/Products/Release-iphoneos/App.app Payload/
           # Zip it into an IPA
           zip -r App-Unsigned.ipa Payload
 
