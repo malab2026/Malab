@@ -334,7 +334,7 @@ export async function deleteField(fieldId: string) {
 
 export async function getFinancialReport(filters: { startDate?: string, endDate?: string, fieldId?: string }) {
     const session = await auth()
-    if (!session || session.user.role !== 'admin') {
+    if (!session || (session.user.role !== 'admin' && session.user.role !== 'owner')) {
         throw new Error("Unauthorized")
     }
 
@@ -346,6 +346,11 @@ export async function getFinancialReport(filters: { startDate?: string, endDate?
 
     if (fieldId) {
         where.fieldId = fieldId
+    }
+
+    // Security: If owner, strictly limit to their fields
+    if (session.user.role === 'owner') {
+        where.field = { ownerId: session.user.id }
     }
 
     if (startDate || endDate) {

@@ -156,7 +156,7 @@ export async function createBooking(prevState: any, formData: FormData) {
                 fieldId,
                 startTime: startDateTime,
                 endTime: endDateTime,
-                status: isOwner ? "CONFIRMED" : "PENDING"
+                status: session.user.role === "admin" ? "CONFIRMED" : "PENDING"
             })
         }
 

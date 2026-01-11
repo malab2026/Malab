@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache"
 export async function updateOwnerBookingStatus(bookingId: string, status: "CONFIRMED" | "REJECTED") {
     const session = await auth()
 
-    if (!session || (session.user.role !== 'owner' && session.user.role !== 'admin')) {
+    if (!session || session.user.role !== 'admin') {
         return { message: "Unauthorized", success: false }
     }
 
@@ -18,11 +18,6 @@ export async function updateOwnerBookingStatus(bookingId: string, status: "CONFI
         })
 
         if (!booking) return { message: "Booking not found", success: false }
-
-        // If user is owner, check if הם actually own the field
-        if (session.user.role === 'owner' && booking.field.ownerId !== session.user.id) {
-            return { message: "Unauthorized: You don't own this field", success: false }
-        }
 
         await prisma.booking.update({
             where: { id: bookingId },
@@ -48,10 +43,6 @@ export async function blockSlot(fieldId: string, date: string, hour: number, dur
     try {
         const field = await prisma.field.findUnique({ where: { id: fieldId } })
         if (!field) return { message: "Field not found", success: false }
-
-        if (session.user.role === 'owner' && field.ownerId !== session.user.id) {
-            return { message: "Unauthorized", success: false }
-        }
 
         const startTime = new Date(date)
         startTime.setHours(hour, 0, 0, 0)
