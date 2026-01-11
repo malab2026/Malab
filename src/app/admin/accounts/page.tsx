@@ -25,8 +25,10 @@ export default async function AdminAccountsPage({
             <div className="container mx-auto py-10 px-4">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                     <div>
-                        <Link href="/admin" className="text-sm text-blue-600 hover:underline mb-2 block">← Back to Admin</Link>
-                        <h1 className="text-3xl font-bold">Financial Accounts</h1>
+                        <Link href="/admin" className="text-sm text-blue-600 hover:underline mb-2 block bg-white/50 w-fit px-2 rounded">← Back to Admin</Link>
+                        <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-xl shadow-sm border border-white/20 inline-block">
+                            <h1 className="text-3xl font-bold text-gray-900">Financial Accounts</h1>
+                        </div>
                     </div>
                 </div>
 

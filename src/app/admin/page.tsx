@@ -103,8 +103,10 @@ export default async function AdminPage() {
             <div className="container mx-auto py-10 px-4">
                 <div className="flex justify-between items-center mb-8">
                     <div className="flex items-center gap-4">
-                        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-                        <Button asChild variant="outline" className="bg-white">
+                        <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-xl shadow-sm border border-white/20">
+                            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+                        </div>
+                        <Button asChild variant="outline" className="bg-white shadow-sm ring-1 ring-black/5 h-12">
                             <Link href="/admin/accounts">💰 View Accounts</Link>
                         </Button>
                     </div>
@@ -121,9 +123,11 @@ export default async function AdminPage() {
                 <div className="grid gap-12">
                     {/* User Management Section */}
                     <section>
-                        <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
-                            👥 User Management
-                        </h2>
+                        <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-xl shadow-sm border border-white/20 inline-flex items-center gap-2 mb-6">
+                            <h2 className="text-2xl font-semibold text-gray-900">
+                                👥 User Management
+                            </h2>
+                        </div>
                         <div className="grid lg:grid-cols-3 gap-8">
                             <div className="lg:col-span-1">
                                 <CreateOwnerForm />
@@ -175,7 +179,9 @@ export default async function AdminPage() {
                     {/* Field Management Section */}
                     <section>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-semibold">Manage Fields</h2>
+                            <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-xl shadow-sm border border-white/20">
+                                <h2 className="text-2xl font-semibold text-gray-900">Manage Fields</h2>
+                            </div>
                         </div>
                         <div className="grid lg:grid-cols-3 gap-8">
                             <div className="lg:col-span-1">
@@ -235,8 +241,10 @@ export default async function AdminPage() {
                     {/* Pending Bookings Section */}
                     <section>
                         <div className="flex items-center gap-2 mb-4">
-                            <h2 className="text-2xl font-semibold">Pending Approvals</h2>
-                            <Badge variant="secondary">{pendingBookings.length}</Badge>
+                            <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-xl shadow-sm border border-white/20 flex items-center gap-2">
+                                <h2 className="text-2xl font-semibold text-gray-900">Pending Approvals</h2>
+                                <Badge variant="secondary" className="bg-gray-100">{pendingBookings.length}</Badge>
+                            </div>
                         </div>
 
                         <div className="space-y-4">
@@ -252,8 +260,10 @@ export default async function AdminPage() {
                     {/* Cancellation Requests Section */}
                     <section>
                         <div className="flex items-center gap-2 mb-4">
-                            <h2 className="text-2xl font-semibold text-orange-600">Cancellation Requests</h2>
-                            <Badge variant="destructive" className="bg-orange-600">{cancelRequests.length}</Badge>
+                            <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-xl shadow-sm border border-white/20 flex items-center gap-2">
+                                <h2 className="text-2xl font-semibold text-orange-600">Cancellation Requests</h2>
+                                <Badge variant="destructive" className="bg-orange-600">{cancelRequests.length}</Badge>
+                            </div>
                         </div>
 
                         <div className="space-y-4">
@@ -268,7 +278,9 @@ export default async function AdminPage() {
 
                     {/* Recent History Section */}
                     <section>
-                        <h2 className="text-2xl font-semibold mb-4">Recent Actvity</h2>
+                        <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-xl shadow-sm border border-white/20 inline-block mb-4">
+                            <h2 className="text-2xl font-semibold text-gray-900">Recent Activity</h2>
+                        </div>
                         <div className="space-y-4 opacity-80">
                             {historyBookings.map((booking: any) => (
                                 <BookingCard key={booking.id} booking={booking} />
