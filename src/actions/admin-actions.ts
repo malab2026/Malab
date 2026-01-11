@@ -311,3 +311,23 @@ export async function processCancellationRequest(
         return { message: "Database Error", success: false }
     }
 }
+
+export async function deleteField(fieldId: string) {
+    const session = await auth()
+    if (!session || session.user.role !== 'admin') {
+        return { message: "Unauthorized", success: false }
+    }
+
+    try {
+        await prisma.field.delete({
+            where: { id: fieldId }
+        })
+
+        revalidatePath('/admin')
+        revalidatePath('/fields')
+        return { message: "Field deleted successfully", success: true }
+    } catch (e) {
+        console.error(e)
+        return { message: "Failed to delete field. It might have active bookings.", success: false }
+    }
+}

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import Image from "next/image"
-import { updateBookingStatus, updateUserRole } from "@/actions/admin-actions"
+import { updateBookingStatus, updateUserRole, deleteField } from "@/actions/admin-actions"
 
 export const dynamic = 'force-dynamic'
 
@@ -176,11 +176,22 @@ export default async function AdminPage() {
                                                     <span className="text-gray-300 text-xs italic">No map</span>
                                                 )}
 
-                                                <Button asChild size="sm" variant="outline" className="h-8 text-xs">
-                                                    <Link href={`/admin/edit/${field.id}`}>
-                                                        Edit Field
-                                                    </Link>
-                                                </Button>
+                                                <div className="flex gap-2">
+                                                    <Button asChild size="sm" variant="outline" className="h-8 text-xs">
+                                                        <Link href={`/admin/edit/${field.id}`}>
+                                                            Edit
+                                                        </Link>
+                                                    </Button>
+                                                    <form action={deleteField.bind(null, field.id) as any} onSubmit={(e) => {
+                                                        if (!confirm("Are you sure you want to delete this field? All associated bookings will also be deleted.")) {
+                                                            e.preventDefault();
+                                                        }
+                                                    }}>
+                                                        <Button size="sm" variant="destructive" className="h-8 text-xs">
+                                                            Delete
+                                                        </Button>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
                                     </Card>
