@@ -35,6 +35,10 @@ export async function Navbar() {
                                 </Button>
                             )}
 
+                            <Button variant="secondary" className={buttonClass} asChild>
+                                <Link href="/download">📥 Download</Link>
+                            </Button>
+
                             <form action={handleSignOut}>
                                 <Button type="submit" variant="destructive" className="bg-white text-red-600 hover:bg-red-50 hover:text-red-700 shadow-sm rounded-xl font-bold px-4 py-2 h-auto border-0 cursor-pointer">
                                     Sign Out
@@ -43,6 +47,9 @@ export async function Navbar() {
                         </div>
                     ) : (
                         <div className="flex gap-3">
+                            <Button variant="secondary" className={buttonClass} asChild>
+                                <Link href="/download">📥 Download</Link>
+                            </Button>
                             <Button variant="secondary" className={buttonClass} asChild>
                                 <Link href="/login">Login</Link>
                             </Button>
