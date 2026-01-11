@@ -65,8 +65,8 @@ export default async function Home() {
         </div>
 
         <div className="relative z-20 space-y-4 max-w-4xl px-4 animate-in fade-in slide-in-from-bottom-5 duration-700">
-          <h1 className="text-5xl md:text-7xl font-black tracking-tight">
-            Malaeb <span className="text-green-500">Booking</span>
+          <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
+            Mala3ebna <span className="text-green-400">Booking</span>
           </h1>
           <p className="text-xl md:text-2xl text-gray-200 font-medium">
             Find the best pitches and book your game in seconds.
