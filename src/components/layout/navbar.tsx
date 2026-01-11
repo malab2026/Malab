@@ -2,6 +2,7 @@ import Link from "next/link"
 import { auth } from "@/auth"
 import { Button } from "@/components/ui/button"
 import { handleSignOut } from "@/actions/auth-actions"
+import Image from "next/image"
 
 export async function Navbar() {
     const session = await auth()
@@ -12,8 +13,8 @@ export async function Navbar() {
         <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/20 backdrop-blur-xl transition-all pt-[var(--safe-area-inset-top)]">
             <div className="container flex h-16 items-center justify-between">
                 <Link href="/" className="flex items-center space-x-2 font-black text-2xl text-white tracking-tight">
-                    <span className="bg-green-500 p-1.5 rounded-lg shadow-lg shadow-green-500/20">⚽</span>
-                    <span>Malaeb</span>
+                    <Image src="/logo.png" alt="MALA3EBNA" width={40} height={40} className="rounded-lg shadow-lg" />
+                    <span>MALA3EBNA</span>
                 </Link>
 
                 <nav className="flex items-center gap-3">

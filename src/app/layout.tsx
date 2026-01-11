@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Malaeb - Book Your Pitch",
-  description: "Pitch booking application",
+  title: "MALA3EBNA - Book Your Pitch",
+  description: "Football pitch booking application - Reserve your field easily",
 };
 
 export const viewport = {
