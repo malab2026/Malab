@@ -37,7 +37,7 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync ios
 
-      - name: Build Unsigned IPA (Device)
+      - name: Build Unsigned IPA (Debug Device)
         run: |
           cd ios/App
           # Clean and Install
@@ -45,8 +45,7 @@ jobs:
           rm -f Podfile.lock
           pod install --repo-update
           
-          # 🩹 CRITICAL FIX: Patch the CocoaPods script to skip code signing
-          # This prevents the "Code 65" error during framework embedding
+          # 🩹 PATCH: Skip code signing in Pods scripts
           find Pods -name "*-frameworks.sh" -exec sed -i '' 's/code_sign_if_enabled/echo "Skipping code signing"/g' {} +
           find Pods -name "*-frameworks.sh" -exec sed -i '' 's/codesign /echo "Skipping codesign" /g' {} +
           
@@ -54,11 +53,11 @@ jobs:
           sed -i '' 's/CODE_SIGNING_REQUIRED = YES/CODE_SIGNING_REQUIRED = NO/g' Pods/Pods.xcodeproj/project.pbxproj
           sed -i '' 's/CODE_SIGNING_ALLOWED = YES/CODE_SIGNING_ALLOWED = NO/g' Pods/Pods.xcodeproj/project.pbxproj
           
-          # Build for Device (iphoneos)
+          # Build for Device (iphoneos) in DEBUG mode (Fixes optimization error)
           xcodebuild clean build \
             -workspace App.xcworkspace \
             -scheme App \
-            -configuration Release \
+            -configuration Debug \
             -sdk iphoneos \
             -derivedDataPath ../../build \
             CODE_SIGNING_ALLOWED=NO \
@@ -66,10 +65,10 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             DISABLE_MANUAL_TARGET_ORDER_BUILD_WARNING=YES
 
-      - name: Package Unsigned IPA
+      - name: Package Unsigned Debug IPA
         run: |
           echo "📂 Finding built App.app..."
-          # Note: With Release config and derivedDataPath, it should be in .../build/Build/Products/Release-iphoneos/
+          # Note: With Debug config, path changes to Debug-iphoneos
           APP_PATH=$(find ../../build -name "App.app" -type d | head -n 1)
           
           if [ -z "$APP_PATH" ]; then
@@ -80,7 +79,7 @@ jobs:
           echo "✅ Found App at: $APP_PATH"
           mkdir Payload
           cp -r "$APP_PATH" Payload/
-          zip -r App-Unsigned.ipa Payload
+          zip -r App-Unsigned-Debug.ipa Payload
 
       - name: Get Version
         id: version
@@ -90,19 +89,19 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ios-ipa-v${{ steps.version.outputs.version }}
-          name: MALA3EBNA iOS Unsigned IPA v${{ steps.version.outputs.version }}
+          name: MALA3EBNA iOS Unsigned Debug IPA v${{ steps.version.outputs.version }}
           body: |
-            ## 🍎 MALA3EBNA - Unsigned IPA
+            ## 🍎 MALA3EBNA - Unsigned Debug IPA
             
-            ⚠️ **تنبيه هام:** هذا الملف **Unsigned** (غير موقع).
+            ⚠️ **تنبيه هام:** هذا الملف **Unsigned Debug**.
             
-            - **لا يعمل** بالتثبيت المباشر.
-            - يحتاج إلى **توقيع يدوي** باستخدام أدوات مثل AltStore أو Sideloadly.
+            - تم بناؤه بوضع **Debug** لحل مشاكل التوافق.
+            - يحتاج إلى **توقيع يدوي** (Sideloading).
             
             ### 📥 Download
-            Download `App-Unsigned.ipa` below.
+            Download `App-Unsigned-Debug.ipa` below.
           files: |
-            App-Unsigned.ipa
+            App-Unsigned-Debug.ipa
           draft: false
           prerelease: false
         env:
