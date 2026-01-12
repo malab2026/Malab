@@ -37,26 +37,28 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync ios
 
-      - name: Build for Simulator (Strict Clean)
+      - name: Setup Keychain (Fix for Code 65)
+        run: |
+          security create-keychain -p "" build.keychain
+          security list-keychains -s build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "" build.keychain
+          security set-keychain-settings -t 3600 -l ~/Library/Keychains/build.keychain
+
+      - name: Build for Simulator (No Signing)
         run: |
           cd ios/App
-          # Nuclear clean
+          # Clean Pods
           rm -rf Pods
           rm -f Podfile.lock
           pod install --repo-update
           
-          # Disable signing in Pods
-          sed -i '' 's/CODE_SIGNING_ALLOWED = YES/CODE_SIGNING_ALLOWED = NO/g' Pods/Pods.xcodeproj/project.pbxproj
-          sed -i '' 's/CODE_SIGNING_REQUIRED = YES/CODE_SIGNING_REQUIRED = NO/g' Pods/Pods.xcodeproj/project.pbxproj
-          
-          # Build with explicit destination found in runner logs
-          xcodebuild clean build \
+          # Build
+          xcodebuild build \
             -workspace App.xcworkspace \
             -scheme App \
             -configuration Debug \
             -destination 'platform=iOS Simulator,name=iPhone SE (3rd generation)' \
-            -derivedDataPath ../../build \
-            CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
             DISABLE_MANUAL_TARGET_ORDER_BUILD_WARNING=YES
