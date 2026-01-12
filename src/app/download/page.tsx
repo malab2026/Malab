@@ -60,23 +60,23 @@ export default function DownloadPage() {
                                 </div>
                             </CardHeader>
                             <CardContent className="pt-6 space-y-4">
-                                <p className="text-gray-600 font-medium">كود المصدر للبناء على Mac</p>
+                                <p className="text-gray-600 font-medium">نسخة المحاكي (Simulator Only)</p>
                                 <Button
                                     className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg h-14 shadow-lg"
                                     asChild
                                 >
-                                    <a href="https://github.com/malab2026/Malab/releases/latest/download/ios-source-code.zip" download>
-                                        📥 Download iOS Source
+                                    <a href="https://github.com/malab2026/Malab/releases/latest/download/App-Simulator-Debug.zip" download>
+                                        📥 Download Simulator IPA
                                     </a>
                                 </Button>
                                 <div className="text-xs text-gray-500 space-y-1 bg-blue-50 p-3 rounded-lg">
                                     <p className="font-bold text-blue-700">⚠️ تنبيه هام:</p>
-                                    <p>بسبب قيود Apple، ده <b>Source Code</b> جاهز للبناء.</p>
-                                    <p className="font-bold mt-2">خطوات الاستخدام:</p>
-                                    <ul className="list-decimal list-inside space-y-1">
-                                        <li>حمل الملف وفك الضغط على <b>Mac</b></li>
-                                        <li>شغل <code>pod install</code> في مجلد <code>ios/App</code></li>
-                                        <li>افتح <code>App.xcworkspace</code> وابني التطبيق!</li>
+                                    <p>الملف ده <b>Simulator Build</b>.</p>
+                                    <p className="font-bold mt-2">طريقة التشغيل:</p>
+                                    <ul className="list-disc list-inside space-y-1">
+                                        <li>فك الضغط (Unzip)</li>
+                                        <li>اسحب ملف <code>App.app</code> على الـ iOS Simulator</li>
+                                        <li>هذا الملف <b>لا يعمل</b> على iPhone حقيقي.</li>
                                     </ul>
                                 </div>
                             </CardContent>
