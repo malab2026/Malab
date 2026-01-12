@@ -67,6 +67,14 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
         setViewDate(new Date())
     }
 
+    // Helper to format time (e.g. "14:00" -> "2:00 PM")
+    const formatTimeDisplay = (time: string) => {
+        const [h, m] = time.split(':').map(Number)
+        const date = new Date()
+        date.setHours(h, m)
+        return format(date, 'h:mm a')
+    }
+
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between mb-4">
@@ -115,7 +123,7 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
                         {hours.map((time) => (
                             <div key={time} className="grid grid-cols-8 border-b last:border-b-0">
                                 <div className="p-2 border-r text-[11px] font-bold text-gray-400 flex items-center justify-center bg-gray-50/30">
-                                    {time}
+                                    {formatTimeDisplay(time)}
                                 </div>
                                 {weekDays.map((day, i) => {
                                     const booked = isBooked(day, time)

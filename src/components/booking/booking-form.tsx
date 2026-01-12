@@ -57,6 +57,13 @@ export function BookingForm({ field, userRole, initialBookings = [] }: { field: 
         }
     }
 
+    const formatTime = (time: string) => {
+        const [h, m] = time.split(':').map(Number)
+        const date = new Date()
+        date.setHours(h, m)
+        return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
+    }
+
     return (
         <form action={dispatch} className="space-y-6">
             <input type="hidden" name="fieldId" value={field.id} />
@@ -104,7 +111,7 @@ export function BookingForm({ field, userRole, initialBookings = [] }: { field: 
                                             </div>
                                             <div className="flex items-center text-xs font-semibold text-green-800">
                                                 <Timer className="mr-1.5 h-3.5 w-3.5" />
-                                                {slot.startTime}
+                                                {formatTime(slot.startTime)}
                                             </div>
                                         </div>
                                         <Button
@@ -164,7 +171,7 @@ export function BookingForm({ field, userRole, initialBookings = [] }: { field: 
                         <div className="grid gap-2">
                             {slots.map((slot, idx) => (
                                 <div key={idx} className="flex justify-between text-sm py-1 border-b border-gray-100 last:border-0">
-                                    <span className="text-gray-600">{slot.date} @ {slot.startTime}</span>
+                                    <span className="text-gray-600">{slot.date} @ {formatTime(slot.startTime)}</span>
                                     <span className="font-medium">{slot.duration * field.pricePerHour} EGP</span>
                                 </div>
                             ))}
