@@ -60,23 +60,23 @@ export default function DownloadPage() {
                                 </div>
                             </CardHeader>
                             <CardContent className="pt-6 space-y-4">
-                                <p className="text-gray-600 font-medium">كود المصدر (للتحميل والبناء)</p>
+                                <p className="text-gray-600 font-medium">كود المصدر للبناء على Mac</p>
                                 <Button
                                     className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg h-14 shadow-lg"
                                     asChild
                                 >
                                     <a href="https://github.com/malab2026/Malab/releases/latest/download/ios-source-code.zip" download>
-                                        📥 Download Source Code
+                                        📥 Download iOS Source
                                     </a>
                                 </Button>
                                 <div className="text-xs text-gray-500 space-y-1 bg-blue-50 p-3 rounded-lg">
-                                    <p className="font-bold text-blue-700">⚠️ تنبيه نهائي:</p>
-                                    <p>بسبب قيود Apple، لا يمكن إنشاء ملف التطبيق آلياً.</p>
-                                    <p className="font-bold mt-2">الحل المتاح:</p>
-                                    <ul className="list-disc list-inside space-y-1">
-                                        <li>حمل هذا الملف (Source Code).</li>
-                                        <li>انقله لأي جهاز <b>Mac</b>.</li>
-                                        <li>ابنيه هناك باستخدام Xcode.</li>
+                                    <p className="font-bold text-blue-700">⚠️ تنبيه:</p>
+                                    <p>بسبب قيود Apple، ده <b>Source Code</b> جاهز للبناء.</p>
+                                    <p className="font-bold mt-2">خطوات الاستخدام:</p>
+                                    <ul className="list-decimal list-inside space-y-1">
+                                        <li>حمل الملف وفك الضغط على <b>Mac</b></li>
+                                        <li>شغل <code>pod install</code> في مجلد <code>ios/App</code></li>
+                                        <li>افتح <code>App.xcworkspace</code> وابني التطبيق!</li>
                                     </ul>
                                 </div>
                             </CardContent>
