@@ -38,6 +38,11 @@ jobs:
         run: |
           cd ios/App
           pod install --repo-update
+          
+          # 🪄 Magic fix: Disable signing for all Pods
+          sed -i '' 's/CODE_SIGNING_ALLOWED = YES/CODE_SIGNING_ALLOWED = NO/g' Pods/Pods.xcodeproj/project.pbxproj
+          sed -i '' 's/CODE_SIGNING_REQUIRED = YES/CODE_SIGNING_REQUIRED = NO/g' Pods/Pods.xcodeproj/project.pbxproj
+          sed -i '' 's/CODE_SIGN_IDENTITY = "iPhone Developer"/CODE_SIGN_IDENTITY = ""/g' Pods/Pods.xcodeproj/project.pbxproj
 
       - name: Build Unsigned App
         run: |
