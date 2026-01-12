@@ -53,14 +53,18 @@ jobs:
           rm -f Podfile.lock
           pod install --repo-update
           
-          # Build
+          # Build with optimization fixes
           xcodebuild build \
             -workspace App.xcworkspace \
             -scheme App \
             -configuration Debug \
             -destination 'platform=iOS Simulator,name=iPhone SE (3rd generation)' \
+            -derivedDataPath ../../build \
+            CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
+            SWIFT_OPTIMIZATION_LEVEL="-Onone" \
+            GCC_OPTIMIZATION_LEVEL="0" \
             DISABLE_MANUAL_TARGET_ORDER_BUILD_WARNING=YES
 
       - name: Package Simulator App
