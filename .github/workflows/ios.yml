@@ -37,35 +37,66 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync ios
 
-      - name: Archive iOS Source Code
+      - name: Build Unsigned IPA (Payload Method)
         run: |
-          echo "📦 Zipping iOS source code..."
-          zip -r ios-source-code.zip ios/
+          cd ios/App
+          # Clean and Install
+          rm -rf Pods
+          rm -f Podfile.lock
+          pod install --repo-update
           
+          # Patch Pods to ignore signing
+          find Pods -name "*-frameworks.sh" -exec sed -i '' 's/code_sign_if_enabled/echo "Skipping code signing"/g' {} +
+          find Pods -name "*-frameworks.sh" -exec sed -i '' 's/codesign /echo "Skipping codesign" /g' {} +
+          
+          # Build .app (Not .ipa directly)
+          xcodebuild build \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath ../../build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DISABLE_MANUAL_TARGET_ORDER_BUILD_WARNING=YES
+
+      - name: Package MALA3EBNA IPA
+        run: |
+          echo "📂 Finding built App.app..."
+          # In Release/iphoneos
+          APP_PATH=$(find ../../build -name "App.app" -type d | head -n 1)
+          
+          if [ -z "$APP_PATH" ]; then
+            echo "❌ Error: App.app not found!"
+            exit 1
+          fi
+          
+          echo "✅ Found App at: $APP_PATH"
+          mkdir Payload
+          cp -r "$APP_PATH" Payload/
+          
+          # Zip into IPA with the CORRECT NAME
+          zip -r MALA3EBNA.ipa Payload
+
       - name: Get Version
         id: version
         run: echo "version=$(date +'%Y.%m.%d-%H%M')" >> $GITHUB_OUTPUT
 
-      - name: Upload Source Code Release
+      - name: Upload IPA Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ios-source-v${{ steps.version.outputs.version }}
-          name: MALA3EBNA iOS Source v${{ steps.version.outputs.version }}
+          tag_name: ios-ipa-v${{ steps.version.outputs.version }}
+          name: MALA3EBNA iOS IPA v${{ steps.version.outputs.version }}
           body: |
-            ## 🍎 MALA3EBNA - iOS Source Code
+            ## 🍎 MALA3EBNA - Unsigned IPA
             
-            بسبب قيود Apple الصارمة، تم استخراج الكود المصدري للبناء يدوياً.
-            
-            ### 🛠️ طريقة الاستخدام
-            1. حمل ملف `ios-source-code.zip`
-            2. فك الضغط على جهاز Mac
-            3. شغل `pod install` داخل مجلد `ios/App`
-            4. افتح `App.xcworkspace` وابني التطبيق بسهولة!
+            نسخة التطبيق (Unsigned). للتركيب عن طريق Sideloadly أو AltStore.
             
             ### 📥 Download
-            Download `ios-source-code.zip` below.
+            Download `MALA3EBNA.ipa` below.
           files: |
-            ios-source-code.zip
+            MALA3EBNA.ipa
           draft: false
           prerelease: false
         env:
