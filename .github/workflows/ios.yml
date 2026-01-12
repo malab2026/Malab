@@ -37,35 +37,72 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync ios
 
-      - name: Archive iOS Source Code
+      - name: Build Unsigned IPA (Device)
         run: |
-          echo "📦 Zipping iOS source code..."
-          zip -r ios-source-code.zip ios/
+          cd ios/App
+          # Clean and Install
+          rm -rf Pods
+          rm -f Podfile.lock
+          pod install --repo-update
           
+          # 🩹 CRITICAL FIX: Patch the CocoaPods script to skip code signing
+          # This prevents the "Code 65" error during framework embedding
+          find Pods -name "*-frameworks.sh" -exec sed -i '' 's/code_sign_if_enabled/echo "Skipping code signing"/g' {} +
+          find Pods -name "*-frameworks.sh" -exec sed -i '' 's/codesign /echo "Skipping codesign" /g' {} +
+          
+          # Disable signing in project files
+          sed -i '' 's/CODE_SIGNING_REQUIRED = YES/CODE_SIGNING_REQUIRED = NO/g' Pods/Pods.xcodeproj/project.pbxproj
+          sed -i '' 's/CODE_SIGNING_ALLOWED = YES/CODE_SIGNING_ALLOWED = NO/g' Pods/Pods.xcodeproj/project.pbxproj
+          
+          # Build for Device (iphoneos)
+          xcodebuild clean build \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath ../../build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DISABLE_MANUAL_TARGET_ORDER_BUILD_WARNING=YES
+
+      - name: Package Unsigned IPA
+        run: |
+          echo "📂 Finding built App.app..."
+          # Note: With Release config and derivedDataPath, it should be in .../build/Build/Products/Release-iphoneos/
+          APP_PATH=$(find ../../build -name "App.app" -type d | head -n 1)
+          
+          if [ -z "$APP_PATH" ]; then
+            echo "❌ Error: App.app not found!"
+            exit 1
+          fi
+          
+          echo "✅ Found App at: $APP_PATH"
+          mkdir Payload
+          cp -r "$APP_PATH" Payload/
+          zip -r App-Unsigned.ipa Payload
+
       - name: Get Version
         id: version
         run: echo "version=$(date +'%Y.%m.%d-%H%M')" >> $GITHUB_OUTPUT
 
-      - name: Upload Source Code Release
+      - name: Upload IPA Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ios-source-v${{ steps.version.outputs.version }}
-          name: MALA3EBNA iOS Source v${{ steps.version.outputs.version }}
+          tag_name: ios-ipa-v${{ steps.version.outputs.version }}
+          name: MALA3EBNA iOS Unsigned IPA v${{ steps.version.outputs.version }}
           body: |
-            ## 🍎 MALA3EBNA - iOS Source Code
+            ## 🍎 MALA3EBNA - Unsigned IPA
             
-            بسبب قيود Apple الصارمة، لا يمكن بناء ملف التطبيق (IPA) تلقائياً بدون جهاز Mac وشهادة مدفوعة.
+            ⚠️ **تنبيه هام:** هذا الملف **Unsigned** (غير موقع).
             
-            ### 🛠️ طريقة الاستخدام
-            1. حمل ملف `ios-source-code.zip`
-            2. فك الضغط على جهاز Mac
-            3. شغل `pod install` داخل مجلد `ios/App`
-            4. افتح `App.xcworkspace` وابني التطبيق بسهولة!
+            - **لا يعمل** بالتثبيت المباشر.
+            - يحتاج إلى **توقيع يدوي** باستخدام أدوات مثل AltStore أو Sideloadly.
             
             ### 📥 Download
-            Download `ios-source-code.zip` below.
+            Download `App-Unsigned.ipa` below.
           files: |
-            ios-source-code.zip
+            App-Unsigned.ipa
           draft: false
           prerelease: false
         env:
