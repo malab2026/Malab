@@ -44,18 +44,32 @@ jobs:
           sed -i '' 's/CODE_SIGNING_REQUIRED = YES/CODE_SIGNING_REQUIRED = NO/g' Pods/Pods.xcodeproj/project.pbxproj
           sed -i '' 's/CODE_SIGN_IDENTITY = "iPhone Developer"/CODE_SIGN_IDENTITY = ""/g' Pods/Pods.xcodeproj/project.pbxproj
 
-      - name: Build Unsigned App
+      - name: Build for Simulator (No Signing Required)
         run: |
           cd ios/App
           xcodebuild clean build \
             -workspace App.xcworkspace \
             -scheme App \
-            -configuration Release \
-            -sdk iphoneos \
+            -configuration Debug \
+            -sdk iphonesimulator \
             -derivedDataPath ../../build \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Package Simulator App
+        run: |
+          echo "📂 Finding built App.app..."
+          APP_PATH=$(find build -name "App.app" -type d | head -n 1)
+          
+          if [ -z "$APP_PATH" ]; then
+            echo "❌ Error: App.app not found!"
+            exit 1
+          fi
+          
+          echo "✅ Found App at: $APP_PATH"
+          mkdir Payload
+          cp -r "$APP_PATH" Payload/
+          zip -r App-Simulator-Debug.zip Payload
 
       - name: Package Unsigned IPA
         run: |
@@ -80,16 +94,18 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ios-v${{ steps.version.outputs.version }}
-          name: MALA3EBNA iOS v${{ steps.version.outputs.version }}
+          name: MALA3EBNA iOS Simulator Build v${{ steps.version.outputs.version }}
           body: |
-            ## 🍎 MALA3EBNA - iOS Release (Unsigned)
+            ## 🍎 MALA3EBNA - iOS Simulator Build
             
-            ⚠️ **للتثبيت:** استخدم AltStore أو Sideloadly.
+            ⚠️ **تنبيه:** هذه النسخة مخصصة للمحاكي (Simulator) فقط لأن Apple تمنع بناء نسخ للأجهزة بدون شهادة مطور مدفوعة ($99).
+            
+            لتجربة التطبيق على iPhone حقيقي، يجب استخدام **Android version** أو بناء التطبيق بنفسك باستخدام Mac.
             
             ### 📥 Download
-            Download `App-Unsigned.ipa` below.
+            Download `App-Simulator-Debug.zip` below.
           files: |
-            App-Unsigned.ipa
+            App-Simulator-Debug.zip
           draft: false
           prerelease: false
         env:
