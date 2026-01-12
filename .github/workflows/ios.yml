@@ -44,68 +44,35 @@ jobs:
           sed -i '' 's/CODE_SIGNING_REQUIRED = YES/CODE_SIGNING_REQUIRED = NO/g' Pods/Pods.xcodeproj/project.pbxproj
           sed -i '' 's/CODE_SIGN_IDENTITY = "iPhone Developer"/CODE_SIGN_IDENTITY = ""/g' Pods/Pods.xcodeproj/project.pbxproj
 
-      - name: Build for Simulator (No Signing Required)
+      - name: Archive iOS Source Code
         run: |
-          cd ios/App
-          xcodebuild clean build \
-            -workspace App.xcworkspace \
-            -scheme App \
-            -configuration Debug \
-            -sdk iphonesimulator \
-            -derivedDataPath ../../build \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO
-
-      - name: Package Simulator App
-        run: |
-          echo "📂 Finding built App.app..."
-          APP_PATH=$(find build -name "App.app" -type d | head -n 1)
+          echo "📦 Zipping iOS source code..."
+          zip -r ios-source-code.zip ios/
           
-          if [ -z "$APP_PATH" ]; then
-            echo "❌ Error: App.app not found!"
-            exit 1
-          fi
-          
-          echo "✅ Found App at: $APP_PATH"
-          mkdir Payload
-          cp -r "$APP_PATH" Payload/
-          zip -r App-Simulator-Debug.zip Payload
-
-      - name: Package Unsigned IPA
-        run: |
-          echo "📂 Finding built App.app..."
-          APP_PATH=$(find build -name "App.app" -type d | head -n 1)
-          
-          if [ -z "$APP_PATH" ]; then
-            echo "❌ Error: App.app not found!"
-            exit 1
-          fi
-          
-          echo "✅ Found App at: $APP_PATH"
-          mkdir Payload
-          cp -r "$APP_PATH" Payload/
-          zip -r App-Unsigned.ipa Payload
-
       - name: Get Version
         id: version
         run: echo "version=$(date +'%Y.%m.%d-%H%M')" >> $GITHUB_OUTPUT
 
-      - name: Upload Release
+      - name: Upload Source Code Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ios-v${{ steps.version.outputs.version }}
-          name: MALA3EBNA iOS Simulator Build v${{ steps.version.outputs.version }}
+          tag_name: ios-source-v${{ steps.version.outputs.version }}
+          name: MALA3EBNA iOS Source v${{ steps.version.outputs.version }}
           body: |
-            ## 🍎 MALA3EBNA - iOS Simulator Build
+            ## 🍎 MALA3EBNA - iOS Source Code
             
-            ⚠️ **تنبيه:** هذه النسخة مخصصة للمحاكي (Simulator) فقط لأن Apple تمنع بناء نسخ للأجهزة بدون شهادة مطور مدفوعة ($99).
+            بسبب قيود Apple الصارمة، لا يمكن بناء ملف التطبيق (IPA) تلقائياً بدون جهاز Mac.
             
-            لتجربة التطبيق على iPhone حقيقي، يجب استخدام **Android version** أو بناء التطبيق بنفسك باستخدام Mac.
+            ### 🛠️ طريقة الاستخدام
+            1. حمل ملف `ios-source-code.zip`
+            2. فك الضغط على جهاز Mac
+            3. شغل `pod install` داخل مجلد `ios/App`
+            4. افتح `App.xcworkspace` وابني التطبيق بسهولة!
             
             ### 📥 Download
-            Download `App-Simulator-Debug.zip` below.
+            Download `ios-source-code.zip` below.
           files: |
-            App-Simulator-Debug.zip
+            ios-source-code.zip
           draft: false
           prerelease: false
         env:
