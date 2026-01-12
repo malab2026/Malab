@@ -59,10 +59,21 @@ jobs:
 
       - name: Package Unsigned IPA
         run: |
+          echo "📂 Finding built App.app..."
+          find build -name "*.app" -type d
+          
+          APP_PATH=$(find build -name "App.app" -type d | head -n 1)
+          
+          if [ -z "$APP_PATH" ]; then
+            echo "❌ Error: App.app not found in build directory!"
+            find build -maxdepth 4
+            exit 1
+          fi
+          
+          echo "✅ Found App at: $APP_PATH"
+          
           mkdir Payload
-          # Copy the built app to the Payload directory
-          cp -r build/Build/Products/Release-iphoneos/App.app Payload/
-          # Zip it into an IPA
+          cp -r "$APP_PATH" Payload/
           zip -r App-Unsigned.ipa Payload
 
       - name: Get Version
