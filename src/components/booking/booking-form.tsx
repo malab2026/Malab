@@ -177,23 +177,48 @@ export function BookingForm({
                         </div>
                     </div>
 
-                    <div className="space-y-3">
-                        <h3 className="text-sm font-semibold text-gray-700 px-1">Booking Summary</h3>
-                        <div className="grid gap-2">
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between px-1">
+                            <h3 className="text-sm font-black text-gray-800 uppercase tracking-tight">Booking Summary</h3>
+                            <div className="h-0.5 flex-1 mx-4 bg-gray-100 rounded-full"></div>
+                        </div>
+                        <div className="grid gap-3">
                             {slots.map((slot, idx) => (
-                                <div key={idx} className="space-y-1 py-2 border-b border-gray-100 last:border-0">
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-gray-600 font-medium">{slot.date} @ {formatTime(slot.startTime)}</span>
-                                        <span className="font-bold text-gray-900">{slot.duration * field.pricePerHour + serviceFeePerSlot} EGP</span>
+                                <div key={idx} className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 space-y-3">
+                                    <div className="flex justify-between items-start">
+                                        <div className="space-y-1">
+                                            <p className="text-sm font-black text-gray-900">{slot.date}</p>
+                                            <div className="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                                <Timer className="h-3 w-3" />
+                                                {formatTime(slot.startTime)} - {slot.duration} Hour
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-lg font-black text-green-700">{slot.duration * field.pricePerHour + serviceFeePerSlot} EGP</p>
+                                        </div>
                                     </div>
-                                    <div className="flex justify-between text-[11px] text-gray-400 font-bold uppercase tracking-tighter">
-                                        <span>Field: {slot.duration * field.pricePerHour} | Service: {serviceFeePerSlot}</span>
+
+                                    <div className="pt-2 border-t border-gray-200/60 space-y-2">
+                                        <div className="flex justify-between items-center text-[12px] font-bold">
+                                            <span className="text-gray-500 uppercase tracking-tight">سعر الملعب (Pitch Price)</span>
+                                            <span className="text-gray-900">{slot.duration * field.pricePerHour} EGP</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-[12px] font-bold">
+                                            <span className="text-gray-500 uppercase tracking-tight">رسم الخدمة (Service Fee)</span>
+                                            <span className="text-green-600 font-black">+ {serviceFeePerSlot} EGP</span>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
-                            <div className="flex justify-between pt-4 mt-2 border-t-2 border-dashed border-gray-200 font-black text-2xl text-green-700">
-                                <span>Total:</span>
-                                <span>{totalPrice} EGP</span>
+
+                            <div className="mt-2 bg-green-600 p-5 rounded-3xl shadow-xl shadow-green-100 flex justify-between items-center text-white">
+                                <div className="space-y-0.5">
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Total Amount</p>
+                                    <p className="text-3xl font-black tracking-tighter">{totalPrice} EGP</p>
+                                </div>
+                                <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm">
+                                    <CheckCircle2 className="h-6 w-6" />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -201,8 +226,8 @@ export function BookingForm({
                     {!isOwner ? (
                         <div className="space-y-4 border rounded-lg p-4 bg-yellow-50 border-yellow-200">
                             <h3 className="font-semibold text-yellow-800">Payment Instructions</h3>
-                            <p className="text-sm text-yellow-700">
-                                Please transfer <strong>{totalPrice} EGP</strong> to <strong>01000000000 (InstaPay)</strong> and upload the receipt screenshot below.
+                            <p className="text-sm text-yellow-700 leading-relaxed font-medium">
+                                قم بتحويل مبلغ <strong className="text-lg text-yellow-900">{totalPrice} EGP</strong> شامل (سعر الملعب + {serviceFeePerSlot} ج خدمة) إلى رقم <strong>01000000000 (InstaPay)</strong> وارفع صورة التحويل بالأسفل.
                             </p>
                             <div className="space-y-2">
                                 <Label htmlFor="receipt">Upload Receipt</Label>
