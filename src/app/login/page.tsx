@@ -8,7 +8,7 @@ export default function LoginPage() {
                 <CardHeader className="space-y-1">
                     <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
                     <CardDescription className="text-center">
-                        Enter your email below to login to your account
+                        Enter your phone number below to login to your account
                     </CardDescription>
                 </CardHeader>
                 <CardContent>

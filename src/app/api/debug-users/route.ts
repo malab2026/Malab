@@ -14,6 +14,7 @@ export async function GET() {
                 name: true,
                 createdAt: true,
                 password: true,
+                phone: true,
             }
         });
 
