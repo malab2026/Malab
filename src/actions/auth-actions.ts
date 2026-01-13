@@ -32,12 +32,21 @@ export async function registerUser(
     const { name, email, password, phone } = validatedFields.data
 
     try {
-        const existingUser = await prisma.user.findUnique({
-            where: { phone },
+        const existingPhone = await prisma.user.findUnique({
+            where: { phone: phone.trim() },
         })
 
-        if (existingUser) {
+        if (existingPhone) {
             return "User with this phone number already exists."
+        }
+
+        if (email) {
+            const existingEmail = await prisma.user.findUnique({
+                where: { email },
+            })
+            if (existingEmail) {
+                return "User with this email already exists."
+            }
         }
 
         const hashedPassword = await bcrypt.hash(password, 10)

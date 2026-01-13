@@ -21,12 +21,17 @@ export function RegisterForm() {
                 <Input id="phone" type="tel" name="phone" placeholder="010xxxxxxxxx" required />
             </div>
             <div className="space-y-2">
-                <Label htmlFor="email">Email <span className="text-gray-400 text-xs font-normal">(Optional)</span></Label>
-                <Input id="email" type="email" name="email" placeholder="m@example.com" />
-            </div>
-            <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" name="password" required />
+                <Input id="password" type="password" name="password" placeholder="••••••••" required />
+            </div>
+
+            <div className="pt-2 border-t border-gray-100">
+                <div className="space-y-2">
+                    <Label htmlFor="email" className="text-gray-500 font-normal">
+                        Email <span className="text-xs text-gray-400 font-light">(Optional - for receipts & recovery)</span>
+                    </Label>
+                    <Input id="email" type="email" name="email" placeholder="m@example.com" className="bg-gray-50/50" />
+                </div>
             </div>
 
             <RegisterButton />
