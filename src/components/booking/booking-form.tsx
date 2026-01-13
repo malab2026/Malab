@@ -94,6 +94,7 @@ export function BookingForm({
                 </div>
             </div>
 
+            {/* Step 1: Selection */}
             {step === 1 && (
                 <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                     <div className="space-y-2">
@@ -168,6 +169,7 @@ export function BookingForm({
                 </div>
             )}
 
+            {/* Step 2: Payment */}
             {step === 2 && (
                 <div className="space-y-6 animate-in fade-in slide-in-from-left-4 duration-300">
                     <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-start gap-4">
@@ -198,99 +200,100 @@ export function BookingForm({
                                             <p className="text-lg font-black text-gray-900">{slot.duration * field.pricePerHour} EGP</p>
                                         </div>
                                     </div>
+                                </div>
                             ))}
 
-                                    {/* Service Fee Row */}
-                                    {slots.length > 0 && (
-                                        <div className="px-4 py-2 flex justify-between items-center text-sm font-bold bg-green-50/50 rounded-xl border border-green-100 text-green-700">
-                                            <span className="uppercase tracking-tight">رسم خدمة (Service Fee)</span>
-                                            <span>{serviceFeePerBooking} EGP</span>
-                                        </div>
-                                    )}
-
-                                    <div className="mt-2 bg-green-600 p-5 rounded-3xl shadow-xl shadow-green-100 flex justify-between items-center text-white">
-                                        <div className="space-y-0.5">
-                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Total Amount</p>
-                                            <p className="text-3xl font-black tracking-tighter">{totalPrice} EGP</p>
-                                        </div>
-                                        <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm">
-                                            <CheckCircle2 className="h-6 w-6" />
-                                        </div>
-                                    </div>
+                            {/* Service Fee Row */}
+                            {slots.length > 0 && (
+                                <div className="px-4 py-2 flex justify-between items-center text-sm font-bold bg-green-50/50 rounded-xl border border-green-100 text-green-700">
+                                    <span className="uppercase tracking-tight">رسم خدمة (Service Fee)</span>
+                                    <span>{serviceFeePerBooking} EGP</span>
                                 </div>
-                    </div>
+                            )}
 
-                        {!isOwner ? (
-                            <div className="space-y-4 border rounded-lg p-4 bg-yellow-50 border-yellow-200">
-                                <h3 className="font-semibold text-yellow-800">Payment Instructions</h3>
-                                <p className="text-sm text-yellow-700 leading-relaxed font-medium">
-                                    قم بتحويل مبلغ <strong className="text-lg text-yellow-900">{totalPrice} EGP</strong> شامل (سعر الملاعب + {serviceFeePerBooking} ج خدمة) إلى رقم <strong>01000000000 (InstaPay)</strong> وارفع صورة التحويل بالأسفل.
-                                </p>
-                                <div className="space-y-2">
-                                    <Label htmlFor="receipt">Upload Receipt</Label>
-                                    <Input
-                                        type="file"
-                                        id="receipt"
-                                        name="receipt"
-                                        accept="image/*"
-                                        required
-                                        onChange={(e) => {
-                                            const file = e.target.files?.[0];
-                                            if (file) {
-                                                const reader = new FileReader();
-                                                reader.onloadend = () => {
-                                                    setReceiptPreview(reader.result as string);
-                                                };
-                                                reader.readAsDataURL(file);
-                                            }
-                                        }}
-                                    />
-                                    {receiptPreview && (
-                                        <div className="mt-2 relative h-40 w-full border rounded overflow-hidden">
-                                            <img src={receiptPreview} alt="Receipt preview" className="object-contain w-full h-full" />
-                                        </div>
-                                    )}
+                            <div className="mt-2 bg-green-600 p-5 rounded-3xl shadow-xl shadow-green-100 flex justify-between items-center text-white">
+                                <div className="space-y-0.5">
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Total Amount</p>
+                                    <p className="text-3xl font-black tracking-tighter">{totalPrice} EGP</p>
+                                </div>
+                                <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm">
+                                    <CheckCircle2 className="h-6 w-6" />
                                 </div>
                             </div>
-                        ) : (
-                            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800">
-                                <strong>Note:</strong> As an admin/owner, you are blocking this slot manually. No receipt is required.
-                            </div>
-                        )}
-
-                        <div className="flex gap-4">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                className="flex-1 h-12"
-                                onClick={() => setStep(1)}
-                            >
-                                <ChevronLeft className="mr-2 h-4 w-4" />
-                                Back
-                            </Button>
-                            <SubmitButton isOwner={isOwner} canSubmit={true} />
                         </div>
                     </div>
+
+                    {!isOwner ? (
+                        <div className="space-y-4 border rounded-lg p-4 bg-yellow-50 border-yellow-200">
+                            <h3 className="font-semibold text-yellow-800">Payment Instructions</h3>
+                            <p className="text-sm text-yellow-700 leading-relaxed font-medium">
+                                قم بتحويل مبلغ <strong className="text-lg text-yellow-900">{totalPrice} EGP</strong> شامل (سعر الملاعب + {serviceFeePerBooking} ج خدمة) إلى رقم <strong>01000000000 (InstaPay)</strong> وارفع صورة التحويل بالأسفل.
+                            </p>
+                            <div className="space-y-2">
+                                <Label htmlFor="receipt">Upload Receipt</Label>
+                                <Input
+                                    type="file"
+                                    id="receipt"
+                                    name="receipt"
+                                    accept="image/*"
+                                    required
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                            const reader = new FileReader();
+                                            reader.onloadend = () => {
+                                                setReceiptPreview(reader.result as string);
+                                            };
+                                            reader.readAsDataURL(file);
+                                        }
+                                    }}
+                                />
+                                {receiptPreview && (
+                                    <div className="mt-2 relative h-40 w-full border rounded overflow-hidden">
+                                        <img src={receiptPreview} alt="Receipt preview" className="object-contain w-full h-full" />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800">
+                            <strong>Note:</strong> As an admin/owner, you are blocking this slot manually. No receipt is required.
+                        </div>
+                    )}
+
+                    <div className="flex gap-4">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            className="flex-1 h-12"
+                            onClick={() => setStep(1)}
+                        >
+                            <ChevronLeft className="mr-2 h-4 w-4" />
+                            Back
+                        </Button>
+                        <SubmitButton isOwner={isOwner} canSubmit={true} />
+                    </div>
+                </div>
             )}
 
-                    {(error || state?.message) && (
-                        <p className="text-sm mt-2 text-center text-red-500 font-medium">
-                            {error || state?.message}
-                        </p>
-                    )}
-                </form>
-            )
-            }
+            {(error || state?.message) && (
+                <p className="text-sm mt-2 text-center text-red-500 font-medium">
+                    {error || state?.message}
+                </p>
+            )}
+        </form>
+    )
+}
 
-            function SubmitButton({isOwner, canSubmit}: {isOwner: boolean, canSubmit: boolean }) {
-    const {pending} = useFormStatus()
-            return (
-            <Button
-                type="submit"
-                className="w-full h-12 text-base font-semibold"
-                disabled={pending || !canSubmit}
-            >
-                {pending ? "Booking..." : "Confirm & Book Now"}
-            </Button>
-            )
+function SubmitButton({ isOwner, canSubmit }: { isOwner: boolean, canSubmit: boolean }) {
+    const { pending } = useFormStatus()
+    return (
+        <Button
+            type="submit"
+            className="w-full h-12 text-base font-semibold"
+            disabled={pending || !canSubmit}
+        >
+            {pending ? "Booking..." : "Confirm & Book Now"}
+        </Button>
+    )
 }
