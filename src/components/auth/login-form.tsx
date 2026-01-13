@@ -33,8 +33,8 @@ export function LoginForm() {
     return (
         <form action={dispatch} className="space-y-3">
             <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" name="email" placeholder="m@example.com" required />
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input id="phone" type="tel" name="phone" placeholder="01xxxxxxxxx" required />
             </div>
             <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>

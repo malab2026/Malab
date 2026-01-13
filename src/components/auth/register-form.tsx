@@ -17,12 +17,12 @@ export function RegisterForm() {
                 <Input id="name" type="text" name="name" placeholder="John Doe" required />
             </div>
             <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" name="email" placeholder="m@example.com" required />
+                <Label htmlFor="phone">Phone Number <span className="text-red-500">*</span></Label>
+                <Input id="phone" type="tel" name="phone" placeholder="010xxxxxxxxx" required />
             </div>
             <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
-                <Input id="phone" type="tel" name="phone" placeholder="010xxxxxxxxx" required />
+                <Label htmlFor="email">Email <span className="text-gray-400 text-xs font-normal">(Optional)</span></Label>
+                <Input id="email" type="email" name="email" placeholder="m@example.com" />
             </div>
             <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>

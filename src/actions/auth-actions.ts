@@ -9,7 +9,7 @@ import { redirect } from "next/navigation"
 
 const RegisterSchema = z.object({
     name: z.string().min(1, "Name is required"),
-    email: z.string().email("Invalid email address"),
+    email: z.string().email("Invalid email address").optional().or(z.literal('')),
     password: z.string().min(6, "Password must be at least 6 characters"),
     phone: z.string().min(10, "Phone number must be at least 10 digits"),
 })
@@ -20,36 +20,39 @@ export async function registerUser(
 ) {
     const validatedFields = RegisterSchema.safeParse({
         name: formData.get('name'),
-        email: formData.get('email'),
+        email: formData.get('email') || undefined, // Treat empty string as undefined
         password: formData.get('password'),
         phone: formData.get('phone'),
     })
 
     if (!validatedFields.success) {
-        return "Invalid fields. Please check your input."
+        return "Invalid fields. Please check your inputs."
     }
 
     const { name, email, password, phone } = validatedFields.data
 
     try {
         const existingUser = await prisma.user.findUnique({
-            where: { email },
+            where: { phone },
         })
 
         if (existingUser) {
-            return "User with this email already exists."
+            return "User with this phone number already exists."
         }
 
         const hashedPassword = await bcrypt.hash(password, 10)
 
+        // Handle email being undefined/null
+        const userData: any = {
+            name,
+            password: hashedPassword,
+            phone,
+            role: 'user',
+        }
+        if (email) userData.email = email
+
         await prisma.user.create({
-            data: {
-                name,
-                email,
-                password: hashedPassword,
-                phone,
-                role: 'user', // Default role
-            },
+            data: userData,
         })
 
     } catch (error) {
@@ -66,8 +69,8 @@ export async function authenticate(
     formData: FormData,
 ) {
     try {
-        const email = formData.get('email') as string
-        const user = await prisma.user.findUnique({ where: { email } })
+        const phone = formData.get('phone') as string
+        const user = await prisma.user.findUnique({ where: { phone } })
 
         await signIn('credentials', {
             ...Object.fromEntries(formData),

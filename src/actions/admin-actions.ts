@@ -63,11 +63,14 @@ export async function createField(prevState: any, formData: FormData) {
             if (existing) return { message: "User with this email already exists", success: false }
 
             const hashedPassword = await bcrypt.hash(newManagerPassword, 10)
+            // Generate a random phone number for now since it's required
+            const randomPhone = "010" + Math.floor(10000000 + Math.random() * 90000000).toString()
             const newUser = await prisma.user.create({
                 data: {
                     name: newManagerName,
                     email: newManagerEmail,
                     password: hashedPassword,
+                    phone: randomPhone,
                     role: 'owner'
                 }
             })
@@ -222,35 +225,42 @@ export async function assignOwner(fieldId: string, ownerId: string) {
         return { message: "Database Error", success: false }
     }
 }
+const CreateOwnerSchema = z.object({
+    name: z.string().min(1, "Name is required"),
+    email: z.string().email("Invalid email address"),
+    phone: z.string().min(10, "Phone number is required"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+})
+
 export async function createOwnerAccount(prevState: any, formData: FormData) {
     const session = await auth()
-    if (!session || session.user.role !== 'admin') {
+    if (session?.user?.role !== 'admin') {
         return { message: "Unauthorized", success: false }
     }
 
-    const name = formData.get("name") as string
-    const email = formData.get("email") as string
-    const password = formData.get("password") as string
-    const phone = formData.get("phone") as string
+    const validatedFields = CreateOwnerSchema.safeParse({
+        name: formData.get('name'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        password: formData.get('password'),
+    })
 
-    if (!name || !email || !password) {
-        return { message: "Name, email and password are required", success: false }
+    if (!validatedFields.success) {
+        return { message: "Invalid fields", success: false }
     }
 
+    const { name, email, phone, password } = validatedFields.data
+
     try {
-        const existingUser = await prisma.user.findUnique({ where: { email } })
-        if (existingUser) return { message: "User already exists", success: false }
-
         const hashedPassword = await bcrypt.hash(password, 10)
-
         await prisma.user.create({
             data: {
                 name,
                 email,
-                password: hashedPassword,
                 phone,
-                role: 'owner'
-            }
+                password: hashedPassword,
+                role: 'owner',
+            },
         })
 
         revalidatePath('/admin')

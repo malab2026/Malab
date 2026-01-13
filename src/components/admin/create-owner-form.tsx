@@ -23,12 +23,12 @@ export function CreateOwnerForm() {
                         <Input id="owner-name" name="name" placeholder="Owner Name" required />
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="owner-email">Email</Label>
-                        <Input id="owner-email" name="email" type="email" placeholder="owner@example.com" required />
+                        <Label htmlFor="phone">Phone Number</Label>
+                        <Input id="phone" name="phone" placeholder="01xxxxxxxxx" required />
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="owner-phone">Phone Number</Label>
-                        <Input id="owner-phone" name="phone" placeholder="010..." />
+                        <Label htmlFor="email">Email</Label>
+                        <Input id="email" name="email" type="email" placeholder="owner@example.com" required />
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="owner-password">Temporary Password</Label>

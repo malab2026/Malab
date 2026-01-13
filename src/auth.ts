@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs"
 import { z } from "zod"
 import { authConfig } from "./auth.config"
 
-if (!process.env.AUTH_SECRET) process.env.AUTH_SECRET = "7f8a9b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z"
+if (!process.env.AUTH_SECRET) process.env.AUTH_SECRET = "force-logout-new-secret-v2-phone-auth-update"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
     ...authConfig,
@@ -15,20 +15,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         Credentials({
             name: "Credentials",
             credentials: {
-                email: { label: "Email", type: "email" },
+                phone: { label: "Phone Number", type: "text" },
                 password: { label: "Password", type: "password" },
             },
             authorize: async (credentials) => {
                 const parsedCredentials = z
-                    .object({ email: z.string().email(), password: z.string().min(6) })
+                    .object({ phone: z.string().min(10), password: z.string().min(6) })
                     .safeParse(credentials);
 
                 if (parsedCredentials.success) {
-                    const { email, password } = parsedCredentials.data;
-                    console.log(`[Auth] Login Attempt: ${email}`);
+                    const { phone, password } = parsedCredentials.data;
+                    console.log(`[Auth] Login Attempt: ${phone}`);
 
                     const user = await prisma.user.findUnique({
-                        where: { email },
+                        where: { phone },
                     });
 
                     if (!user) {
