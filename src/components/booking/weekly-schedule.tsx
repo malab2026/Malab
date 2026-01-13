@@ -86,23 +86,20 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
 
     return (
         <div className="space-y-6">
-            {/* Header / Week Navigation */}
-            <div className="flex items-center justify-between bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
-                <Button variant="outline" size="sm" onClick={goToToday} className="font-bold border-green-200 text-green-700 hover:bg-green-50 flex items-center gap-1.5">
-                    <Calendar className="h-4 w-4" />
-                    Today
-                </Button>
-                <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="icon" onClick={() => navigateWeek('prev')} className="h-8 w-8">
-                        <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <span className="text-xs font-black text-gray-700 min-w-[120px] text-center uppercase tracking-tight">
-                        {format(weekDays[0], 'MMM d')} - {format(weekDays[6], 'MMM d')}
-                    </span>
-                    <Button variant="ghost" size="icon" onClick={() => navigateWeek('next')} className="h-8 w-8">
-                        <ChevronRight className="h-4 w-4" />
-                    </Button>
+            {/* Header - Simple Title, No Navigation */}
+            <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                <div className="flex items-center gap-3">
+                    <div className="bg-green-100 p-2 rounded-lg">
+                        <Calendar className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-black text-gray-800 uppercase tracking-tight">Booking Schedule</h3>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{format(weekDays[0], 'MMM d')} - {format(weekDays[6], 'MMM d')}</p>
+                    </div>
                 </div>
+                <Button variant="ghost" size="sm" onClick={goToToday} className="text-[10px] font-black uppercase tracking-widest text-green-600 hover:bg-green-50">
+                    RESET TO TODAY
+                </Button>
             </div>
 
             {/* Horizontal Day Picker */}
@@ -113,6 +110,7 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
                     return (
                         <button
                             key={i}
+                            type="button"
                             onClick={() => setSelectedDay(day)}
                             className={cn(
                                 "flex flex-col items-center justify-center min-w-[70px] rounded-2xl border transition-all active:scale-95 snap-start",
@@ -162,30 +160,34 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
                                 onClick={() => handleSlotClick(selectedDay, time)}
                                 className={cn(
                                     "relative h-16 rounded-2xl border text-xs font-black transition-all flex flex-col items-center justify-center gap-1.5",
-                                    booked ? "bg-red-50 border-red-100 text-red-300 cursor-not-allowed" :
-                                        selected ? "bg-green-600 border-green-600 text-white shadow-lg scale-[1.05] z-10" :
+                                    booked ? "bg-red-600 border-red-700 text-white cursor-not-allowed shadow-sm" :
+                                        selected ? "bg-blue-600 border-blue-700 text-white shadow-lg scale-[1.05] z-10" :
                                             past ? "bg-gray-50 border-gray-100 text-gray-300 cursor-default" :
-                                                "bg-white border-gray-100 text-gray-700 hover:border-green-400 hover:bg-green-50 active:scale-95"
+                                                "bg-green-500 border-green-600 text-white hover:bg-green-600 active:scale-95 shadow-sm"
                                 )}
                             >
-                                <Timer className={cn("h-4 w-4", selected ? "text-green-200" : (booked ? "text-red-200" : "text-gray-400"))} />
+                                <Timer className={cn("h-4 w-4", (selected || booked || !past) ? "text-white/80" : "text-gray-400")} />
                                 {formatTimeDisplay(time)}
-                                {booked && <span className="absolute -top-1 -right-1 text-[8px] bg-red-600 text-white px-2 py-0.5 rounded-full border-2 border-white font-bold leading-none">FULL</span>}
+                                {booked && <span className="absolute -top-1 -right-1 text-[8px] bg-white text-red-600 px-2 py-0.5 rounded-full border-2 border-red-600 font-bold leading-none">BOOKED</span>}
                             </button>
                         )
                     })}
                 </div>
 
-                {/* Improved Legend */}
+                {/* Optimized Legend */}
                 <div className="flex justify-between items-center pt-6 border-t border-gray-100">
                     <div className="flex gap-4">
                         <div className="flex items-center gap-1.5">
-                            <div className="w-2.5 h-2.5 rounded-full bg-green-600 shadow-sm"></div>
-                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">Your Pick</span>
+                            <div className="w-3 h-3 rounded bg-green-500 shadow-sm"></div>
+                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">Available</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                            <div className="w-2.5 h-2.5 rounded-full bg-red-50 border border-red-100"></div>
+                            <div className="w-3 h-3 rounded bg-red-600 shadow-sm"></div>
                             <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">Occupied</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <div className="w-3 h-3 rounded bg-blue-600 shadow-sm"></div>
+                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">Selected</span>
                         </div>
                     </div>
                 </div>
