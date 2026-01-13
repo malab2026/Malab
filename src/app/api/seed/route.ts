@@ -14,7 +14,8 @@ export async function GET() {
             where: { email: adminEmail },
             update: {
                 password: adminPassword,
-                role: 'admin' // Ensure role is admin
+                role: 'admin', // Ensure role is admin
+                phone: '01000000000',
             },
             create: {
                 email: adminEmail,
