@@ -129,11 +129,11 @@ export function BookingForm({ field, userRole, initialBookings = [] }: { field: 
                         </div>
                     )}
 
-                    <Card className="bg-green-600 border-green-700 shadow-md">
-                        <CardContent className="py-4">
-                            <div className="flex justify-between items-center text-lg font-bold text-white">
-                                <span className="flex items-center gap-2">
-                                    Total Price:
+                    <Card className="bg-green-600 border-green-700 shadow-xl scale-105 mx-2">
+                        <CardContent className="py-6">
+                            <div className="flex justify-between items-center text-2xl font-black text-white">
+                                <span className="flex items-center gap-3">
+                                    Total:
                                 </span>
                                 <span>{totalPrice} EGP</span>
                             </div>
@@ -142,14 +142,14 @@ export function BookingForm({ field, userRole, initialBookings = [] }: { field: 
 
                     <Button
                         type="button"
-                        className="w-full h-12 text-base font-bold bg-green-600 hover:bg-green-700 shadow-lg"
+                        className="w-full h-16 text-xl font-black bg-green-600 hover:bg-green-700 shadow-2xl active:scale-95 transition-all mt-4 border-b-4 border-green-800"
                         disabled={isChecking || slots.length === 0}
                         onClick={handleNextStep}
                     >
                         {isChecking ? "Checking availability..." : (
                             <>
-                                Next: Payment Instructions
-                                <ChevronRight className="ml-2 h-4 w-4" />
+                                NEXT: PAYMENT
+                                <ChevronRight className="ml-2 h-6 w-6 stroke-[3]" />
                             </>
                         )}
                     </Button>
