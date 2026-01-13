@@ -22,8 +22,10 @@ export function BookingForm({ field, userRole, initialBookings = [] }: { field: 
 
     const isOwner = userRole === 'owner' || userRole === 'admin'
 
+    const serviceFeePerSlot = 10
+
     const totalPrice = useMemo(() => {
-        return slots.reduce((acc, slot) => acc + (field.pricePerHour * slot.duration), 0)
+        return slots.reduce((acc, slot) => acc + (field.pricePerHour * slot.duration) + serviceFeePerSlot, 0)
     }, [slots, field.pricePerHour])
 
     const handleSlotSelect = (slot: any) => {
@@ -170,12 +172,17 @@ export function BookingForm({ field, userRole, initialBookings = [] }: { field: 
                         <h3 className="text-sm font-semibold text-gray-700 px-1">Booking Summary</h3>
                         <div className="grid gap-2">
                             {slots.map((slot, idx) => (
-                                <div key={idx} className="flex justify-between text-sm py-1 border-b border-gray-100 last:border-0">
-                                    <span className="text-gray-600">{slot.date} @ {formatTime(slot.startTime)}</span>
-                                    <span className="font-medium">{slot.duration * field.pricePerHour} EGP</span>
+                                <div key={idx} className="space-y-1 py-2 border-b border-gray-100 last:border-0">
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-gray-600 font-medium">{slot.date} @ {formatTime(slot.startTime)}</span>
+                                        <span className="font-bold text-gray-900">{slot.duration * field.pricePerHour + serviceFeePerSlot} EGP</span>
+                                    </div>
+                                    <div className="flex justify-between text-[11px] text-gray-400 font-bold uppercase tracking-tighter">
+                                        <span>Field: {slot.duration * field.pricePerHour} | Service: {serviceFeePerSlot}</span>
+                                    </div>
                                 </div>
                             ))}
-                            <div className="flex justify-between pt-2 mt-2 border-t border-gray-200 font-bold text-lg">
+                            <div className="flex justify-between pt-4 mt-2 border-t-2 border-dashed border-gray-200 font-black text-2xl text-green-700">
                                 <span>Total:</span>
                                 <span>{totalPrice} EGP</span>
                             </div>

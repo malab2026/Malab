@@ -43,6 +43,8 @@ model Booking {
   endTime               DateTime
   status                String    @default("PENDING") // PENDING, CONFIRMED, REJECTED, CANCEL_REQUESTED, CANCELLED
   receiptUrl            String?
+  serviceFee            Float     @default(10.0)
+  totalPrice            Float
   cancellationReason    String?
   refundAmount          Float?
   cancellationAdminNote String?

@@ -126,6 +126,9 @@ export async function createBooking(prevState: any, formData: FormData) {
         }
 
         const { fieldId, slots } = validatedFields.data
+        const field = await prisma.field.findUnique({ where: { id: fieldId }, select: { pricePerHour: true } })
+        if (!field) return { message: "Field not found." }
+
         const bookingData: any[] = []
 
         for (const slot of slots) {
@@ -151,12 +154,18 @@ export async function createBooking(prevState: any, formData: FormData) {
                 return { message: `Slot at ${slot.startTime} on ${slot.date} is already taken.` }
             }
 
+            const serviceFee = 10.0
+            const slotPrice = field.pricePerHour * slot.duration
+            const totalPrice = slotPrice + serviceFee
+
             bookingData.push({
                 userId: session.user.id,
                 fieldId,
                 startTime: startDateTime,
                 endTime: endDateTime,
-                status: session.user.role === "admin" ? "CONFIRMED" : "PENDING"
+                status: session.user.role === "admin" ? "CONFIRMED" : "PENDING",
+                serviceFee,
+                totalPrice
             })
         }
 
