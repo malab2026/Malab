@@ -85,8 +85,11 @@ export async function authenticate(
         await signIn('credentials', {
             phone: phone.trim(),
             password,
-            redirectTo: user?.role === 'admin' ? '/admin' : (user?.role === 'owner' ? '/owner' : '/fields'),
+            redirect: false,
         })
+
+        const redirectUrl = user?.role === 'admin' ? '/admin' : (user?.role === 'owner' ? '/owner' : '/fields')
+        return { redirectUrl }
 
     } catch (error) {
         if (error instanceof AuthError) {
