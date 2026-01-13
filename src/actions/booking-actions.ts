@@ -159,7 +159,13 @@ export async function createBooking(prevState: any, formData: FormData) {
                 update: {},
                 create: { id: 'global', serviceFee: 10.0 }
             })
-            const serviceFee = settings.serviceFee
+            const globalServiceFee = settings.serviceFee
+
+            // Calculate total price for the entire booking to store consistently
+            // However, since we store each slot as a row, we'll apply the fee to the FIRST slot
+            // and the others will have 0 service fee, making the total sum correct.
+            const isFirstSlot = bookingData.length === 0
+            const serviceFee = isFirstSlot ? globalServiceFee : 0
             const slotPrice = field.pricePerHour * slot.duration
             const totalPrice = slotPrice + serviceFee
 

@@ -23,7 +23,7 @@ export function BookingForm({
 }) {
     const [step, setStep] = useState(1)
     const [slots, setSlots] = useState<any[]>([])
-    const serviceFeePerSlot = initialServiceFee
+    const serviceFeePerBooking = initialServiceFee
 
     // Receipt state and other existing states
     const [state, dispatch] = useActionState(createBooking, null)
@@ -34,8 +34,9 @@ export function BookingForm({
     const isOwner = userRole === 'owner' || userRole === 'admin'
 
     const totalPrice = useMemo(() => {
-        return slots.reduce((acc, slot) => acc + (field.pricePerHour * slot.duration) + serviceFeePerSlot, 0)
-    }, [slots, field.pricePerHour])
+        const pitchSubtotal = slots.reduce((acc, slot) => acc + (field.pricePerHour * slot.duration), 0)
+        return pitchSubtotal + (slots.length > 0 ? serviceFeePerBooking : 0)
+    }, [slots, field.pricePerHour, serviceFeePerBooking])
 
     const handleSlotSelect = (slot: any) => {
         setSlots(prev => [...prev, slot])
@@ -227,7 +228,7 @@ export function BookingForm({
                         <div className="space-y-4 border rounded-lg p-4 bg-yellow-50 border-yellow-200">
                             <h3 className="font-semibold text-yellow-800">Payment Instructions</h3>
                             <p className="text-sm text-yellow-700 leading-relaxed font-medium">
-                                قم بتحويل مبلغ <strong className="text-lg text-yellow-900">{totalPrice} EGP</strong> شامل (سعر الملعب + {serviceFeePerSlot} ج خدمة) إلى رقم <strong>01000000000 (InstaPay)</strong> وارفع صورة التحويل بالأسفل.
+                                قم بتحويل مبلغ <strong className="text-lg text-yellow-900">{totalPrice} EGP</strong> شامل (سعر الملاعب + {serviceFeePerBooking} ج خدمة) إلى رقم <strong>01000000000 (InstaPay)</strong> وارفع صورة التحويل بالأسفل.
                             </p>
                             <div className="space-y-2">
                                 <Label htmlFor="receipt">Upload Receipt</Label>
