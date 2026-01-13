@@ -195,20 +195,10 @@ export function BookingForm({
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-lg font-black text-green-700">{slot.duration * field.pricePerHour + serviceFeePerSlot} EGP</p>
+                                            <p className="text-lg font-black text-gray-900">{slot.duration * field.pricePerHour} EGP</p>
                                         </div>
                                     </div>
 
-                                    <div className="pt-2 border-t border-gray-200/60 space-y-2">
-                                        <div className="flex justify-between items-center text-[12px] font-bold">
-                                            <span className="text-gray-500 uppercase tracking-tight">سعر الملعب (Pitch Price)</span>
-                                            <span className="text-gray-900">{slot.duration * field.pricePerHour} EGP</span>
-                                        </div>
-                                        <div className="flex justify-between items-center text-[12px] font-bold">
-                                            <span className="text-gray-500 uppercase tracking-tight">رسم الخدمة (Service Fee)</span>
-                                            <span className="text-green-600 font-black">+ {serviceFeePerSlot} EGP</span>
-                                        </div>
-                                    </div>
                                 </div>
                             ))}
 
