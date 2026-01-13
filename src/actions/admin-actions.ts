@@ -427,3 +427,45 @@ export async function getFinancialReport(filters: { startDate?: string, endDate?
 
     return report
 }
+
+export async function getServiceFee() {
+    try {
+        const settings = await prisma.globalSettings.upsert({
+            where: { id: 'global' },
+            update: {},
+            create: { id: 'global', serviceFee: 10.0 }
+        })
+        return { success: true, serviceFee: settings.serviceFee }
+    } catch (e) {
+        console.error(e)
+        return { success: false, message: "Failed to fetch service fee" }
+    }
+}
+
+export async function updateServiceFee(prevState: any, formData: FormData) {
+    const session = await auth()
+
+    if (!session || session.user.role !== 'admin') {
+        return { message: "Unauthorized", success: false }
+    }
+
+    const serviceFee = parseFloat(formData.get("serviceFee") as string)
+
+    if (isNaN(serviceFee)) {
+        return { message: "Invalid service fee amount", success: false }
+    }
+
+    try {
+        await prisma.globalSettings.upsert({
+            where: { id: 'global' },
+            update: { serviceFee },
+            create: { id: 'global', serviceFee }
+        })
+
+        revalidatePath('/admin')
+        return { message: "Service fee updated successfully", success: true }
+    } catch (e) {
+        console.error(e)
+        return { message: "Database Error", success: false }
+    }
+}

@@ -15,6 +15,7 @@ export const dynamic = 'force-dynamic'
 import { AddFieldForm } from "@/components/admin/add-field-form"
 import { CreateOwnerForm } from "@/components/admin/create-owner-form"
 import { ProcessCancellationDialog } from "@/components/admin/process-cancellation-dialog"
+import { ServiceFeeForm } from "@/components/admin/service-fee-form"
 
 export default async function AdminPage() {
     const session = await auth()
@@ -29,7 +30,8 @@ export default async function AdminPage() {
         historyBookings,
         fields,
         owners,
-        users
+        users,
+        settings
     ] = await Promise.all([
         prisma.booking.findMany({
             where: { status: 'PENDING' },
@@ -93,8 +95,15 @@ export default async function AdminPage() {
         prisma.user.findMany({
             orderBy: { createdAt: 'desc' },
             select: { id: true, name: true, email: true, role: true, createdAt: true }
+        }),
+        prisma.globalSettings.upsert({
+            where: { id: 'global' },
+            update: {},
+            create: { id: 'global', serviceFee: 10.0 }
         })
     ]) as any
+
+    const initialServiceFee = settings?.serviceFee ?? 10
 
     return (
         <main className="min-h-screen pb-10">
@@ -129,7 +138,8 @@ export default async function AdminPage() {
                             </h2>
                         </div>
                         <div className="grid lg:grid-cols-3 gap-8">
-                            <div className="lg:col-span-1">
+                            <div className="lg:col-span-1 space-y-8">
+                                <ServiceFeeForm initialFee={initialServiceFee} />
                                 <CreateOwnerForm />
                             </div>
                             <div className="lg:col-span-2">

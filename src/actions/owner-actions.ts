@@ -57,6 +57,8 @@ export async function blockSlot(fieldId: string, date: string, hour: number, dur
                 startTime,
                 endTime,
                 status: "BLOCKED",
+                serviceFee: 0,
+                totalPrice: 0,
             }
         })
 

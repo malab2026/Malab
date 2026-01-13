@@ -154,7 +154,12 @@ export async function createBooking(prevState: any, formData: FormData) {
                 return { message: `Slot at ${slot.startTime} on ${slot.date} is already taken.` }
             }
 
-            const serviceFee = 10.0
+            const settings = await prisma.globalSettings.upsert({
+                where: { id: 'global' },
+                update: {},
+                create: { id: 'global', serviceFee: 10.0 }
+            })
+            const serviceFee = settings.serviceFee
             const slotPrice = field.pricePerHour * slot.duration
             const totalPrice = slotPrice + serviceFee
 

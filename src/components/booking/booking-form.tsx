@@ -10,9 +10,20 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Trash2, Timer, Calendar, ChevronRight, ChevronLeft, CheckCircle2, AlertCircle } from "lucide-react"
 import { WeeklySchedule } from "./weekly-schedule"
 
-export function BookingForm({ field, userRole, initialBookings = [] }: { field: any, userRole: string, initialBookings?: any[] }) {
+export function BookingForm({
+    field,
+    userRole,
+    initialBookings = [],
+    serviceFee: initialServiceFee = 10
+}: {
+    field: any,
+    userRole: string,
+    initialBookings?: any[],
+    serviceFee?: number
+}) {
     const [step, setStep] = useState(1)
     const [slots, setSlots] = useState<any[]>([])
+    const serviceFeePerSlot = initialServiceFee
 
     // Receipt state and other existing states
     const [state, dispatch] = useActionState(createBooking, null)
@@ -21,8 +32,6 @@ export function BookingForm({ field, userRole, initialBookings = [] }: { field: 
     const [receiptPreview, setReceiptPreview] = useState<string | null>(null)
 
     const isOwner = userRole === 'owner' || userRole === 'admin'
-
-    const serviceFeePerSlot = 10
 
     const totalPrice = useMemo(() => {
         return slots.reduce((acc, slot) => acc + (field.pricePerHour * slot.duration) + serviceFeePerSlot, 0)

@@ -52,3 +52,9 @@ model Booking {
   field                 Field     @relation(fields: [fieldId], references: [id], onDelete: Cascade)
   user                  User      @relation(fields: [userId], references: [id])
 }
+
+model GlobalSettings {
+  id         String   @id @default("global")
+  serviceFee Float    @default(10.0)
+  updatedAt  DateTime @updatedAt
+}

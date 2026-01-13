@@ -39,6 +39,14 @@ export default async function FieldDetailsPage({ params }: { params: Promise<{ i
     const bookingsResult = await getFieldBookings(field.id, startDate, endDate)
     const initialBookings = bookingsResult.success ? bookingsResult.bookings : []
 
+    // Fetch dynamic service fee
+    const settings = await prisma.globalSettings.upsert({
+        where: { id: 'global' },
+        update: {},
+        create: { id: 'global', serviceFee: 10.0 }
+    })
+    const serviceFee = settings.serviceFee
+
     return (
         <main className="min-h-screen pb-10 bg-gray-50/30">
             <Navbar />
@@ -91,7 +99,12 @@ export default async function FieldDetailsPage({ params }: { params: Promise<{ i
                                 Reserve Your Slot
                             </h2>
                         </div>
-                        <BookingForm field={field} userRole={session.user.role} initialBookings={initialBookings} />
+                        <BookingForm
+                            field={field}
+                            userRole={session.user.role}
+                            initialBookings={initialBookings}
+                            serviceFee={serviceFee}
+                        />
                     </div>
 
                     {/* About Section */}
