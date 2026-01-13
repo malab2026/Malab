@@ -70,16 +70,14 @@ export async function authenticate(
 ) {
     try {
         const phone = formData.get('phone') as string
-        const user = await prisma.user.findUnique({ where: { phone } })
+        const password = formData.get('password') as string
+        const user = await prisma.user.findUnique({ where: { phone: phone.trim() } })
 
         await signIn('credentials', {
-            ...Object.fromEntries(formData),
-            redirect: false,
+            phone: phone.trim(),
+            password,
+            redirectTo: user?.role === 'admin' ? '/admin' : (user?.role === 'owner' ? '/owner' : '/fields'),
         })
-
-        if (user?.role === 'admin') return { redirectUrl: '/admin' }
-        if (user?.role === 'owner') return { redirectUrl: '/owner' }
-        return { redirectUrl: '/' }
 
     } catch (error) {
         if (error instanceof AuthError) {

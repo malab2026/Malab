@@ -9,15 +9,19 @@ export async function GET() {
         const adminEmail = 'admin@malaeb.com';
         const adminPassword = await bcrypt.hash('admin123', 10);
 
-        // Create or Update Admin
-        const admin = await prisma.user.upsert({
-            where: { email: adminEmail },
-            update: {
-                password: adminPassword,
-                role: 'admin', // Ensure role is admin
-                phone: '01000000000',
-            },
-            create: {
+        // Delete any existing admin with this email or phone to ensure clean state
+        await prisma.user.deleteMany({
+            where: {
+                OR: [
+                    { email: adminEmail },
+                    { phone: '01000000000' }
+                ]
+            }
+        });
+
+        // Create Admin Fresh
+        const admin = await prisma.user.create({
+            data: {
                 email: adminEmail,
                 name: 'Admin User',
                 password: adminPassword,

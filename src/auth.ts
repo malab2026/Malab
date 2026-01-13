@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs"
 import { z } from "zod"
 import { authConfig } from "./auth.config"
 
-if (!process.env.AUTH_SECRET) process.env.AUTH_SECRET = "force-logout-new-secret-v2-phone-auth-update"
+if (!process.env.AUTH_SECRET) process.env.AUTH_SECRET = "malaeb-secret-v3-rotated-for-phone-auth"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
     ...authConfig,
@@ -25,10 +25,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
                 if (parsedCredentials.success) {
                     const { phone, password } = parsedCredentials.data;
-                    console.log(`[Auth] Login Attempt: ${phone}`);
+                    const cleanPhone = phone.trim();
+                    console.log(`[Auth] Login Attempt: ${cleanPhone}`);
 
                     const user = await prisma.user.findUnique({
-                        where: { phone },
+                        where: { phone: cleanPhone },
                     });
 
                     if (!user) {
