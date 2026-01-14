@@ -15,14 +15,17 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 
+import { useTranslation } from "@/components/providers/locale-context"
+
 export function CancellationRequestButton({ bookingId }: { bookingId: string }) {
+    const { t } = useTranslation()
     const [reason, setReason] = useState("")
     const [open, setOpen] = useState(false)
     const [pending, setPending] = useState(false)
 
     async function handleRequest() {
         if (!reason.trim()) {
-            toast.error("Please provide a reason for cancellation")
+            toast.error(t('reasonRequired'))
             return
         }
 
@@ -41,26 +44,26 @@ export function CancellationRequestButton({ bookingId }: { bookingId: string }) 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="destructive" size="sm">Request Cancellation</Button>
+                <Button variant="destructive" size="sm">{t('requestCancellation')}</Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Request Cancellation</DialogTitle>
+                    <DialogTitle>{t('requestCancellation')}</DialogTitle>
                     <DialogDescription>
-                        Please explain why you want to cancel this booking. Your request will be reviewed by the admin.
+                        {t('cancellationNote')}
                     </DialogDescription>
                 </DialogHeader>
                 <div className="py-4">
                     <Textarea
-                        placeholder="Type your reason here..."
+                        placeholder={t('reasonPlaceholder')}
                         value={reason}
                         onChange={(e) => setReason(e.target.value)}
                     />
                 </div>
                 <DialogFooter>
-                    <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
+                    <Button variant="ghost" onClick={() => setOpen(false)}>{t('cancel')}</Button>
                     <Button variant="destructive" onClick={handleRequest} disabled={pending}>
-                        {pending ? "Sending..." : "Submit Request"}
+                        {pending ? t('sending') : t('submitRequest')}
                     </Button>
                 </DialogFooter>
             </DialogContent>

@@ -25,8 +25,8 @@ export function HomeClient({ session, sortedFields, bookedFieldIds }: any) {
                 </div>
 
                 <div className="relative z-20 space-y-4 max-w-4xl px-4 animate-in fade-in slide-in-from-bottom-5 duration-700">
-                    <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
-                        {t('heroTitle')} <span className="text-green-400">Booking</span>
+                    <h1 className="text-6xl md:text-8xl font-black text-white tracking-tighter leading-none mb-6">
+                        {t('heroTitle')} <span className="text-green-400">{t('bookingHistory').split(' ')[0]}</span>
                     </h1>
                     <p className="text-xl md:text-2xl text-gray-200 font-medium">
                         {t('heroSubtitle')}

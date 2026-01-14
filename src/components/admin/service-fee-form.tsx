@@ -8,7 +8,10 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Settings, CheckCircle2, AlertCircle } from "lucide-react"
 
+import { useTranslation } from "@/components/providers/locale-context"
+
 export function ServiceFeeForm({ initialFee }: { initialFee: number }) {
+    const { t } = useTranslation()
     const [state, dispatch] = useActionState(updateServiceFee, null)
 
     return (
@@ -16,17 +19,17 @@ export function ServiceFeeForm({ initialFee }: { initialFee: number }) {
             <CardHeader className="bg-green-50/50 pb-4">
                 <CardTitle className="text-lg flex items-center gap-2 text-green-900">
                     <Settings className="h-5 w-5" />
-                    Global Settings
+                    {t('serviceFeeConfig')}
                 </CardTitle>
                 <CardDescription className="text-xs font-medium text-green-700/70">
-                    Configure platform-wide booking parameters
+                    {t('serviceFeeConfigDesc')}
                 </CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
                 <form action={dispatch} className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="serviceFee" className="text-sm font-bold text-gray-700">
-                            Booking Service Fee (EGP)
+                            {t('serviceFeeLabel')}
                         </Label>
                         <div className="relative">
                             <Input
@@ -39,11 +42,11 @@ export function ServiceFeeForm({ initialFee }: { initialFee: number }) {
                                 required
                             />
                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">
-                                £
+                                {t('egp')}
                             </span>
                         </div>
                         <p className="text-[10px] text-gray-400 font-medium">
-                            * This fee is added to every booking slot created by users.
+                            {t('serviceFeeHelp')}
                         </p>
                     </div>
 
@@ -55,7 +58,7 @@ export function ServiceFeeForm({ initialFee }: { initialFee: number }) {
                     )}
 
                     <Button type="submit" className="w-full h-12 bg-green-600 hover:bg-green-700 text-white font-bold shadow-md transition-all active:scale-95">
-                        Save Changes
+                        {t('saveChanges')}
                     </Button>
                 </form>
             </CardContent>

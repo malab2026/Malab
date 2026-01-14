@@ -76,6 +76,21 @@ export const translations = {
         optional: "اختياري - للإيصالات واستعادة الحساب",
         alreadyHaveAccount: "لديك حساب بالفعل؟",
         creatingAccount: "جاري إنشاء الحساب...",
+
+        // Management & Edit
+        date: "التاريخ",
+        startTime: "وقت البدء",
+        duration: "المدة",
+        hoursCount: "ساعة",
+        pricePerHourLabel: "السعر لكل ساعة:",
+        newTotal: "الإجمالي الجديد:",
+        editBookingNote: "ملحوظة: تعديل الحجز سيبقيه في حالة 'قيد الانتظار' حتى تتم مراجعته من قبل صاحب الملعب.",
+        cancel: "إلغاء",
+        saveChanges: "حفظ التعديلات",
+        updating: "جاري التحديث...",
+        requestCancellation: "طلب إلغاء",
+        cancellationReason: "سبب الإلغاء",
+        cancellationNote: "يُرجى توضيح سبب رغبتك في إلغاء هذا الحجز. سيتم مراجعة طلبك من قبل الأدمن.",
     },
     en: {
         // Navbar
@@ -154,6 +169,31 @@ export const translations = {
         optional: "Optional - for receipts & recovery",
         alreadyHaveAccount: "Already have an account?",
         creatingAccount: "Creating account...",
+
+        // Management & Edit
+        date: "Date",
+        startTime: "Start Time",
+        duration: "Duration",
+        hoursCount: "Hour(s)",
+        pricePerHourLabel: "Price per hour:",
+        newTotal: "New Total:",
+        editBookingNote: "Note: Editing a booking will keep it in PENDING status until reviewed by the field owner.",
+        cancel: "Cancel",
+        saveChanges: "Save Changes",
+        updating: "Updating...",
+        requestCancellation: "Request Cancellation",
+        cancellationReason: "Cancellation Reason",
+        cancellationNote: "Please explain why you want to cancel this booking. Your request will be reviewed by the admin.",
+        sending: "Sending...",
+        submitRequest: "Submit Request",
+        reasonPlaceholder: "Type your reason here...",
+        reasonRequired: "Please provide a reason for cancellation",
+
+        // Admin
+        serviceFeeConfig: "Service Fee Configuration",
+        serviceFeeConfigDesc: "Configure platform-wide booking parameters",
+        serviceFeeLabel: "Booking Service Fee (EGP)",
+        serviceFeeHelp: "* This fee is added to every booking slot created by users.",
     }
 };
 
