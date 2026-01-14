@@ -31,18 +31,30 @@ async function main() {
             pricePerHour: 200,
             description: 'Professional grass turf, floodlights available.',
             imageUrl: 'https://images.unsplash.com/photo-1529900748604-07564a03e7a6?q=80&w=2070&auto=format&fit=crop',
+            area: 'Cairo',
+            lat: 30.0444,
+            lng: 31.2357,
+            address: 'Cairo, Egypt'
         },
         {
             name: 'Camp Nou (7-a-side)',
             pricePerHour: 300,
             description: 'Wide pitch, excellent for larger teams.',
             imageUrl: 'https://images.unsplash.com/photo-1459865264687-595d652de67e?q=80&w=2070&auto=format&fit=crop',
+            area: 'Giza',
+            lat: 30.0131,
+            lng: 31.2089,
+            address: 'Giza, Egypt'
         },
         {
             name: 'Anfield (5-a-side)',
             pricePerHour: 180,
             description: 'Cozy pitch, great atmosphere.',
             imageUrl: 'https://images.unsplash.com/photo-1556056504-5c7696c4c28d?q=80&w=2076&auto=format&fit=crop',
+            area: 'Cairo',
+            lat: 30.0626,
+            lng: 31.2497,
+            address: 'Nasr City, Cairo'
         },
     ]
 

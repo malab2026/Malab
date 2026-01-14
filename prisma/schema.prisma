@@ -26,6 +26,9 @@ model Field {
   pricePerHour       Float
   description        String?
   address            String?
+  area               String?
+  lat                Float?
+  lng                Float?
   locationUrl        String?
   imageUrl           String?
   cancellationPolicy String?   @default("No cancellation policy specified.")

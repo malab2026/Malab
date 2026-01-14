@@ -91,6 +91,16 @@ export const translations = {
         requestCancellation: "طلب إلغاء",
         cancellationReason: "سبب الإلغاء",
         cancellationNote: "يُرجى توضيح سبب رغبتك في إلغاء هذا الحجز. سيتم مراجعة طلبك من قبل الأدمن.",
+
+        // Filters
+        searchByName: "ابحث باسم الملعب...",
+        allAreas: "كل المناطق",
+        nearest: "الأقرب ليك",
+        filterBy: "تصفية حسب",
+        area: "المنطقة",
+        noFieldsFound: "لم يتم العثور على ملاعب تطابق بحثك.",
+        distance: "على بعد",
+        km: "كم",
     },
     en: {
         // Navbar
@@ -188,6 +198,16 @@ export const translations = {
         submitRequest: "Submit Request",
         reasonPlaceholder: "Type your reason here...",
         reasonRequired: "Please provide a reason for cancellation",
+
+        // Filters
+        searchByName: "Search by pitch name...",
+        allAreas: "All Areas",
+        nearest: "Nearest to you",
+        filterBy: "Filter by",
+        area: "Area",
+        noFieldsFound: "No fields found matching your search.",
+        distance: "is",
+        km: "km away",
 
         // Admin
         serviceFeeConfig: "Service Fee Configuration",
