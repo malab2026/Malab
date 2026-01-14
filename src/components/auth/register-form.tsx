@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { useTranslation } from "@/components/providers/locale-context"
 
 export function RegisterForm() {
-    const { t } = useTranslation()
+    const { t, locale } = useTranslation()
     const [errorMessage, dispatch] = useActionState(registerUser, undefined)
 
     return (
