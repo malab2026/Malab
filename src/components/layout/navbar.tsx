@@ -36,7 +36,7 @@ export async function Navbar() {
                             )}
 
                             <Button variant="secondary" className={buttonClass} asChild>
-                                <Link href="/download">📥 Download</Link>
+                                <Link href="/dashboard">📅 Booking History</Link>
                             </Button>
 
                             <form action={handleSignOut}>
