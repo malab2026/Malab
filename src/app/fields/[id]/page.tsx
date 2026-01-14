@@ -89,6 +89,23 @@ export default async function FieldDetailsPage({ params }: { params: Promise<{ i
                                 )}
                             </div>
                         </div>
+
+                        {/* About Section */}
+                        <div className="bg-white p-6 md:p-10 rounded-2xl shadow-sm border border-gray-100">
+                            <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                📖 About this Field
+                            </h3>
+                            <p className="text-gray-600 leading-relaxed mb-8 text-lg">{field.description}</p>
+
+                            <div className="p-6 bg-orange-50 border border-orange-100 rounded-2xl">
+                                <h4 className="text-orange-900 font-bold mb-3 flex items-center gap-2 text-lg">
+                                    🛡️ Cancellation Policy
+                                </h4>
+                                <p className="text-orange-800/80 leading-relaxed whitespace-pre-line font-medium">
+                                    {field.cancellationPolicy || "No cancellation policy specified."}
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Bottom: Booking Form */}
@@ -105,23 +122,6 @@ export default async function FieldDetailsPage({ params }: { params: Promise<{ i
                             initialBookings={initialBookings}
                             serviceFee={serviceFee}
                         />
-                    </div>
-
-                    {/* About Section */}
-                    <div className="bg-white p-6 md:p-10 rounded-2xl shadow-sm border border-gray-100">
-                        <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                            📖 About this Field
-                        </h3>
-                        <p className="text-gray-600 leading-relaxed mb-8 text-lg">{field.description}</p>
-
-                        <div className="p-6 bg-orange-50 border border-orange-100 rounded-2xl">
-                            <h4 className="text-orange-900 font-bold mb-3 flex items-center gap-2 text-lg">
-                                🛡️ Cancellation Policy
-                            </h4>
-                            <p className="text-orange-800/80 leading-relaxed whitespace-pre-line font-medium">
-                                {field.cancellationPolicy}
-                            </p>
-                        </div>
                     </div>
                 </div>
             </div>
