@@ -42,8 +42,21 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
         })
     }, [])
 
+    const getSlotDateTime = (date: Date, time: string) => {
+        const [h, m] = time.split(':').map(Number)
+        // Create a new date starting from the selected day's year/month/day
+        const d = new Date(date.getFullYear(), date.getMonth(), date.getDate(), h, m, 0, 0)
+
+        // If the hour is early morning (0, 1, 2 AM), it's part of the session 
+        // starting on the previous calendar day's night.
+        if (h < 8) {
+            d.setDate(d.getDate() + 1)
+        }
+        return d
+    }
+
     const isBooked = (date: Date, time: string) => {
-        const slotStart = new Date(`${format(date, 'yyyy-MM-dd')}T${time}:00`)
+        const slotStart = getSlotDateTime(date, time)
         return existingBookings.some(b => {
             const bStart = new Date(b.startTime)
             const bEnd = new Date(b.endTime)
@@ -52,12 +65,15 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
     }
 
     const isSelected = (date: Date, time: string) => {
-        const dateStr = format(date, 'yyyy-MM-dd')
+        const slotStart = getSlotDateTime(date, time)
+        const dateStr = format(slotStart, 'yyyy-MM-dd')
         return selectedSlots.some(s => s.date === dateStr && s.startTime === time)
     }
 
     const handleSlotClick = (date: Date, time: string) => {
-        const dateStr = format(date, 'yyyy-MM-dd')
+        const slotStart = getSlotDateTime(date, time)
+        const dateStr = format(slotStart, 'yyyy-MM-dd')
+
         if (isBooked(date, time)) return
 
         if (isSelected(date, time)) {
@@ -150,7 +166,8 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
                     {hours.map((time) => {
                         const booked = isBooked(selectedDay, time)
                         const selected = isSelected(selectedDay, time)
-                        const past = isBefore(new Date(`${format(selectedDay, 'yyyy-MM-dd')}T${time}:00`), new Date())
+                        const slotDateTime = getSlotDateTime(selectedDay, time)
+                        const past = isBefore(slotDateTime, new Date())
 
                         return (
                             <button
