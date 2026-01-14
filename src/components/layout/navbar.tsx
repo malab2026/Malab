@@ -48,7 +48,7 @@ export async function Navbar() {
                     ) : (
                         <div className="flex gap-3">
                             <Button variant="secondary" className={buttonClass} asChild>
-                                <Link href="/download">📥 Download</Link>
+                                <Link href="/dashboard">📅 Booking History</Link>
                             </Button>
                             <Button variant="secondary" className={buttonClass} asChild>
                                 <Link href="/login">Login</Link>
