@@ -227,7 +227,7 @@ export function BookingForm({
                         <div className="space-y-4 border rounded-lg p-4 bg-yellow-50 border-yellow-200">
                             <h3 className="font-semibold text-yellow-800">Payment Instructions</h3>
                             <p className="text-sm text-yellow-700 leading-relaxed font-medium">
-                                قم بتحويل مبلغ <strong className="text-lg text-yellow-900">{totalPrice} EGP</strong> شامل (سعر الملاعب + {serviceFeePerBooking} ج خدمة) إلى رقم <strong>01000000000 (InstaPay)</strong> وارفع صورة التحويل بالأسفل.
+                                Please transfer <strong className="text-lg text-yellow-900">{totalPrice} EGP</strong> inclusive of (Field Price + {serviceFeePerBooking} EGP service fee) to <strong>01000000000 (InstaPay)</strong> and upload the receipt below.
                             </p>
                             <div className="space-y-2">
                                 <Label htmlFor="receipt">Upload Receipt</Label>
