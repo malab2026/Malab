@@ -5,6 +5,8 @@ import { format, addDays, isSameDay, isBefore } from 'date-fns'
 import { ChevronLeft, ChevronRight, Timer, Calendar } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { useTranslation } from '@/components/providers/locale-context'
+import { ar, enUS } from 'date-fns/locale'
 
 interface Slot {
     date: string
@@ -20,8 +22,11 @@ interface WeeklyScheduleProps {
 }
 
 export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, onSlotRemove }: WeeklyScheduleProps) {
+    const { t, locale, isRtl } = useTranslation()
     const [viewDate, setViewDate] = useState(new Date())
     const [selectedDay, setSelectedDay] = useState<Date>(new Date())
+
+    const dateLocale = locale === 'ar' ? ar : enUS
 
     const weekDays = useMemo(() => {
         return Array.from({ length: 7 }).map((_, i) => addDays(viewDate, i))
@@ -44,11 +49,7 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
 
     const getSlotDateTime = (date: Date, time: string) => {
         const [h, m] = time.split(':').map(Number)
-        // Create a new date starting from the selected day's year/month/day
         const d = new Date(date.getFullYear(), date.getMonth(), date.getDate(), h, m, 0, 0)
-
-        // If the hour is early morning (0, 1, 2 AM), it's part of the session 
-        // starting on the previous calendar day's night.
         if (h < 8) {
             d.setDate(d.getDate() + 1)
         }
@@ -83,10 +84,6 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
         }
     }
 
-    const navigateWeek = (direction: 'next' | 'prev') => {
-        setViewDate(prev => addDays(prev, direction === 'next' ? 7 : -7))
-    }
-
     const goToToday = () => {
         const today = new Date()
         setViewDate(today)
@@ -97,24 +94,26 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
         const [h, m] = time.split(':').map(Number)
         const date = new Date()
         date.setHours(h, m)
-        return format(date, 'h:mm a')
+        return format(date, 'h:mm a', { locale: dateLocale })
     }
 
     return (
         <div className="space-y-6">
-            {/* Header - Simple Title, No Navigation */}
+            {/* Header */}
             <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
                 <div className="flex items-center gap-3">
                     <div className="bg-green-100 p-2 rounded-lg">
                         <Calendar className="h-5 w-5 text-green-600" />
                     </div>
                     <div>
-                        <h3 className="text-sm font-black text-gray-800 uppercase tracking-tight">Booking Schedule</h3>
-                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{format(weekDays[0], 'MMM d')} - {format(weekDays[6], 'MMM d')}</p>
+                        <h3 className="text-sm font-black text-gray-800 uppercase tracking-tight">{t('bookingSchedule')}</h3>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                            {format(weekDays[0], 'MMM d', { locale: dateLocale })} - {format(weekDays[6], 'MMM d', { locale: dateLocale })}
+                        </p>
                     </div>
                 </div>
                 <Button variant="ghost" size="sm" onClick={goToToday} className="text-[10px] font-black uppercase tracking-widest text-green-600 hover:bg-green-50">
-                    RESET TO TODAY
+                    {t('resetToToday')}
                 </Button>
             </div>
 
@@ -136,10 +135,10 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
                             )}
                         >
                             <span className={cn("text-[10px] font-bold uppercase tracking-widest mb-1", active ? "text-green-100" : "text-gray-400")}>
-                                {format(day, 'EEE')}
+                                {format(day, 'EEE', { locale: dateLocale })}
                             </span>
                             <span className="text-xl font-black leading-none tracking-tighter">
-                                {format(day, 'd')}
+                                {format(day, 'd', { locale: dateLocale })}
                             </span>
                             {isToday && !active && <div className="mt-1.5 w-1.5 h-1.5 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>}
                         </button>
@@ -153,10 +152,10 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
                     <div className="w-2 h-8 bg-green-500 rounded-full"></div>
                     <div>
                         <h3 className="font-black text-gray-900 leading-tight">
-                            Available slots for {format(selectedDay, 'EEEE')}
+                            {t('availableSlotsFor')} {format(selectedDay, 'EEEE', { locale: dateLocale })}
                         </h3>
-                        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-0.5">
-                            {format(selectedDay, 'MMMM d, yyyy')}
+                        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-0.5" dir="ltr">
+                            {format(selectedDay, 'MMMM d, yyyy', { locale: dateLocale })}
                         </p>
                     </div>
                 </div>
@@ -184,27 +183,34 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
                                 )}
                             >
                                 <Timer className={cn("h-4 w-4", (selected || booked || !past) ? "text-white/80" : "text-gray-400")} />
-                                {formatTimeDisplay(time)}
-                                {booked && <span className="absolute -top-1 -right-1 text-[8px] bg-white text-red-600 px-2 py-0.5 rounded-full border-2 border-red-600 font-bold leading-none">BOOKED</span>}
+                                <span dir="ltr">{formatTimeDisplay(time)}</span>
+                                {booked && (
+                                    <span className={cn(
+                                        "absolute -top-1 text-[8px] bg-white text-red-600 px-2 py-0.5 rounded-full border-2 border-red-600 font-bold leading-none",
+                                        isRtl ? "-left-1" : "-right-1"
+                                    )}>
+                                        {t('booked')}
+                                    </span>
+                                )}
                             </button>
                         )
                     })}
                 </div>
 
-                {/* Optimized Legend */}
+                {/* Legend */}
                 <div className="flex justify-between items-center pt-6 border-t border-gray-100">
                     <div className="flex gap-4">
                         <div className="flex items-center gap-1.5">
                             <div className="w-3 h-3 rounded bg-green-500 shadow-sm"></div>
-                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">Available</span>
+                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">{t('available')}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
                             <div className="w-3 h-3 rounded bg-red-600 shadow-sm"></div>
-                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">Occupied</span>
+                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">{t('occupied')}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
                             <div className="w-3 h-3 rounded bg-blue-600 shadow-sm"></div>
-                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">Selected</span>
+                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">{t('selected')}</span>
                         </div>
                     </div>
                 </div>

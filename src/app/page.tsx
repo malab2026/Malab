@@ -1,11 +1,7 @@
-import Link from "next/link"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Navbar } from "@/components/layout/navbar"
 import { auth } from "@/auth"
 import prisma from "@/lib/prisma"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Navbar } from "@/components/layout/navbar"
+import { HomeClient } from "@/components/home/home-client"
 
 export const dynamic = 'force-dynamic'
 
@@ -36,12 +32,12 @@ export default async function Home() {
   }) : []
 
   // Get unique field IDs user has booked before
-  const bookedFieldIds = new Set(userBookings.map(b => b.field.id))
+  const bookedFieldIds = Array.from(new Set(userBookings.map(b => b.field.id)))
 
   // Sort fields: Previously booked first, then by name
   const sortedFields = [...allFields].sort((a, b) => {
-    const aBooked = bookedFieldIds.has(a.id)
-    const bBooked = bookedFieldIds.has(b.id)
+    const aBooked = bookedFieldIds.includes(a.id)
+    const bBooked = bookedFieldIds.includes(b.id)
 
     if (aBooked && !bBooked) return -1
     if (!aBooked && bBooked) return 1
@@ -51,153 +47,11 @@ export default async function Home() {
   return (
     <main className="flex min-h-screen flex-col bg-gray-50/50">
       <Navbar />
-
-      {/* Hero Section - More Compact */}
-      <section className="relative h-[60vh] flex items-center justify-center text-center text-white overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-black/60 z-10" />
-          <Image
-            src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2000&auto=format&fit=crop"
-            alt="Football Field"
-            fill
-            className="object-cover"
-          />
-        </div>
-
-        <div className="relative z-20 space-y-4 max-w-4xl px-4 animate-in fade-in slide-in-from-bottom-5 duration-700">
-          <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
-            Mala3ebna <span className="text-green-400">Booking</span>
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-200 font-medium">
-            Find the best pitches and book your game in seconds.
-          </p>
-          {!session && (
-            <div className="flex gap-4 justify-center pt-6">
-              <Link href="/register">
-                <Button size="lg" className="text-lg px-8 py-6 bg-green-500 hover:bg-green-600 font-bold border-0 shadow-xl">
-                  Join Now
-                </Button>
-              </Link>
-            </div>
-          )}
-        </div>
-      </section>
-
-      <div className="container mx-auto -mt-20 relative z-30 px-4 space-y-16 pb-20">
-
-        {/* Fields Section - NOW AT THE TOP */}
-        <section className="space-y-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <span className="h-10 w-2 bg-green-500 rounded-full shadow-[0_0_15px_rgba(34,197,94,0.5)]"></span>
-              <h2 className="text-4xl font-black text-white md:text-gray-900 tracking-tight drop-shadow-sm md:drop-shadow-none">Available Fields</h2>
-            </div>
-            <Link href="/fields" className="text-sm font-bold text-white md:text-green-600 hover:underline bg-green-600/20 md:bg-transparent px-3 py-1 rounded-full backdrop-blur-sm md:backdrop-none">View All</Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {sortedFields.map((field: any) => (
-              <Card key={field.id} className="group overflow-hidden border-0 shadow-2xl hover:shadow-green-100 transition-all duration-500 rounded-[2.5rem] bg-white">
-                <Link href={`/fields/${field.id}`}>
-                  <div className="relative h-72 w-full overflow-hidden">
-                    <Image
-                      src={`/api/field-image/${field.id}`}
-                      alt={field.name}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-
-                    {bookedFieldIds.has(field.id) && (
-                      <div className="absolute top-6 left-6 animate-pulse">
-                        <Badge className="bg-green-500 text-white border-0 font-black px-4 py-1.5 rounded-full shadow-lg backdrop-blur-md">
-                          YOU BOOKED THIS BEFORE ⚽
-                        </Badge>
-                      </div>
-                    )}
-
-                    <div className="absolute bottom-8 left-8 right-8">
-                      <h3 className="text-3xl font-black text-white tracking-tight">{field.name}</h3>
-                      <div className="flex items-center gap-2 text-gray-300 text-sm font-bold mt-2">
-                        {field.address && (
-                          <span className="bg-white/10 px-2 py-0.5 rounded">📍 {field.address.split(',')[0]}</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-                <CardContent className="p-8">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="text-4xl font-black text-green-600">{field.pricePerHour} <span className="text-sm text-gray-400">EGP</span></p>
-                      <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] mt-1">Rate Per Hour</p>
-                    </div>
-                    <Link href={`/fields/${field.id}`}>
-                      <Button className="rounded-2xl h-14 px-8 bg-green-600 hover:bg-green-700 font-black text-lg shadow-[0_10px_20px_rgba(34,197,94,0.3)] transition-all active:scale-95 border-0">
-                        BOOK
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
-
-        {/* My Bookings Section - NOW UNDER FIELDS */}
-        {session && userBookings.length > 0 && (
-          <section className="space-y-6 pt-10 border-t border-gray-100">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <span className="h-8 w-2 bg-gray-300 rounded-full"></span>
-                <h2 className="text-3xl font-black text-gray-900 tracking-tight">Booking History</h2>
-              </div>
-              <Button variant="outline" className="rounded-full border-2 border-green-500 text-green-600 font-black hover:bg-green-500 hover:text-white transition-all px-6" asChild>
-                <Link href="/dashboard">MY FULL HISTORY →</Link>
-              </Button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {userBookings.slice(0, 3).map((booking: any) => (
-                <Card key={booking.id} className="overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all rounded-3xl group bg-white/50 backdrop-blur-sm">
-                  <div className="relative h-40 w-full overflow-hidden">
-                    <Image
-                      src={`/api/field-image/${booking.field.id}`}
-                      alt={booking.field.name}
-                      fill
-                      className="object-cover opacity-80 group-hover:opacity-100 transition-all duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gray-900/10" />
-                    <div className="absolute top-4 right-4">
-                      <StatusBadge status={booking.status} />
-                    </div>
-                  </div>
-                  <div className="p-5">
-                    <h3 className="font-black text-xl text-gray-800">{booking.field.name}</h3>
-                    <div className="flex items-center gap-3 mt-3 text-sm text-gray-500 font-bold bg-gray-50 p-2 rounded-xl">
-                      <span>📅 {new Date(booking.startTime).toLocaleDateString()}</span>
-                      <span className="text-gray-300">|</span>
-                      <span>⏰ {new Date(booking.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </section>
-        )}
-      </div>
+      <HomeClient
+        session={session}
+        sortedFields={sortedFields}
+        bookedFieldIds={bookedFieldIds}
+      />
     </main>
-  )
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const styles = {
-    PENDING: "bg-yellow-500 text-white",
-    CONFIRMED: "bg-green-600 text-white",
-    REJECTED: "bg-red-500 text-white",
-  }
-  return (
-    <Badge className={`${styles[status as keyof typeof styles] || ""} border-0 font-bold px-2 py-0.5 text-[10px]`}>
-      {status}
-    </Badge>
   )
 }

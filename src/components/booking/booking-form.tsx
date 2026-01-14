@@ -10,6 +10,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Trash2, Timer, Calendar, ChevronRight, ChevronLeft, CheckCircle2, AlertCircle } from "lucide-react"
 import { WeeklySchedule } from "./weekly-schedule"
 
+import { useTranslation } from "@/components/providers/locale-context"
+
 export function BookingForm({
     field,
     userRole,
@@ -21,11 +23,12 @@ export function BookingForm({
     initialBookings?: any[],
     serviceFee?: number
 }) {
+    const { t, locale } = useTranslation()
     const [step, setStep] = useState(1)
     const [slots, setSlots] = useState<any[]>([])
     const serviceFeePerBooking = initialServiceFee
 
-    // Receipt state and other existing states
+    // ...
     const [state, dispatch] = useActionState(createBooking, null)
     const [isChecking, setIsChecking] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -54,7 +57,7 @@ export function BookingForm({
     const handleNextStep = async () => {
         setError(null)
         if (slots.length === 0) {
-            setError("Please select at least one time slot from the schedule.")
+            setError(t('selectAvailableSlots'))
             return
         }
 
@@ -65,7 +68,7 @@ export function BookingForm({
         if (result.success) {
             setStep(2)
         } else {
-            setError(result.message || "Some selected slots are no longer available.")
+            setError(result.message || t('slotsNoLongerAvailable'))
         }
     }
 
@@ -73,7 +76,7 @@ export function BookingForm({
         const [h, m] = time.split(':').map(Number)
         const date = new Date()
         date.setHours(h, m)
-        return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
+        return date.toLocaleTimeString(locale === 'ar' ? 'ar-EG' : 'en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
     }
 
     return (
@@ -85,12 +88,12 @@ export function BookingForm({
             <div className="flex items-center justify-between px-2 mb-4">
                 <div className={`flex items-center gap-2 ${step === 1 ? 'text-green-600' : 'text-gray-400'}`}>
                     <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${step === 1 ? 'bg-green-600 text-white' : 'bg-gray-200'}`}>1</div>
-                    <span className="text-sm font-semibold">Select Time</span>
+                    <span className="text-sm font-semibold">{t('selectAvailableSlots')}</span>
                 </div>
                 <div className="h-px flex-1 bg-gray-200 mx-4"></div>
                 <div className={`flex items-center gap-2 ${step === 2 ? 'text-green-600' : 'text-gray-400'}`}>
                     <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${step === 2 ? 'bg-green-600 text-white' : 'bg-gray-200'}`}>2</div>
-                    <span className="text-sm font-semibold">Payment</span>
+                    <span className="text-sm font-semibold">{t('paymentInstructions')}</span>
                 </div>
             </div>
 
@@ -100,7 +103,7 @@ export function BookingForm({
                     <div className="space-y-2">
                         <Label className="text-sm font-bold text-gray-700 flex items-center gap-2 mb-2">
                             <Calendar className="h-4 w-4 text-green-600" />
-                            Select Available Slots
+                            {t('reserveSlot')}
                         </Label>
                         <WeeklySchedule
                             existingBookings={initialBookings}
@@ -113,7 +116,7 @@ export function BookingForm({
                     {/* Selected Slots List */}
                     {slots.length > 0 && (
                         <div className="space-y-3">
-                            <h3 className="text-sm font-bold text-gray-700 px-1">Selected ({slots.length})</h3>
+                            <h3 className="text-sm font-bold text-gray-700 px-1">{t('selectedSlots')} ({slots.length})</h3>
                             <div className="grid gap-2 max-h-[200px] overflow-y-auto pr-1">
                                 {slots.map((slot, index) => (
                                     <div key={index} className="flex items-center justify-between p-2.5 bg-green-50 border border-green-100 rounded-lg shadow-sm">
@@ -146,9 +149,9 @@ export function BookingForm({
                         <CardContent className="py-6">
                             <div className="flex justify-between items-center text-2xl font-black text-white">
                                 <span className="flex items-center gap-3">
-                                    Total:
+                                    {t('totalAmount')}:
                                 </span>
-                                <span>{totalPrice} EGP</span>
+                                <span>{totalPrice} {t('egp')}</span>
                             </div>
                         </CardContent>
                     </Card>
@@ -159,9 +162,9 @@ export function BookingForm({
                         disabled={isChecking || slots.length === 0}
                         onClick={handleNextStep}
                     >
-                        {isChecking ? "Checking availability..." : (
+                        {isChecking ? t('checkingAvailability') : (
                             <>
-                                NEXT: PAYMENT
+                                {t('nextPayment')}
                                 <ChevronRight className="ml-2 h-6 w-6 stroke-[3]" />
                             </>
                         )}
@@ -175,14 +178,14 @@ export function BookingForm({
                     <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-start gap-4">
                         <CheckCircle2 className="h-6 w-6 text-green-600 shrink-0 mt-0.5" />
                         <div>
-                            <h3 className="font-bold text-green-900">Slots are Available!</h3>
-                            <p className="text-sm text-green-800">Please complete the payment to secure your booking.</p>
+                            <h3 className="font-bold text-green-900">{t('slotsAvailable')}</h3>
+                            <p className="text-sm text-green-800">{t('completePayment')}</p>
                         </div>
                     </div>
 
                     <div className="space-y-4">
                         <div className="flex items-center justify-between px-1">
-                            <h3 className="text-sm font-black text-gray-800 uppercase tracking-tight">Booking Summary</h3>
+                            <h3 className="text-sm font-black text-gray-800 uppercase tracking-tight">{t('bookingSummary')}</h3>
                             <div className="h-0.5 flex-1 mx-4 bg-gray-100 rounded-full"></div>
                         </div>
                         <div className="grid gap-3">
@@ -193,11 +196,11 @@ export function BookingForm({
                                             <p className="text-sm font-black text-gray-900">{slot.date}</p>
                                             <div className="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                                                 <Timer className="h-3 w-3" />
-                                                {formatTime(slot.startTime)} - {slot.duration} Hour
+                                                {formatTime(slot.startTime)} - {slot.duration} {t('hour')}
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-lg font-black text-gray-900">{slot.duration * field.pricePerHour} EGP</p>
+                                            <p className="text-lg font-black text-gray-900">{slot.duration * field.pricePerHour} {t('egp')}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -206,15 +209,15 @@ export function BookingForm({
                             {/* Service Fee Row */}
                             {slots.length > 0 && (
                                 <div className="px-4 py-2 flex justify-between items-center text-sm font-bold bg-green-50/50 rounded-xl border border-green-100 text-green-700">
-                                    <span className="uppercase tracking-tight">رسم خدمة (Service Fee)</span>
-                                    <span>{serviceFeePerBooking} EGP</span>
+                                    <span className="uppercase tracking-tight">{t('serviceFee')}</span>
+                                    <span>{serviceFeePerBooking} {t('egp')}</span>
                                 </div>
                             )}
 
                             <div className="mt-2 bg-green-600 p-5 rounded-3xl shadow-xl shadow-green-100 flex justify-between items-center text-white">
                                 <div className="space-y-0.5">
-                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Total Amount</p>
-                                    <p className="text-3xl font-black tracking-tighter">{totalPrice} EGP</p>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">{t('totalAmount')}</p>
+                                    <p className="text-3xl font-black tracking-tighter">{totalPrice} {t('egp')}</p>
                                 </div>
                                 <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm">
                                     <CheckCircle2 className="h-6 w-6" />
@@ -225,12 +228,12 @@ export function BookingForm({
 
                     {!isOwner ? (
                         <div className="space-y-4 border rounded-lg p-4 bg-yellow-50 border-yellow-200">
-                            <h3 className="font-semibold text-yellow-800">Payment Instructions</h3>
+                            <h3 className="font-semibold text-yellow-800">{t('paymentInstructions')}</h3>
                             <p className="text-sm text-yellow-700 leading-relaxed font-medium">
-                                Please transfer <strong className="text-lg text-yellow-900">{totalPrice} EGP</strong> inclusive of (Field Price + {serviceFeePerBooking} EGP service fee) to <strong>01000000000 (InstaPay)</strong> and upload the receipt below.
+                                {t('transferText', { amount: totalPrice, fee: serviceFeePerBooking })}
                             </p>
                             <div className="space-y-2">
-                                <Label htmlFor="receipt">Upload Receipt</Label>
+                                <Label htmlFor="receipt">{t('uploadReceipt')}</Label>
                                 <Input
                                     type="file"
                                     id="receipt"
@@ -257,7 +260,7 @@ export function BookingForm({
                         </div>
                     ) : (
                         <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800">
-                            <strong>Note:</strong> As an admin/owner, you are blocking this slot manually. No receipt is required.
+                            <strong>{t('adminNote')}</strong>
                         </div>
                     )}
 
@@ -269,9 +272,9 @@ export function BookingForm({
                             onClick={() => setStep(1)}
                         >
                             <ChevronLeft className="mr-2 h-4 w-4" />
-                            Back
+                            {t('back')}
                         </Button>
-                        <SubmitButton isOwner={isOwner} canSubmit={true} />
+                        <SubmitButton isOwner={isOwner} canSubmit={true} t={t} />
                     </div>
                 </div>
             )}
@@ -285,7 +288,7 @@ export function BookingForm({
     )
 }
 
-function SubmitButton({ isOwner, canSubmit }: { isOwner: boolean, canSubmit: boolean }) {
+function SubmitButton({ isOwner, canSubmit, t }: { isOwner: boolean, canSubmit: boolean, t: any }) {
     const { pending } = useFormStatus()
     return (
         <Button
@@ -293,7 +296,7 @@ function SubmitButton({ isOwner, canSubmit }: { isOwner: boolean, canSubmit: boo
             className="flex-[3] h-12 text-base font-semibold bg-gray-900 hover:bg-black text-white rounded-xl shadow-xl active:scale-95 transition-all"
             disabled={pending || !canSubmit}
         >
-            {pending ? "Booking..." : "Confirm & Book Now"}
+            {pending ? t('booking') : t('confirmBookNow')}
         </Button>
     )
 }

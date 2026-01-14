@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MALA3EBNA - Book Your Pitch",
-  description: "Football pitch booking application - Reserve your field easily",
+  title: "Mala3ebna - Book Your Pitches",
+  description: "Experience the ultimate football pitch booking platform",
 };
 
 export const viewport: Viewport = {
@@ -26,6 +26,7 @@ export const viewport: Viewport = {
 };
 
 import { Toaster } from "sonner";
+import { LocaleProvider } from "@/components/providers/locale-context";
 
 export default function RootLayout({
   children,
@@ -33,12 +34,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ar" dir="rtl">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
-        <Toaster position="top-center" richColors />
+        <LocaleProvider>
+          {children}
+          <Toaster position="top-center" richColors />
+        </LocaleProvider>
       </body>
     </html>
   );
