@@ -290,7 +290,7 @@ function SubmitButton({ isOwner, canSubmit }: { isOwner: boolean, canSubmit: boo
     return (
         <Button
             type="submit"
-            className="w-full h-12 text-base font-semibold"
+            className="flex-[3] h-12 text-base font-semibold bg-gray-900 hover:bg-black text-white rounded-xl shadow-xl active:scale-95 transition-all"
             disabled={pending || !canSubmit}
         >
             {pending ? "Booking..." : "Confirm & Book Now"}
