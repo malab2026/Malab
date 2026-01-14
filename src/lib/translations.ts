@@ -58,6 +58,24 @@ export const translations = {
         // Shared
         egp: "ج.م",
         hour: "ساعة",
+
+        // Auth
+        loginTitle: "تسجيل الدخول",
+        loginDesc: "أدخل رقم هاتفك بالأسفل لتسجيل الدخول إلى حسابك",
+        phoneNumber: "رقم الهاتف",
+        password: "كلمة المرور",
+        rememberMe: "تذكرني",
+        forgotPassword: "نسيت كلمة المرور؟",
+        logIn: "دخول",
+        loggingIn: "جاري الدخول...",
+        dontHaveAccount: "ليس لديك حساب؟",
+        createAccountTitle: "إنشاء حساب",
+        createAccountDesc: "أدخل بياناتك بالأسفل لإنشاء حساب جديد",
+        name: "الاسم",
+        email: "البريد الإلكتروني",
+        optional: "اختياري - للإيصالات واستعادة الحساب",
+        alreadyHaveAccount: "لديك حساب بالفعل؟",
+        creatingAccount: "جاري إنشاء الحساب...",
     },
     en: {
         // Navbar
@@ -118,6 +136,24 @@ export const translations = {
         // Shared
         egp: "EGP",
         hour: "Hour",
+
+        // Auth
+        loginTitle: "Login",
+        loginDesc: "Enter your phone number below to login to your account",
+        phoneNumber: "Phone Number",
+        password: "Password",
+        rememberMe: "Remember me",
+        forgotPassword: "Forgot password?",
+        logIn: "Log in",
+        loggingIn: "Logging in...",
+        dontHaveAccount: "Don't have an account?",
+        createAccountTitle: "Create Account",
+        createAccountDesc: "Enter your details below to create a new account",
+        name: "Name",
+        email: "Email",
+        optional: "Optional - for receipts & recovery",
+        alreadyHaveAccount: "Already have an account?",
+        creatingAccount: "Creating account...",
     }
 };
 

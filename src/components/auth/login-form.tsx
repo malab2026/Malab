@@ -16,8 +16,10 @@ import { Label } from "@/components/ui/label"
 // React 19 usage: useActionState from react.
 
 import { useRouter } from "next/navigation"
+import { useTranslation } from "@/components/providers/locale-context"
 
 export function LoginForm() {
+    const { t } = useTranslation()
     const [state, dispatch] = useActionState(authenticate, undefined)
     const router = useRouter()
 
@@ -33,23 +35,23 @@ export function LoginForm() {
     return (
         <form action={dispatch} className="space-y-3">
             <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
+                <Label htmlFor="phone">{t('phoneNumber')}</Label>
                 <Input id="phone" type="tel" name="phone" placeholder="01xxxxxxxxx" required />
             </div>
             <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t('password')}</Label>
                 <Input id="password" type="password" name="password" required />
             </div>
 
             <div className="flex items-center justify-between">
                 <label className="flex items-center gap-2 text-sm">
                     <input type="checkbox" className="rounded border-gray-300" />
-                    Remember me
+                    {t('rememberMe')}
                 </label>
-                <a href="#" className="text-sm text-blue-600 hover:underline">Forgot password?</a>
+                <a href="#" className="text-sm text-blue-600 hover:underline">{t('forgotPassword')}</a>
             </div>
 
-            <LoginButton />
+            <LoginButton t={t} />
 
             {errorMessage && (
                 <div
@@ -62,21 +64,21 @@ export function LoginForm() {
             )}
 
             <div className="mt-4 text-center text-sm">
-                Don't have an account?{" "}
+                {t('dontHaveAccount')}{" "}
                 <a href="/register" className="text-blue-600 hover:underline">
-                    Sign up
+                    {t('signUp')}
                 </a>
             </div>
         </form>
     )
 }
 
-function LoginButton() {
+function LoginButton({ t }: { t: any }) {
     const { pending } = useFormStatus()
 
     return (
         <Button className="w-full bg-blue-600 hover:bg-blue-700 mt-4" disabled={pending}>
-            {pending ? "Logging in..." : "Log in"}
+            {pending ? t('loggingIn') : t('logIn')}
         </Button>
     )
 }
