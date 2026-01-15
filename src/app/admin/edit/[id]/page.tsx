@@ -14,7 +14,7 @@ export default async function EditFieldPage({ params }: { params: { id: string }
 
     const field = await prisma.field.findUnique({
         where: { id }
-    })
+    } as any)
 
     if (!field) {
         notFound()

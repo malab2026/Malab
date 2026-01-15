@@ -23,7 +23,7 @@ export default async function Home() {
       lng: true,
       pricePerHour: true,
     },
-  })
+  } as any)
 
   // Fetch user's bookings to determine sorting and previous bookings
   const userBookings = userId ? await prisma.booking.findMany({

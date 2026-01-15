@@ -1,3 +1,5 @@
+'use client'
+
 import { Navbar } from "@/components/layout/navbar"
 import Image from "next/image"
 import { useState } from "react"

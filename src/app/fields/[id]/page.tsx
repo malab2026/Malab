@@ -22,14 +22,19 @@ export default async function FieldDetailsPage({ params }: { params: Promise<{ i
         select: {
             id: true,
             name: true,
+            nameEn: true,
             pricePerHour: true,
             address: true,
             locationUrl: true,
             description: true,
+            descriptionEn: true,
+            imageUrl: true,
+            imageUrl2: true,
+            imageUrl3: true,
             cancellationPolicy: true,
             ownerId: true,
         }
-    })
+    } as any)
 
     if (!field) {
         notFound()

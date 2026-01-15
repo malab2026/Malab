@@ -128,7 +128,7 @@ export async function createField(prevState: any, formData: FormData) {
                 imageUrl3: images[2] || null,
                 ownerId: finalOwnerId,
             }
-        })
+        } as any)
     } catch (e) {
         console.error(e)
         return { message: "Database Error", success: false }
@@ -198,7 +198,7 @@ export async function updateField(fieldId: string, prevState: any, formData: For
                 ...imageUpdates,
                 ownerId: ownerId || null,
             }
-        })
+        } as any)
     } catch (e) {
         console.error(e)
         return { message: "Database Error", success: false }
