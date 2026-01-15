@@ -10,19 +10,19 @@ import path from "path"
 
 const FieldSchema = z.object({
     name: z.string().min(1),
-    nameEn: z.string().optional().or(z.literal('')),
+    nameEn: z.string().optional().or(z.literal('')).nullable(),
     price: z.coerce.number().min(0),
-    address: z.string().optional(),
-    addressEn: z.string().optional().or(z.literal('')),
-    locationUrl: z.string().url().optional().or(z.literal('')),
-    description: z.string().optional(),
-    descriptionEn: z.string().optional(),
-    cancellationPolicy: z.string().optional(),
-    cancellationPolicyEn: z.string().optional(),
-    ownerId: z.string().optional().or(z.literal('')),
-    newManagerName: z.string().optional(),
-    newManagerEmail: z.string().email().optional().or(z.literal('')),
-    newManagerPassword: z.string().min(6).optional().or(z.literal('')),
+    address: z.string().optional().nullable(),
+    addressEn: z.string().optional().or(z.literal('')).nullable(),
+    locationUrl: z.string().url().optional().or(z.literal('')).nullable(),
+    description: z.string().optional().nullable(),
+    descriptionEn: z.string().optional().nullable(),
+    cancellationPolicy: z.string().optional().nullable(),
+    cancellationPolicyEn: z.string().optional().nullable(),
+    ownerId: z.string().optional().or(z.literal('')).nullable(),
+    newManagerName: z.string().optional().nullable(),
+    newManagerEmail: z.string().email().optional().or(z.literal('')).nullable(),
+    newManagerPassword: z.string().min(6).optional().or(z.literal('')).nullable(),
 })
 
 export async function createField(prevState: any, formData: FormData) {
