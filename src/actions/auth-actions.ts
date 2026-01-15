@@ -95,11 +95,18 @@ export async function authenticate(
         if (error instanceof AuthError) {
             switch (error.type) {
                 case 'CredentialsSignin':
-                    return { message: 'Invalid credentials.' }
+                    // Check if user exists but password failed
+                    const phone = formData.get('phone') as string
+                    const user = await prisma.user.findUnique({ where: { phone: phone.trim() } })
+                    if (!user) {
+                        return { message: 'Phone number not found.' }
+                    }
+                    return { message: 'Incorrect password.' }
                 default:
                     return { message: 'Something went wrong.' }
             }
         }
+        throw error
     }
 }
 

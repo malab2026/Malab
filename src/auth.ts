@@ -33,18 +33,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     });
 
                     if (!user) {
-                        console.log('[Auth] User found: false');
                         return null;
                     }
-                    console.log('[Auth] User found: true');
 
                     const passwordsMatch = await bcrypt.compare(password, user.password);
-                    console.log(`[Auth] Password match: ${passwordsMatch}`);
 
                     if (passwordsMatch) return user;
                 }
 
-                console.log('[Auth] Invalid credentials format or password mismatch');
                 return null;
             },
         }),
