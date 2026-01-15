@@ -28,6 +28,11 @@ export async function GET(
         return new NextResponse("Not Found", { status: 404 })
     }
 
+    // If it's a direct URL (not Base64), redirect to it
+    if (targetImageUrl.startsWith('http')) {
+        return NextResponse.redirect(targetImageUrl)
+    }
+
     // Parse Base64 Data URI
     try {
         const matches = targetImageUrl.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)

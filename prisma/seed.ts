@@ -83,10 +83,19 @@ async function main() {
     ]
 
     for (const field of fields) {
-        const createdField = await prisma.field.create({
-            data: field,
-        })
-        console.log(`Created field with id: ${createdField.id}`)
+        const createdField = await prisma.field.upsert({
+            where: { name: field.name },
+            update: {
+                pricePerHour: field.pricePerHour,
+                description: field.description,
+                area: field.area,
+                lat: field.lat,
+                lng: field.lng,
+                address: field.address,
+            },
+            create: field,
+        } as any)
+        console.log(`Synced field: ${createdField.name}`)
     }
 }
 
