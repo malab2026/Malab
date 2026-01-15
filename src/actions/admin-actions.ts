@@ -54,8 +54,11 @@ export async function createField(prevState: any, formData: FormData) {
     })
 
     if (!validatedFields.success) {
-        console.error("Create Field Validation Errors:", validatedFields.error.flatten().fieldErrors);
-        return { message: "Invalid Inputs: " + JSON.stringify(validatedFields.error.flatten().fieldErrors), success: false }
+        return {
+            message: "Invalid Inputs",
+            success: false,
+            errors: validatedFields.error.flatten().fieldErrors
+        }
     }
 
     const {
@@ -168,8 +171,11 @@ export async function updateField(fieldId: string, prevState: any, formData: For
     })
 
     if (!validatedFields.success) {
-        console.error("Update Field Validation Errors:", validatedFields.error.flatten().fieldErrors);
-        return { message: "Invalid Inputs: " + JSON.stringify(validatedFields.error.flatten().fieldErrors), success: false }
+        return {
+            message: "Invalid Inputs",
+            success: false,
+            errors: validatedFields.error.flatten().fieldErrors
+        }
     }
 
     const { name, nameEn, price, address, addressEn, locationUrl, description, descriptionEn,

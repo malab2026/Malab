@@ -38,10 +38,12 @@ export function EditFieldForm({ field, owners }: { field: any, owners: any[] }) 
                         <div className="space-y-2">
                             <Label htmlFor="name">Field Name (Arabic)</Label>
                             <Input id="name" name="name" defaultValue={field.name} required />
+                            {state?.errors?.name && <p className="text-red-500 text-xs">{state.errors.name[0]}</p>}
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="nameEn">Field Name (English)</Label>
                             <Input id="nameEn" name="nameEn" defaultValue={field.nameEn || ''} required />
+                            {state?.errors?.nameEn && <p className="text-red-500 text-xs">{state.errors.nameEn[0]}</p>}
                         </div>
                     </div>
 
@@ -49,30 +51,36 @@ export function EditFieldForm({ field, owners }: { field: any, owners: any[] }) 
                         <div className="space-y-2">
                             <Label htmlFor="price">Price per Hour (EGP)</Label>
                             <Input id="price" name="price" type="number" defaultValue={field.pricePerHour} required />
+                            {state?.errors?.price && <p className="text-red-500 text-xs">{state.errors.price[0]}</p>}
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="address">Detailed Address (Arabic)</Label>
                             <Input id="address" name="address" defaultValue={field.address || ''} placeholder="مثلاً: بنها، بالقرب من الاستاد" />
+                            {state?.errors?.address && <p className="text-red-500 text-xs">{state.errors.address[0]}</p>}
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="addressEn">Detailed Address (English)</Label>
                             <Input id="addressEn" name="addressEn" defaultValue={field.addressEn || ''} placeholder="e.g. Benha, near Stadium" />
+                            {state?.errors?.addressEn && <p className="text-red-500 text-xs">{state.errors.addressEn[0]}</p>}
                         </div>
                     </div>
 
                     <div className="space-y-2">
                         <Label htmlFor="locationUrl">Google Maps Link</Label>
                         <Input id="locationUrl" name="locationUrl" type="url" defaultValue={field.locationUrl || ''} placeholder="https://maps.google.com/..." />
+                        {state?.errors?.locationUrl && <p className="text-red-500 text-xs">{state.errors.locationUrl[0]}</p>}
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="description">Description (Arabic)</Label>
                             <Input id="description" name="description" defaultValue={field.description || ''} placeholder="نجيل ممتاز، إضاءة ليلية..." />
+                            {state?.errors?.description && <p className="text-red-500 text-xs">{state.errors.description[0]}</p>}
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="descriptionEn">Description (English)</Label>
                             <Input id="descriptionEn" name="descriptionEn" defaultValue={field.descriptionEn || ''} placeholder="Excellent turf, night floodlights..." />
+                            {state?.errors?.descriptionEn && <p className="text-red-500 text-xs">{state.errors.descriptionEn[0]}</p>}
                         </div>
                     </div>
 
@@ -86,6 +94,7 @@ export function EditFieldForm({ field, owners }: { field: any, owners: any[] }) 
                                 placeholder="مثلاً: استرداد كامل إذا تم الإلغاء قبل 24 ساعة..."
                                 className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                             />
+                            {state?.errors?.cancellationPolicy && <p className="text-red-500 text-xs">{state.errors.cancellationPolicy[0]}</p>}
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="cancellationPolicyEn">Cancellation Policy (English)</Label>
@@ -96,6 +105,7 @@ export function EditFieldForm({ field, owners }: { field: any, owners: any[] }) 
                                 placeholder="e.g. Full refund if cancelled 24 hours before..."
                                 className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                             />
+                            {state?.errors?.cancellationPolicyEn && <p className="text-red-500 text-xs">{state.errors.cancellationPolicyEn[0]}</p>}
                         </div>
                     </div>
 
