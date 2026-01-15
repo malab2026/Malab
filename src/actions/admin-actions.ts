@@ -54,7 +54,8 @@ export async function createField(prevState: any, formData: FormData) {
     }
 
     const {
-        name, nameEn, price, address, locationUrl, description, descriptionEn, cancellationPolicy,
+        name, nameEn, price, address, addressEn, locationUrl, description, descriptionEn,
+        cancellationPolicy, cancellationPolicyEn,
         ownerId, newManagerName, newManagerEmail, newManagerPassword
     } = validatedFields.data
 
@@ -119,10 +120,12 @@ export async function createField(prevState: any, formData: FormData) {
                 nameEn: nameEn || null,
                 pricePerHour: price,
                 address: address || null,
+                addressEn: addressEn || null,
                 locationUrl: locationUrl || null,
                 description: description || null,
                 descriptionEn: descriptionEn || null,
                 cancellationPolicy: cancellationPolicy || "No cancellation policy specified.",
+                cancellationPolicyEn: cancellationPolicyEn || null,
                 imageUrl: images[0],
                 imageUrl2: images[1] || null,
                 imageUrl3: images[2] || null,
@@ -161,7 +164,8 @@ export async function updateField(fieldId: string, prevState: any, formData: For
         return { message: "Invalid Inputs", success: false }
     }
 
-    const { name, nameEn, price, address, locationUrl, description, descriptionEn, cancellationPolicy, ownerId } = validatedFields.data
+    const { name, nameEn, price, address, addressEn, locationUrl, description, descriptionEn,
+        cancellationPolicy, cancellationPolicyEn, ownerId } = validatedFields.data
 
     // Handle Multiple Image Uploads (Base64) - Only update if new image provided
     const imageUpdates: any = {}
@@ -191,10 +195,12 @@ export async function updateField(fieldId: string, prevState: any, formData: For
                 nameEn: nameEn || null,
                 pricePerHour: price,
                 address: address || null,
+                addressEn: addressEn || null,
                 locationUrl: locationUrl || null,
                 description: description || null,
                 descriptionEn: descriptionEn || null,
                 cancellationPolicy: cancellationPolicy || null,
+                cancellationPolicyEn: cancellationPolicyEn || null,
                 ...imageUpdates,
                 ownerId: ownerId || null,
             }

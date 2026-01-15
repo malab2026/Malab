@@ -25,6 +25,7 @@ export default async function FieldDetailsPage({ params }: { params: Promise<{ i
             nameEn: true,
             pricePerHour: true,
             address: true,
+            addressEn: true,
             locationUrl: true,
             description: true,
             descriptionEn: true,
@@ -32,6 +33,7 @@ export default async function FieldDetailsPage({ params }: { params: Promise<{ i
             imageUrl2: true,
             imageUrl3: true,
             cancellationPolicy: true,
+            cancellationPolicyEn: true,
             ownerId: true,
         }
     } as any)

@@ -28,6 +28,7 @@ model Field {
   description        String?
   descriptionEn      String?
   address            String?
+  addressEn          String?
   area               String?
   lat                Float?
   lng                Float?
@@ -36,6 +37,7 @@ model Field {
   imageUrl2          String?
   imageUrl3          String?
   cancellationPolicy String?   @default("No cancellation policy specified.")
+  cancellationPolicyEn String?
   ownerId            String?
   createdAt          DateTime  @default(now())
   bookings           Booking[]

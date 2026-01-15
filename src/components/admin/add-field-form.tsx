@@ -34,14 +34,19 @@ export function AddFieldForm({ owners }: { owners: any[] }) {
                         </div>
                     </div>
 
+                    <div className="space-y-2">
+                        <Label htmlFor="price">Price per Hour (EGP)</Label>
+                        <Input id="price" name="price" type="number" min="0" placeholder="200" required />
+                    </div>
+
                     <div className="grid md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label htmlFor="price">Price per Hour (EGP)</Label>
-                            <Input id="price" name="price" type="number" min="0" placeholder="200" required />
+                            <Label htmlFor="address">Detailed Address (Arabic)</Label>
+                            <Input id="address" name="address" placeholder="مثلاً: بنها، بالقرب من الاستاد" required />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="address">Detailed Address</Label>
-                            <Input id="address" name="address" placeholder="e.g. Benha, near Stadium" required />
+                            <Label htmlFor="addressEn">Detailed Address (English)</Label>
+                            <Input id="addressEn" name="addressEn" placeholder="e.g. Benha, near Stadium" required />
                         </div>
                     </div>
 
@@ -61,14 +66,25 @@ export function AddFieldForm({ owners }: { owners: any[] }) {
                         </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="cancellationPolicy">Cancellation Policy</Label>
-                        <textarea
-                            id="cancellationPolicy"
-                            name="cancellationPolicy"
-                            placeholder="e.g. Full refund if cancelled 24 hours before..."
-                            className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        />
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="cancellationPolicy">Cancellation Policy (Arabic)</Label>
+                            <textarea
+                                id="cancellationPolicy"
+                                name="cancellationPolicy"
+                                placeholder="مثلاً: استرداد كامل إذا تم الإلغاء قبل 24 ساعة..."
+                                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="cancellationPolicyEn">Cancellation Policy (English)</Label>
+                            <textarea
+                                id="cancellationPolicyEn"
+                                name="cancellationPolicyEn"
+                                placeholder="e.g. Full refund if cancelled 24 hours before..."
+                                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            />
+                        </div>
                     </div>
 
                     <div className="space-y-4 pt-4 border-t">

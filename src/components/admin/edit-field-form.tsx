@@ -51,8 +51,12 @@ export function EditFieldForm({ field, owners }: { field: any, owners: any[] }) 
                             <Input id="price" name="price" type="number" defaultValue={field.pricePerHour} required />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="address">Detailed Address</Label>
-                            <Input id="address" name="address" defaultValue={field.address || ''} placeholder="e.g. Benha, near Stadium" />
+                            <Label htmlFor="address">Detailed Address (Arabic)</Label>
+                            <Input id="address" name="address" defaultValue={field.address || ''} placeholder="مثلاً: بنها، بالقرب من الاستاد" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="addressEn">Detailed Address (English)</Label>
+                            <Input id="addressEn" name="addressEn" defaultValue={field.addressEn || ''} placeholder="e.g. Benha, near Stadium" />
                         </div>
                     </div>
 
@@ -72,15 +76,27 @@ export function EditFieldForm({ field, owners }: { field: any, owners: any[] }) 
                         </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="cancellationPolicy">Cancellation Policy</Label>
-                        <textarea
-                            id="cancellationPolicy"
-                            name="cancellationPolicy"
-                            defaultValue={field.cancellationPolicy || ''}
-                            placeholder="e.g. Full refund if cancelled 24 hours before..."
-                            className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        />
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="cancellationPolicy">Cancellation Policy (Arabic)</Label>
+                            <textarea
+                                id="cancellationPolicy"
+                                name="cancellationPolicy"
+                                defaultValue={field.cancellationPolicy || ''}
+                                placeholder="مثلاً: استرداد كامل إذا تم الإلغاء قبل 24 ساعة..."
+                                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="cancellationPolicyEn">Cancellation Policy (English)</Label>
+                            <textarea
+                                id="cancellationPolicyEn"
+                                name="cancellationPolicyEn"
+                                defaultValue={field.cancellationPolicyEn || ''}
+                                placeholder="e.g. Full refund if cancelled 24 hours before..."
+                                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            />
+                        </div>
                     </div>
 
                     <div className="space-y-4 pt-4 border-t">

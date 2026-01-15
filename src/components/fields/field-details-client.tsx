@@ -77,9 +77,9 @@ export function FieldDetailsClient({ field, initialBookings, serviceFee, userRol
                             <div className="flex flex-col md:flex-row justify-between items-start gap-4">
                                 <div>
                                     <p className="text-3xl md:text-4xl font-black text-green-600">{field.pricePerHour} {t('egp')} <span className="text-sm font-medium text-gray-400">/ {t('hour')}</span></p>
-                                    {field.address && (
+                                    {(field.address || field.addressEn) && (
                                         <p className="text-gray-500 mt-2 flex items-center gap-2 font-semibold">
-                                            📍 {field.address}
+                                            📍 {isRtl ? field.address : (field.addressEn || field.address)}
                                         </p>
                                     )}
                                 </div>
@@ -110,7 +110,7 @@ export function FieldDetailsClient({ field, initialBookings, serviceFee, userRol
                                     🛡️ {t('cancellationPolicy')}
                                 </h4>
                                 <p className="text-orange-800/80 leading-relaxed whitespace-pre-line font-medium">
-                                    {field.cancellationPolicy || t('noPolicy')}
+                                    {isRtl ? (field.cancellationPolicy || t('noPolicy')) : (field.cancellationPolicyEn || field.cancellationPolicy || t('noPolicy'))}
                                 </p>
                             </div>
                         </div>
