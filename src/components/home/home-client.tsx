@@ -121,17 +121,17 @@ export function HomeClient({ session, sortedFields, bookedFieldIds }: any) {
                 </div>
             </section>
 
-            <div className="container mx-auto -mt-12 relative z-40 px-4 pb-20 space-y-8">
+            <div className="container mx-auto -mt-10 relative z-40 px-4 pb-20 space-y-8 flex flex-col items-center">
                 {/* Filter Bar */}
-                <Card className="rounded-xl shadow-lg border-0 overflow-hidden bg-white/95 backdrop-blur-md">
-                    <CardContent className="p-2 md:p-3">
-                        <div className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
+                <Card className="rounded-xl shadow-lg border-0 overflow-hidden bg-white/95 backdrop-blur-md w-full max-w-3xl">
+                    <CardContent className="p-1.5 md:p-2">
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-1.5 items-center">
                             {/* Search */}
                             <div className="md:col-span-5 relative">
-                                <Search className={`absolute ${isRtl ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 text-gray-400 h-3.5 w-3.5`} />
+                                <Search className={`absolute ${isRtl ? 'right-2.5' : 'left-2.5'} top-1/2 -translate-y-1/2 text-gray-400 h-3 w-3`} />
                                 <Input
                                     placeholder={t('searchByName')}
-                                    className={`${isRtl ? 'pr-9' : 'pl-9'} h-9 bg-gray-50/50 border-gray-100 rounded-lg text-sm focus:ring-green-500 focus:border-green-500 transition-all`}
+                                    className={`${isRtl ? 'pr-8' : 'pl-8'} h-8 bg-gray-50/50 border-gray-100 rounded-md text-xs focus:ring-green-500 focus:border-green-500 transition-all`}
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                 />
@@ -139,11 +139,11 @@ export function HomeClient({ session, sortedFields, bookedFieldIds }: any) {
 
                             {/* Area Select */}
                             <div className="md:col-span-4 relative group">
-                                <MapPin className={`absolute ${isRtl ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 text-gray-400 h-3.5 w-3.5`} />
+                                <MapPin className={`absolute ${isRtl ? 'right-2.5' : 'left-2.5'} top-1/2 -translate-y-1/2 text-gray-400 h-3 w-3`} />
                                 <select
                                     value={selectedArea}
                                     onChange={(e) => setSelectedArea(e.target.value)}
-                                    className={`w-full h-9 bg-gray-50/50 border-gray-100 rounded-lg ${isRtl ? 'pr-9' : 'pl-9'} text-sm focus:ring-green-500 focus:border-green-500 appearance-none cursor-pointer transition-all hover:bg-white`}
+                                    className={`w-full h-8 bg-gray-50/50 border-gray-100 rounded-md ${isRtl ? 'pr-8' : 'pl-8'} text-xs focus:ring-green-500 focus:border-green-500 appearance-none cursor-pointer transition-all hover:bg-white`}
                                 >
                                     <option value="">{t('allAreas')}</option>
                                     {areas.map(area => (
@@ -156,12 +156,12 @@ export function HomeClient({ session, sortedFields, bookedFieldIds }: any) {
                             <div className="md:col-span-3">
                                 <Button
                                     onClick={() => setIsNearestActive(!isNearestActive)}
-                                    className={`w-full h-9 rounded-lg flex items-center justify-center gap-2 font-bold transition-all text-xs ${isNearestActive
-                                        ? 'bg-green-600 text-white shadow-[0_2px_8px_rgba(34,197,94,0.3)]'
+                                    className={`w-full h-8 rounded-md flex items-center justify-center gap-1.5 font-bold transition-all text-[10px] ${isNearestActive
+                                        ? 'bg-green-600 text-white shadow-[0_2px_6px_rgba(34,197,94,0.3)]'
                                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                         }`}
                                 >
-                                    <Navigation2 className={`h-3.5 w-3.5 ${isNearestActive ? 'animate-pulse' : ''}`} />
+                                    <Navigation2 className={`h-3 w-3 ${isNearestActive ? 'animate-pulse' : ''}`} />
                                     {t('nearest')}
                                 </Button>
                             </div>

@@ -56,6 +56,16 @@ async function main() {
             lng: 31.2497,
             address: 'Nasr City, Cairo'
         },
+        {
+            name: 'Benha Stadium',
+            pricePerHour: 150,
+            description: 'Very good pitch in the heart of Benha.',
+            imageUrl: 'https://images.unsplash.com/photo-1543351611-58f69d7c1781?q=80&w=2070&auto=format&fit=crop',
+            area: 'Benha',
+            lat: 30.4591,
+            lng: 31.1856,
+            address: 'Benha, Qalyubia'
+        },
     ]
 
     for (const field of fields) {
