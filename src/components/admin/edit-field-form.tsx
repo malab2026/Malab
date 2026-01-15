@@ -36,18 +36,24 @@ export function EditFieldForm({ field, owners }: { field: any, owners: any[] }) 
                 <form action={dispatch} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label htmlFor="name">Field Name</Label>
+                            <Label htmlFor="name">Field Name (Arabic)</Label>
                             <Input id="name" name="name" defaultValue={field.name} required />
                         </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="nameEn">Field Name (English)</Label>
+                            <Input id="nameEn" name="nameEn" defaultValue={field.nameEn || ''} required />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="price">Price per Hour (EGP)</Label>
                             <Input id="price" name="price" type="number" defaultValue={field.pricePerHour} required />
                         </div>
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label htmlFor="address">Detailed Address</Label>
-                        <Input id="address" name="address" defaultValue={field.address || ''} placeholder="e.g. 5th Settlement, near AUC" />
+                        <div className="space-y-2">
+                            <Label htmlFor="address">Detailed Address</Label>
+                            <Input id="address" name="address" defaultValue={field.address || ''} placeholder="e.g. Benha, near Stadium" />
+                        </div>
                     </div>
 
                     <div className="space-y-2">
@@ -55,9 +61,15 @@ export function EditFieldForm({ field, owners }: { field: any, owners: any[] }) 
                         <Input id="locationUrl" name="locationUrl" type="url" defaultValue={field.locationUrl || ''} placeholder="https://maps.google.com/..." />
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="description">Description</Label>
-                        <Input id="description" name="description" defaultValue={field.description || ''} placeholder="Good lighting, 5-a-side..." />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="description">Description (Arabic)</Label>
+                            <Input id="description" name="description" defaultValue={field.description || ''} placeholder="نجيل ممتاز، إضاءة ليلية..." />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="descriptionEn">Description (English)</Label>
+                            <Input id="descriptionEn" name="descriptionEn" defaultValue={field.descriptionEn || ''} placeholder="Excellent turf, night floodlights..." />
+                        </div>
                     </div>
 
                     <div className="space-y-2">
@@ -71,31 +83,49 @@ export function EditFieldForm({ field, owners }: { field: any, owners: any[] }) 
                         />
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="ownerId">Assign Owner</Label>
-                        <select
-                            id="ownerId"
-                            name="ownerId"
-                            defaultValue={field.ownerId || ''}
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                            <option value="">No Owner (Admin Managed)</option>
-                            {owners.map(owner => (
-                                <option key={owner.id} value={owner.id}>
-                                    {owner.name} ({owner.email})
-                                </option>
-                            ))}
-                        </select>
+                    <div className="space-y-4 pt-4 border-t">
+                        <h3 className="text-sm font-semibold text-gray-700">Manager Access</h3>
+                        <div className="space-y-2">
+                            <Label htmlFor="ownerId">Assign Owner</Label>
+                            <select
+                                id="ownerId"
+                                name="ownerId"
+                                defaultValue={field.ownerId || ''}
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                <option value="">No Owner (Admin Managed)</option>
+                                {owners.map(owner => (
+                                    <option key={owner.id} value={owner.id}>
+                                        {owner.name} ({owner.email})
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="image">Field Image (Leave empty to keep current)</Label>
-                        <Input id="image" name="image" type="file" accept="image/*" onChange={handleImageChange} />
-                        {imagePreview && (
-                            <div className="relative h-40 w-full mt-2 rounded-lg overflow-hidden border">
-                                <Image src={imagePreview} alt="Preview" fill className="object-cover" />
-                            </div>
-                        )}
+                    <div className="space-y-4 pt-4 border-t">
+                        <h3 className="text-sm font-semibold text-gray-700">Images (Leave empty to keep current)</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {[1, 2, 3].map((num) => (
+                                <div key={num} className="space-y-2">
+                                    <Label htmlFor={`image${num}`}>Image {num} {num === 1 ? '(Main)' : ''}</Label>
+                                    <Input id={`image${num}`} name={`image${num}`} type="file" accept="image/*" />
+                                    {field[`imageUrl${num > 1 ? num : ''}`] && (
+                                        <div className="relative h-24 w-full mt-2 rounded-lg overflow-hidden border">
+                                            <Image
+                                                src={field[`imageUrl${num > 1 ? num : ''}`].startsWith('data:')
+                                                    ? field[`imageUrl${num > 1 ? num : ''}`]
+                                                    : `/api/field-image/${field.id}?index=${num - 1}`
+                                                }
+                                                alt={`Current ${num}`}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
                     <div className="flex gap-4 pt-4">

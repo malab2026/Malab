@@ -147,10 +147,12 @@ export async function updateField(fieldId: string, prevState: any, formData: For
 
     const validatedFields = FieldSchema.safeParse({
         name: formData.get("name"),
+        nameEn: formData.get("nameEn"),
         price: formData.get("price"),
         address: formData.get("address"),
         locationUrl: formData.get("locationUrl"),
         description: formData.get("description"),
+        descriptionEn: formData.get("descriptionEn"),
         cancellationPolicy: formData.get("cancellationPolicy"),
         ownerId: formData.get("ownerId"),
     })
@@ -159,23 +161,25 @@ export async function updateField(fieldId: string, prevState: any, formData: For
         return { message: "Invalid Inputs", success: false }
     }
 
-    const { name, price, address, locationUrl, description, cancellationPolicy, ownerId } = validatedFields.data
-    const file = formData.get("image") as File
-    let imageUrl = undefined
+    const { name, nameEn, price, address, locationUrl, description, descriptionEn, cancellationPolicy, ownerId } = validatedFields.data
 
-    // Handle Image Upload if a new file is provided
-    if (file && file.size > 0) {
-        try {
-            const buffer = Buffer.from(await file.arrayBuffer())
-            if (buffer.length > 4 * 1024 * 1024) {
-                return { message: "Image too large (max 4MB)", success: false }
+    // Handle Multiple Image Uploads (Base64) - Only update if new image provided
+    const imageUpdates: any = {}
+    const imageFields = ['image1', 'image2', 'image3']
+    const schemaFields = ['imageUrl', 'imageUrl2', 'imageUrl3']
+
+    for (let i = 0; i < imageFields.length; i++) {
+        const file = formData.get(imageFields[i]) as File
+        if (file && file.size > 0) {
+            try {
+                const buffer = Buffer.from(await file.arrayBuffer())
+                if (buffer.length > 4 * 1024 * 1024) continue;
+                const base64String = buffer.toString('base64')
+                const mimeType = file.type || 'image/jpeg'
+                imageUpdates[schemaFields[i]] = `data:${mimeType};base64,${base64String}`
+            } catch (error) {
+                console.error(`Error processing image ${i + 1}`, error)
             }
-            const base64String = buffer.toString('base64')
-            const mimeType = file.type || 'image/jpeg'
-            imageUrl = `data:${mimeType};base64,${base64String}`
-        } catch (error) {
-            console.error("Error processing image", error)
-            return { message: "Failed to process image.", success: false }
         }
     }
 
@@ -184,12 +188,14 @@ export async function updateField(fieldId: string, prevState: any, formData: For
             where: { id: fieldId },
             data: {
                 name,
+                nameEn: nameEn || null,
                 pricePerHour: price,
                 address: address || null,
                 locationUrl: locationUrl || null,
                 description: description || null,
+                descriptionEn: descriptionEn || null,
                 cancellationPolicy: cancellationPolicy || null,
-                ...(imageUrl && { imageUrl }),
+                ...imageUpdates,
                 ownerId: ownerId || null,
             }
         })
