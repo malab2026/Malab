@@ -7,22 +7,36 @@ async function main() {
     const adminEmail = 'admin@malaeb.com'
     const adminPassword = await bcrypt.hash('admin123', 10)
 
-    // Create Admin
-    const admin = await prisma.user.upsert({
-        where: { email: adminEmail },
-        update: {
-            phone: '01000000000',
-        },
-        create: {
-            email: adminEmail,
-            name: 'Admin User',
+    // Create Admins
+    const admins = [
+        {
+            email: 'admin@malaeb.com',
+            name: 'Main Admin',
             password: adminPassword,
             role: 'admin',
             phone: '01000000000',
         },
-    })
+        {
+            email: 'useradmin@malaeb.com',
+            name: 'User Admin',
+            password: adminPassword,
+            role: 'admin',
+            phone: '01009410112',
+        }
+    ]
 
-    console.log({ admin })
+    for (const adminData of admins) {
+        const admin = await prisma.user.upsert({
+            where: { phone: adminData.phone },
+            update: {
+                email: adminData.email,
+                name: adminData.name,
+                password: adminData.password,
+            },
+            create: adminData,
+        })
+        console.log(`Created/Updated admin: ${admin.phone}`)
+    }
 
     // Create Fields
     const fields = [
