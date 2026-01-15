@@ -10,10 +10,10 @@ import path from "path"
 
 const FieldSchema = z.object({
     name: z.string().min(1),
-    nameEn: z.string().min(1),
+    nameEn: z.string().optional().or(z.literal('')),
     price: z.coerce.number().min(0),
     address: z.string().optional(),
-    addressEn: z.string().optional(),
+    addressEn: z.string().optional().or(z.literal('')),
     locationUrl: z.string().url().optional().or(z.literal('')),
     description: z.string().optional(),
     descriptionEn: z.string().optional(),
