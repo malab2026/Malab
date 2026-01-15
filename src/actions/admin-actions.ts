@@ -10,10 +10,12 @@ import path from "path"
 
 const FieldSchema = z.object({
     name: z.string().min(1),
+    nameEn: z.string().min(1).optional().or(z.literal('')),
     price: z.coerce.number().min(0),
     address: z.string().optional(),
     locationUrl: z.string().url().optional().or(z.literal('')),
     description: z.string().optional(),
+    descriptionEn: z.string().optional().or(z.literal('')),
     cancellationPolicy: z.string().optional(),
     ownerId: z.string().optional().or(z.literal('')),
     newManagerName: z.string().optional(),
@@ -34,10 +36,12 @@ export async function createField(prevState: any, formData: FormData) {
 
     const validatedFields = FieldSchema.safeParse({
         name: formData.get("name"),
+        nameEn: formData.get("nameEn"),
         price: formData.get("price"),
         address: formData.get("address"),
         locationUrl: formData.get("locationUrl"),
         description: formData.get("description"),
+        descriptionEn: formData.get("descriptionEn"),
         cancellationPolicy: formData.get("cancellationPolicy"),
         ownerId: formData.get("ownerId"),
         newManagerName: formData.get("newManagerName"),
@@ -50,7 +54,7 @@ export async function createField(prevState: any, formData: FormData) {
     }
 
     const {
-        name, price, address, locationUrl, description, cancellationPolicy,
+        name, nameEn, price, address, locationUrl, description, descriptionEn, cancellationPolicy,
         ownerId, newManagerName, newManagerEmail, newManagerPassword
     } = validatedFields.data
 
@@ -81,32 +85,47 @@ export async function createField(prevState: any, formData: FormData) {
         }
     }
 
-    // Handle Image Upload
-    // Handle Image Upload (Base64)
-    let imageUrl = '';
-    try {
-        const buffer = Buffer.from(await file.arrayBuffer())
-        if (buffer.length > 4 * 1024 * 1024) {
-            return { message: "Image too large (max 4MB)", success: false }
+    // Handle Multiple Image Uploads (Base64)
+    const images: string[] = ['', '', ''];
+    const imageFiles = [
+        formData.get("image1") as File,
+        formData.get("image2") as File,
+        formData.get("image3") as File
+    ];
+
+    for (let i = 0; i < imageFiles.length; i++) {
+        const file = imageFiles[i];
+        if (file && file.size > 0) {
+            try {
+                const buffer = Buffer.from(await file.arrayBuffer())
+                if (buffer.length > 4 * 1024 * 1024) continue; // Skip if too large or handle error
+                const base64String = buffer.toString('base64')
+                const mimeType = file.type || 'image/jpeg'
+                images[i] = `data:${mimeType};base64,${base64String}`
+            } catch (error) {
+                console.error(`Error processing image ${i + 1}`, error)
+            }
         }
-        const base64String = buffer.toString('base64')
-        const mimeType = file.type || 'image/jpeg'
-        imageUrl = `data:${mimeType};base64,${base64String}`
-    } catch (error) {
-        console.error("Error processing image", error)
-        return { message: "Failed to process image.", success: false }
+    }
+
+    if (!images[0]) {
+        return { message: "First image is required", success: false }
     }
 
     try {
         await prisma.field.create({
             data: {
                 name,
+                nameEn: nameEn || null,
                 pricePerHour: price,
                 address: address || null,
                 locationUrl: locationUrl || null,
                 description: description || null,
+                descriptionEn: descriptionEn || null,
                 cancellationPolicy: cancellationPolicy || "No cancellation policy specified.",
-                imageUrl,
+                imageUrl: images[0],
+                imageUrl2: images[1] || null,
+                imageUrl3: images[2] || null,
                 ownerId: finalOwnerId,
             }
         })

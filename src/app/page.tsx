@@ -14,7 +14,9 @@ export default async function Home() {
     select: {
       id: true,
       name: true,
+      nameEn: true,
       description: true,
+      descriptionEn: true,
       address: true,
       area: true,
       lat: true,

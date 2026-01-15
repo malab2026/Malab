@@ -8,20 +8,29 @@ export async function GET(
     { params }: { params: Promise<{ id: string }> }
 ) {
     const { id } = await params
+    const searchParams = request.nextUrl.searchParams
+    const index = parseInt(searchParams.get('index') || '0')
 
     // Public route for field images (anyone can see field photos)
     const field = await prisma.field.findUnique({
         where: { id },
-        select: { imageUrl: true }
-    })
+        select: { imageUrl: true, imageUrl2: true, imageUrl3: true }
+    } as any)
 
-    if (!field || !field.imageUrl) {
+    if (!field) {
+        return new NextResponse("Not Found", { status: 404 })
+    }
+
+    const imageUrls = [field.imageUrl, field.imageUrl2, field.imageUrl3]
+    const targetImageUrl = imageUrls[index]
+
+    if (!targetImageUrl) {
         return new NextResponse("Not Found", { status: 404 })
     }
 
     // Parse Base64 Data URI
     try {
-        const matches = field.imageUrl.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)
+        const matches = targetImageUrl.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/)
 
         if (!matches || matches.length !== 3) {
             return new NextResponse("Invalid Image Data", { status: 500 })

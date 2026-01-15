@@ -1,12 +1,18 @@
-'use client'
-
 import { Navbar } from "@/components/layout/navbar"
 import Image from "next/image"
+import { useState } from "react"
 import { BookingForm } from "@/components/booking/booking-form"
 import { useTranslation } from "@/components/providers/locale-context"
 
 export function FieldDetailsClient({ field, initialBookings, serviceFee, userRole }: any) {
     const { t, isRtl } = useTranslation()
+    const [selectedImage, setSelectedImage] = useState(0)
+
+    const images = [
+        field.imageUrl,
+        field.imageUrl2,
+        field.imageUrl3
+    ].filter(Boolean)
 
     return (
         <main className="min-h-screen pb-10 bg-gray-50/30">
@@ -16,17 +22,54 @@ export function FieldDetailsClient({ field, initialBookings, serviceFee, userRol
                 <div className="flex flex-col gap-10 max-w-5xl mx-auto">
                     {/* Top: Image & Info */}
                     <div className="space-y-6">
-                        <div className="relative h-[300px] md:h-[450px] w-full rounded-2xl overflow-hidden shadow-2xl">
-                            <Image
-                                src={`/api/field-image/${field.id}`}
-                                alt={field.name}
-                                fill
-                                className="object-cover"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6 md:p-10">
-                                <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight">{field.name}</h1>
+                        <div className="relative group">
+                            <div className="relative h-[300px] md:h-[450px] w-full rounded-2xl overflow-hidden shadow-2xl transition-all duration-500">
+                                <Image
+                                    src={images[selectedImage]?.startsWith('data:') ? images[selectedImage] : `/api/field-image/${field.id}?index=${selectedImage}`}
+                                    alt={field.name}
+                                    fill
+                                    className="object-cover transition-transform duration-700 hover:scale-105"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-6 md:p-10">
+                                    <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight">
+                                        {isRtl ? field.name : (field.nameEn || field.name)}
+                                    </h1>
+                                </div>
                             </div>
+
+                            {/* Image Navigation Dots / Thumbnails */}
+                            {images.length > 1 && (
+                                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+                                    {images.map((_, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => setSelectedImage(idx)}
+                                            className={`w-3 h-3 rounded-full transition-all ${idx === selectedImage ? 'bg-green-500 w-8' : 'bg-white/50 hover:bg-white'}`}
+                                        />
+                                    ))}
+                                </div>
+                            )}
                         </div>
+
+                        {/* Thumbnails list */}
+                        {images.length > 1 && (
+                            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                                {images.map((img, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => setSelectedImage(idx)}
+                                        className={`relative h-20 w-32 flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all ${idx === selectedImage ? 'border-green-500 scale-95 shadow-lg' : 'border-transparent opacity-70 hover:opacity-100'}`}
+                                    >
+                                        <Image
+                                            src={img?.startsWith('data:') ? img : `/api/field-image/${field.id}?index=${idx}`}
+                                            alt={`${field.name} ${idx + 1}`}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
 
                         <div className="bg-white p-6 md:p-10 rounded-2xl shadow-sm border border-gray-100">
                             <div className="flex flex-col md:flex-row justify-between items-start gap-4">
@@ -56,7 +99,9 @@ export function FieldDetailsClient({ field, initialBookings, serviceFee, userRol
                             <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
                                 📖 {t('aboutField')}
                             </h3>
-                            <p className="text-gray-600 leading-relaxed mb-8 text-lg">{field.description}</p>
+                            <p className="text-gray-600 leading-relaxed mb-8 text-lg">
+                                {isRtl ? field.description : (field.descriptionEn || field.description)}
+                            </p>
 
                             <div className="p-6 bg-orange-50 border border-orange-100 rounded-2xl">
                                 <h4 className="text-orange-900 font-bold mb-3 flex items-center gap-2 text-lg">

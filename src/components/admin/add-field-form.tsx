@@ -25,18 +25,24 @@ export function AddFieldForm({ owners }: { owners: any[] }) {
                 <form action={dispatch} className="space-y-4">
                     <div className="grid md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label htmlFor="name">Field Name</Label>
-                            <Input id="name" name="name" placeholder="e.g. Camp Nou" required />
+                            <Label htmlFor="name">Field Name (Arabic)</Label>
+                            <Input id="name" name="name" placeholder="مثلاً: ملعب الكامب نو" required />
                         </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="nameEn">Field Name (English)</Label>
+                            <Input id="nameEn" name="nameEn" placeholder="e.g. Camp Nou Stadium" required />
+                        </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="price">Price per Hour (EGP)</Label>
                             <Input id="price" name="price" type="number" min="0" placeholder="200" required />
                         </div>
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label htmlFor="address">Detailed Address</Label>
-                        <Input id="address" name="address" placeholder="e.g. 5th Settlement, near AUC" required />
+                        <div className="space-y-2">
+                            <Label htmlFor="address">Detailed Address</Label>
+                            <Input id="address" name="address" placeholder="e.g. Benha, near Stadium" required />
+                        </div>
                     </div>
 
                     <div className="space-y-2">
@@ -44,9 +50,15 @@ export function AddFieldForm({ owners }: { owners: any[] }) {
                         <Input id="locationUrl" name="locationUrl" type="url" placeholder="https://maps.google.com/..." />
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="description">Description</Label>
-                        <Input id="description" name="description" placeholder="Good lighting, 5-a-side..." />
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="description">Description (Arabic)</Label>
+                            <Input id="description" name="description" placeholder="نجيل ممتاز، إضاءة ليلية..." />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="descriptionEn">Description (English)</Label>
+                            <Input id="descriptionEn" name="descriptionEn" placeholder="Excellent turf, night floodlights..." />
+                        </div>
                     </div>
 
                     <div className="space-y-2">
@@ -76,28 +88,24 @@ export function AddFieldForm({ owners }: { owners: any[] }) {
                                 ))}
                             </select>
                         </div>
-                        <div className="bg-gray-50 p-4 rounded-lg space-y-3 border border-dashed border-gray-300">
-                            <p className="text-xs text-gray-500 font-medium">-- OR -- Create New Manager Account</p>
-                            <div className="space-y-2">
-                                <Label htmlFor="newManagerName">Manager Full Name</Label>
-                                <Input id="newManagerName" name="newManagerName" placeholder="Management Name" />
-                            </div>
-                            <div className="grid grid-cols-2 gap-2">
-                                <div className="space-y-2">
-                                    <Label htmlFor="newManagerEmail">Manager Email</Label>
-                                    <Input id="newManagerEmail" name="newManagerEmail" type="email" placeholder="manager@example.com" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="newManagerPassword">Temp Password</Label>
-                                    <Input id="newManagerPassword" name="newManagerPassword" type="password" placeholder="******" />
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="image">Field Image</Label>
-                        <Input id="image" name="image" type="file" accept="image/*" required />
+                    <div className="space-y-4 pt-4 border-t">
+                        <h3 className="text-sm font-semibold text-gray-700">Images (Max 3)</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="image1">Main Image</Label>
+                                <Input id="image1" name="image1" type="file" accept="image/*" required />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="image2">Image 2 (Optional)</Label>
+                                <Input id="image2" name="image2" type="file" accept="image/*" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="image3">Image 3 (Optional)</Label>
+                                <Input id="image3" name="image3" type="file" accept="image/*" />
+                            </div>
+                        </div>
                     </div>
 
                     <SubmitButton />

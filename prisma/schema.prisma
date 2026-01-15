@@ -23,14 +23,18 @@ model User {
 model Field {
   id                 String    @id @default(cuid())
   name               String
+  nameEn             String?
   pricePerHour       Float
   description        String?
+  descriptionEn      String?
   address            String?
   area               String?
   lat                Float?
   lng                Float?
   locationUrl        String?
   imageUrl           String?
+  imageUrl2          String?
+  imageUrl3          String?
   cancellationPolicy String?   @default("No cancellation policy specified.")
   ownerId            String?
   createdAt          DateTime  @default(now())

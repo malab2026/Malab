@@ -62,10 +62,12 @@ export function HomeClient({ session, sortedFields, bookedFieldIds }: any) {
     const filteredAndSortedFields = useMemo(() => {
         let result = [...sortedFields]
 
-        // 1. Filter by Name
+        // 1. Filter by Name (Search both Arabic and English)
         if (search) {
+            const searchLower = search.toLowerCase()
             result = result.filter(f =>
-                f.name.toLowerCase().includes(search.toLowerCase())
+                f.name.toLowerCase().includes(searchLower) ||
+                (f.nameEn && f.nameEn.toLowerCase().includes(searchLower))
             )
         }
 
@@ -218,7 +220,9 @@ export function HomeClient({ session, sortedFields, bookedFieldIds }: any) {
                                                 </div>
 
                                                 <div className={`absolute bottom-8 ${isRtl ? 'right-8 text-right' : 'left-8 text-left'} right-8`}>
-                                                    <h3 className="text-3xl font-black text-white tracking-tight">{field.name}</h3>
+                                                    <h3 className="text-3xl font-black text-white tracking-tight">
+                                                        {isRtl ? field.name : (field.nameEn || field.name)}
+                                                    </h3>
                                                     <div className="flex items-center gap-2 text-gray-300 text-sm font-bold mt-2">
                                                         {field.area && (
                                                             <span className="bg-white/10 px-2 py-0.5 rounded backdrop-blur-sm">🏢 {field.area}</span>
