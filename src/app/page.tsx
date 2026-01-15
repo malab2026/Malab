@@ -16,6 +16,9 @@ export default async function Home() {
       name: true,
       description: true,
       address: true,
+      area: true,
+      lat: true,
+      lng: true,
       pricePerHour: true,
     },
   })
