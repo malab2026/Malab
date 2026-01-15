@@ -31,9 +31,9 @@ export async function createField(prevState: any, formData: FormData) {
         return { message: "Unauthorized", success: false }
     }
 
-    const file = formData.get("image") as File
+    const file = formData.get("image1") as File
     if (!file || file.size === 0) {
-        return { message: "Image is required", success: false }
+        return { message: "Main Image is required", success: false }
     }
 
     const validatedFields = FieldSchema.safeParse({
