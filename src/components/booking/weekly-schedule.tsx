@@ -56,13 +56,14 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
         return d
     }
 
-    const isBooked = (date: Date, time: string) => {
+    const getBookingStatus = (date: Date, time: string) => {
         const slotStart = getSlotDateTime(date, time)
-        return existingBookings.some(b => {
+        const booking = existingBookings.find(b => {
             const bStart = new Date(b.startTime)
             const bEnd = new Date(b.endTime)
             return slotStart >= bStart && slotStart < bEnd
         })
+        return booking?.status
     }
 
     const isSelected = (date: Date, time: string) => {
@@ -75,7 +76,7 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
         const slotStart = getSlotDateTime(date, time)
         const dateStr = format(slotStart, 'yyyy-MM-dd')
 
-        if (isBooked(date, time)) return
+        if (getBookingStatus(date, time)) return
 
         if (isSelected(date, time)) {
             onSlotRemove(dateStr, time)
@@ -163,7 +164,9 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
                 {/* Slots Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                     {hours.map((time) => {
-                        const booked = isBooked(selectedDay, time)
+                        const status = getBookingStatus(selectedDay, time)
+                        const booked = !!status
+                        const isPending = status === 'PENDING'
                         const selected = isSelected(selectedDay, time)
                         const slotDateTime = getSlotDateTime(selectedDay, time)
                         const past = isBefore(slotDateTime, new Date())
@@ -176,20 +179,22 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
                                 onClick={() => handleSlotClick(selectedDay, time)}
                                 className={cn(
                                     "relative h-16 rounded-2xl border text-xs font-black transition-all flex flex-col items-center justify-center gap-1.5",
-                                    booked ? "bg-red-600 border-red-700 text-white cursor-not-allowed shadow-sm" :
-                                        selected ? "bg-blue-600 border-blue-700 text-white shadow-lg scale-[1.05] z-10" :
-                                            past ? "bg-gray-50 border-gray-100 text-gray-300 cursor-default" :
-                                                "bg-green-500 border-green-600 text-white hover:bg-green-600 active:scale-95 shadow-sm"
+                                    isPending ? "bg-orange-500 border-orange-600 text-white cursor-not-allowed shadow-sm" :
+                                        booked ? "bg-red-600 border-red-700 text-white cursor-not-allowed shadow-sm" :
+                                            selected ? "bg-blue-600 border-blue-700 text-white shadow-lg scale-[1.05] z-10" :
+                                                past ? "bg-gray-50 border-gray-100 text-gray-300 cursor-default" :
+                                                    "bg-green-500 border-green-600 text-white hover:bg-green-600 active:scale-95 shadow-sm"
                                 )}
                             >
                                 <Timer className={cn("h-4 w-4", (selected || booked || !past) ? "text-white/80" : "text-gray-400")} />
                                 <span dir="ltr">{formatTimeDisplay(time)}</span>
                                 {booked && (
                                     <span className={cn(
-                                        "absolute -top-1 text-[8px] bg-white text-red-600 px-2 py-0.5 rounded-full border-2 border-red-600 font-bold leading-none",
+                                        "absolute -top-1 text-[8px] bg-white px-2 py-0.5 rounded-full border-2 font-bold leading-none",
+                                        isPending ? "text-orange-600 border-orange-600" : "text-red-600 border-red-600",
                                         isRtl ? "-left-1" : "-right-1"
                                     )}>
-                                        {t('booked')}
+                                        {isPending ? t('confirmPending') : t('booked')}
                                     </span>
                                 )}
                             </button>
@@ -199,10 +204,14 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
 
                 {/* Legend */}
                 <div className="flex justify-between items-center pt-6 border-t border-gray-100">
-                    <div className="flex gap-4">
+                    <div className="flex flex-wrap gap-4">
                         <div className="flex items-center gap-1.5">
                             <div className="w-3 h-3 rounded bg-green-500 shadow-sm"></div>
                             <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">{t('available')}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <div className="w-3 h-3 rounded bg-orange-500 shadow-sm"></div>
+                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">{t('confirmPending')}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
                             <div className="w-3 h-3 rounded bg-red-600 shadow-sm"></div>

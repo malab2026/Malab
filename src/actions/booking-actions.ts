@@ -218,6 +218,7 @@ export async function createBooking(prevState: any, formData: FormData) {
 
     revalidatePath('/dashboard')
     revalidatePath('/owner')
+    revalidatePath(`/fields/${formData.get('fieldId')}`)
     redirect('/dashboard')
 }
 
@@ -243,6 +244,7 @@ export async function cancelBooking(bookingId: string) {
         })
 
         revalidatePath('/dashboard')
+        revalidatePath(`/fields/${booking.fieldId}`)
         return { success: true }
     } catch (e) {
         return { message: "Database Error" }
@@ -308,6 +310,7 @@ export async function updateBooking(bookingId: string, prevState: any, formData:
         })
 
         revalidatePath('/dashboard')
+        revalidatePath(`/fields/${booking.fieldId}`)
     } catch (e) {
         return { message: "Database Error" }
     }

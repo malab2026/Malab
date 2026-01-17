@@ -239,17 +239,18 @@ export async function updateBookingStatus(bookingId: string, status: "CONFIRMED"
     }
 
     try {
-        await prisma.booking.update({
+        const booking = await prisma.booking.update({
             where: { id: bookingId },
             data: { status },
+            select: { fieldId: true }
         })
+        revalidatePath('/admin')
+        revalidatePath('/dashboard')
+        revalidatePath(`/fields/${booking.fieldId}`)
     } catch (e) {
         console.error(e)
         return { message: "Database Error" }
     }
-
-    revalidatePath('/admin')
-    revalidatePath('/dashboard')
 }
 
 export async function assignOwner(fieldId: string, ownerId: string) {

@@ -26,6 +26,7 @@ export async function updateOwnerBookingStatus(bookingId: string, status: "CONFI
 
         revalidatePath('/owner')
         revalidatePath(`/owner/fields/${booking.fieldId}`)
+        revalidatePath(`/fields/${booking.fieldId}`)
         return { message: `Booking ${status.toLowerCase()} successfully`, success: true }
     } catch (e) {
         console.error(e)
