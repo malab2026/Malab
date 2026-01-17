@@ -54,8 +54,6 @@ export const translations = {
         occupied: "محجوز",
         selected: "مختار",
         booked: "تم الحجز",
-        pending: "قيد الانتظار",
-        confirmPending: "بانتظار التأكيد",
 
         // Shared
         egp: "ج.م",
@@ -159,8 +157,6 @@ export const translations = {
         occupied: "Occupied",
         selected: "Selected",
         booked: "BOOKED",
-        pending: "PENDING",
-        confirmPending: "Awaiting Confirmation",
 
         // Shared
         egp: "EGP",
