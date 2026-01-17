@@ -20,6 +20,8 @@ const MultiBookingSchema = z.object({
     slots: z.array(SlotSchema).min(1),
 })
 
+const OCCUPYING_STATUSES = ['PENDING', 'CONFIRMED', 'CANCEL_REQUESTED', 'BLOCKED']
+
 export async function checkAvailability(fieldId: string, slots: any[]) {
     try {
         for (const slot of slots) {
@@ -33,7 +35,7 @@ export async function checkAvailability(fieldId: string, slots: any[]) {
             const conflict = await prisma.booking.findFirst({
                 where: {
                     fieldId,
-                    status: { not: "REJECTED" },
+                    status: { in: OCCUPYING_STATUSES },
                     OR: [
                         { startTime: { lt: endDateTime }, endTime: { gt: startDateTime } },
                     ],
@@ -55,7 +57,7 @@ export async function getFieldBookings(fieldId: string, startDate: string, endDa
         const bookings = await prisma.booking.findMany({
             where: {
                 fieldId,
-                status: { not: "REJECTED" },
+                status: { in: OCCUPYING_STATUSES },
                 startTime: {
                     gte: new Date(`${startDate}T00:00:00`),
                     lte: new Date(`${endDate}T23:59:59`),
@@ -142,7 +144,7 @@ export async function createBooking(prevState: any, formData: FormData) {
             const conflict = await prisma.booking.findFirst({
                 where: {
                     fieldId,
-                    status: { not: "REJECTED" },
+                    status: { in: OCCUPYING_STATUSES },
                     OR: [
                         { startTime: { lt: endDateTime }, endTime: { gt: startDateTime } },
                     ],
@@ -283,7 +285,7 @@ export async function updateBooking(bookingId: string, prevState: any, formData:
             where: {
                 fieldId: booking.fieldId,
                 id: { not: bookingId },
-                status: { not: "REJECTED" },
+                status: { in: OCCUPYING_STATUSES },
                 OR: [
                     {
                         startTime: { lt: endDateTime },
