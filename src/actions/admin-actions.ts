@@ -472,7 +472,7 @@ export async function getFinancialReport(filters: { startDate?: string, endDate?
     }
 
     try {
-        const bookings = await (prisma.booking as any).findMany({
+        const bookings = await prisma.booking.findMany({
             where,
             select: {
                 id: true,
@@ -496,12 +496,12 @@ export async function getFinancialReport(filters: { startDate?: string, endDate?
             totalGross: 0,
             totalRefunds: 0,
             totalNet: 0,
-            totalBookings: (bookings as any).length,
+            totalBookings: bookings.length,
             fieldBreakdown: {} as Record<string, any>,
             bookings: bookings // Include individual bookings for the UI
-        };
+        }
 
-        (bookings as any).forEach((booking: any) => {
+        bookings.forEach((booking: any) => {
             const durationHours = (booking.endTime.getTime() - booking.startTime.getTime()) / (1000 * 60 * 60)
             const gross = durationHours * booking.field.pricePerHour
             const refund = booking.refundAmount || 0
@@ -552,7 +552,7 @@ export async function markBookingsSettled(bookingIds: string[]) {
     }
 
     try {
-        await (prisma.booking as any).updateMany({
+        await prisma.booking.updateMany({
             where: { id: { in: bookingIds } },
             data: { isSettled: true }
         })
