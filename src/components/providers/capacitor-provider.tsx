@@ -9,27 +9,31 @@ export function CapacitorProvider({ children }: { children: React.ReactNode }) {
     const pathname = usePathname()
 
     useEffect(() => {
-        const handleBackButton = async () => {
-            await App.addListener('backButton', ({ canGoBack }) => {
-                if (canGoBack) {
-                    window.history.back()
-                } else if (pathname !== '/') {
-                    router.push('/')
-                } else {
+        let backListener: any = null;
+
+        const setupListener = async () => {
+            backListener = await App.addListener('backButton', () => {
+                if (pathname === '/') {
+                    // On home page, exit app
                     App.exitApp()
+                } else {
+                    // On other pages, go back
+                    window.history.back()
                 }
             })
         }
 
         // Only run on Capacitor (Native)
         if (typeof window !== 'undefined' && (window as any).Capacitor) {
-            handleBackButton()
+            setupListener()
         }
 
         return () => {
-            App.removeAllListeners()
+            if (backListener) {
+                backListener.remove()
+            }
         }
-    }, [router, pathname])
+    }, [pathname])
 
     return <>{children}</>
 }
