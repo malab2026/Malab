@@ -8,7 +8,11 @@ on:
       - 'src/**'
       - 'public/**'
       - 'capacitor.config.ts'
+      - 'package.json'
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build-ios:
@@ -39,75 +43,82 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync ios
 
-      - name: Install CocoaPods
+      - name: Install CocoaPods & Patch Signing
         run: |
           cd ios/App
+          # Clean old pods
+          rm -rf Pods
+          rm -f Podfile.lock
           pod install --repo-update
+          
+          # CRITICAL: Patch Pods to COMPLETELY ignore code signing.
+          # This is the most common cause of 'Code 65' in automated CI.
+          echo "🛠️ Patching Pods for No-Signing build..."
+          find Pods -name "*-frameworks.sh" -exec sed -i '' 's/code_sign_if_enabled/echo "Skipping code signing"/g' {} +
+          find Pods -name "*-frameworks.sh" -exec sed -i '' 's/codesign /echo "Skipping codesign" /g' {} +
 
       - name: Build Unsigned App
         run: |
           cd ios/App
-          xcodebuild clean build \
+          # Build .app with no signing required
+          xcodebuild build \
             -workspace App.xcworkspace \
             -scheme App \
             -configuration Release \
             -sdk iphoneos \
             -derivedDataPath ../../build \
-            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGN_IDENTITY="" \
+            AD_HOC_CODE_SIGNING_ALLOWED=YES
 
-      - name: Package Unsigned IPA
+      - name: Package MALA3EBNA IPA
         run: |
           echo "📂 Finding built App.app..."
-          find build -name "*.app" -type d
-          
           APP_PATH=$(find build -name "App.app" -type d | head -n 1)
           
           if [ -z "$APP_PATH" ]; then
             echo "❌ Error: App.app not found in build directory!"
-            find build -maxdepth 4
             exit 1
           fi
           
           echo "✅ Found App at: $APP_PATH"
-          
           mkdir Payload
           cp -r "$APP_PATH" Payload/
-          zip -r App-Unsigned.ipa Payload
+          zip -r MALA3EBNA.ipa Payload
+
+      - name: Create Source Code Zip (Fallback)
+        run: |
+          # Create a clean zip for Mac users to build manually
+          zip -r Malaeb-iOS-Source.zip ios package.json capacitor.config.ts src public
 
       - name: Get Version
         id: version
         run: echo "version=$(date +'%Y.%m.%d-%H%M')" >> $GITHUB_OUTPUT
 
-      - name: Upload Release Asset
+      - name: Upload Release Assets
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ios-v${{ steps.version.outputs.version }}
-          name: MALA3EBNA iOS (Unsigned) v${{ steps.version.outputs.version }}
+          name: MALA3EBNA iOS v${{ steps.version.outputs.version }}
           body: |
             ## 🍎 MALA3EBNA - iOS Release (Unsigned)
             
-            ⚠️ **IMPORTANT: READ BEFORE DOWNLOADING**
+            This release contains both an Unsigned IPA and the Source Code for manual building.
             
-            This is an **Unsigned IPA**. You CANNOT install this directly on your iPhone just by downloading it. Apple blocks this.
+            ### 📥 Download Options
             
-            ### 🛠️ How to Install
-            To install this file, you must use a Sideloading tool on your PC or Mac:
+            1. **MALA3EBNA.ipa** (Unsigned)
+               - Use **AltStore** or **Sideloadly** on your computer to install this.
             
-            1. **AltStore** (Recommended)
-            2. **Sideloadly**
-            3. **TrollStore** (if compatible)
-            
-            These tools will use your own free Apple ID to sign the app for 7 days.
-            
-            ### 📥 Download
-            Download `App-Unsigned.ipa` below.
+            2. **Malaeb-iOS-Source.zip** (Source Code)
+               - Best for Mac users. Download, unzip, and run `pod install` in `ios/App`, then build in Xcode.
             
             ---
             🏟️ Built with ❤️ for football lovers
           files: |
-            App-Unsigned.ipa
+            MALA3EBNA.ipa
+            Malaeb-iOS-Source.zip
           draft: false
           prerelease: false
         env:
