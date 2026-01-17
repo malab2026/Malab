@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
+import { SettlementManager } from "@/components/admin/settlement-manager"
 
 export const dynamic = 'force-dynamic'
 
@@ -106,10 +107,15 @@ export default async function AdminAccountsPage({
                     </Card>
                 </div>
 
+                {/* Individual Bookings / Settlement Management */}
+                <section className="mb-12">
+                    <SettlementManager bookings={report.bookings} />
+                </section>
+
                 {/* Table Breakdown */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Field Performance</CardTitle>
+                        <CardTitle>Field Performance Summary</CardTitle>
                     </CardHeader>
                     <CardContent className="p-0">
                         <div className="overflow-x-auto">

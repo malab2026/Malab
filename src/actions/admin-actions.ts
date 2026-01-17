@@ -471,7 +471,7 @@ export async function getFinancialReport(filters: { startDate?: string, endDate?
         if (endDate) where.startTime.lte = new Date(`${endDate}T23:59:59`)
     }
 
-    const bookings = await prisma.booking.findMany({
+    const bookings = await (prisma.booking as any).findMany({
         where,
         select: {
             id: true,
@@ -479,6 +479,7 @@ export async function getFinancialReport(filters: { startDate?: string, endDate?
             endTime: true,
             status: true,
             refundAmount: true,
+            isSettled: true,
             field: {
                 select: {
                     id: true,
@@ -494,11 +495,12 @@ export async function getFinancialReport(filters: { startDate?: string, endDate?
         totalGross: 0,
         totalRefunds: 0,
         totalNet: 0,
-        totalBookings: bookings.length,
-        fieldBreakdown: {} as Record<string, any>
-    }
+        totalBookings: (bookings as any).length,
+        fieldBreakdown: {} as Record<string, any>,
+        bookings: bookings // Include individual bookings for the UI
+    };
 
-    bookings.forEach(booking => {
+    (bookings as any).forEach((booking: any) => {
         const durationHours = (booking.endTime.getTime() - booking.startTime.getTime()) / (1000 * 60 * 60)
         const gross = durationHours * booking.field.pricePerHour
         const refund = booking.refundAmount || 0
@@ -528,6 +530,26 @@ export async function getFinancialReport(filters: { startDate?: string, endDate?
     })
 
     return report
+}
+
+export async function markBookingsSettled(bookingIds: string[]) {
+    const session = await auth()
+    if (!session || session.user.role !== 'admin') {
+        return { message: "Unauthorized", success: false }
+    }
+
+    try {
+        await (prisma.booking as any).updateMany({
+            where: { id: { in: bookingIds } },
+            data: { isSettled: true }
+        })
+
+        revalidatePath('/admin/accounts')
+        return { message: "Bookings marked as settled", success: true }
+    } catch (e) {
+        console.error(e)
+        return { message: "Database Error", success: false }
+    }
 }
 
 export async function getServiceFee() {

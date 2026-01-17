@@ -57,6 +57,7 @@ model Booking {
   cancellationReason    String?
   refundAmount          Float?
   cancellationAdminNote String?
+  isSettled             Boolean   @default(false)
   createdAt             DateTime  @default(now())
   field                 Field     @relation(fields: [fieldId], references: [id], onDelete: Cascade)
   user                  User      @relation(fields: [userId], references: [id])
