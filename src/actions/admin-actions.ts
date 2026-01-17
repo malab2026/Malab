@@ -316,6 +316,62 @@ export async function createOwnerAccount(prevState: any, formData: FormData) {
     }
 }
 
+const UpdateUserSchema = z.object({
+    name: z.string().min(1, "Name is required"),
+    email: z.string().email("Invalid email address").optional().or(z.literal('')),
+    phone: z.string().min(10, "Phone number is required"),
+    role: z.enum(['user', 'owner', 'admin'] as const),
+    password: z.string().min(6, "Password must be at least 6 characters").optional().or(z.literal('')),
+})
+
+export async function updateUser(userId: string, prevState: any, formData: FormData) {
+    const session = await auth()
+    if (session?.user?.role !== 'admin') {
+        return { message: "Unauthorized", success: false }
+    }
+
+    const validatedFields = UpdateUserSchema.safeParse({
+        name: formData.get('name'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        role: formData.get('role'),
+        password: formData.get('password'),
+    })
+
+    if (!validatedFields.success) {
+        return { message: "Invalid fields", success: false, errors: validatedFields.error.flatten().fieldErrors }
+    }
+
+    const { name, email, phone, role, password } = validatedFields.data
+
+    try {
+        const updateData: any = {
+            name,
+            email: email || null,
+            phone,
+            role,
+        }
+
+        if (password) {
+            updateData.password = await bcrypt.hash(password, 10)
+        }
+
+        await prisma.user.update({
+            where: { id: userId },
+            data: updateData,
+        })
+
+        revalidatePath('/admin')
+        return { message: "User updated successfully", success: true }
+    } catch (e: any) {
+        console.error(e)
+        if (e.code === 'P2002') {
+            return { message: "Email or Phone already exists", success: false }
+        }
+        return { message: "Database Error", success: false }
+    }
+}
+
 export async function updateUserRole(userId: string, role: string, formData: FormData) {
     const session = await auth()
     if (!session || session.user.role !== 'admin') {

@@ -16,6 +16,7 @@ import { AddFieldForm } from "@/components/admin/add-field-form"
 import { CreateOwnerForm } from "@/components/admin/create-owner-form"
 import { ProcessCancellationDialog } from "@/components/admin/process-cancellation-dialog"
 import { ServiceFeeForm } from "@/components/admin/service-fee-form"
+import { EditUserDialog } from "@/components/admin/edit-user-dialog"
 
 export default async function AdminPage() {
     const session = await auth()
@@ -94,7 +95,7 @@ export default async function AdminPage() {
         }),
         prisma.user.findMany({
             orderBy: { createdAt: 'desc' },
-            select: { id: true, name: true, email: true, role: true, createdAt: true }
+            select: { id: true, name: true, email: true, phone: true, role: true, createdAt: true }
         }),
         prisma.globalSettings.upsert({
             where: { id: 'global' },
@@ -158,22 +159,23 @@ export default async function AdminPage() {
                                                     <tr key={user.id} className="bg-white hover:bg-gray-50">
                                                         <td className="px-6 py-4">
                                                             <div className="font-semibold">{user.name}</div>
-                                                            <div className="text-gray-500 text-xs">{user.email}</div>
+                                                            <div className="text-gray-500 text-xs">{user.email || user.phone}</div>
                                                         </td>
                                                         <td className="px-6 py-4">
                                                             <Badge variant={user.role === 'admin' ? 'default' : user.role === 'owner' ? 'secondary' : 'outline'}>
                                                                 {user.role}
                                                             </Badge>
                                                         </td>
-                                                        <td className="px-6 py-4 text-right">
+                                                        <td className="px-6 py-4 text-right flex justify-end gap-2">
+                                                            <EditUserDialog user={user} />
                                                             {user.role === 'user' && (
                                                                 <form action={updateUserRole.bind(null, user.id, 'owner') as any}>
-                                                                    <Button size="sm" variant="outline">Promote to Owner</Button>
+                                                                    <Button size="sm" variant="outline">Promote</Button>
                                                                 </form>
                                                             )}
                                                             {user.role === 'owner' && (
                                                                 <form action={updateUserRole.bind(null, user.id, 'user') as any}>
-                                                                    <Button size="sm" variant="ghost" className="text-red-600">Demote to User</Button>
+                                                                    <Button size="sm" variant="ghost" className="text-red-600">Demote</Button>
                                                                 </form>
                                                             )}
                                                         </td>
