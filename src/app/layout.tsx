@@ -29,6 +29,8 @@ import { Toaster } from "sonner";
 import { LocaleProvider } from "@/components/providers/locale-context";
 import { AuthProvider } from "@/components/providers/auth-provider";
 
+import { CapacitorProvider } from "@/components/providers/capacitor-provider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -41,8 +43,10 @@ export default function RootLayout({
       >
         <AuthProvider>
           <LocaleProvider>
-            {children}
-            <Toaster position="top-center" richColors />
+            <CapacitorProvider>
+              {children}
+              <Toaster position="top-center" richColors />
+            </CapacitorProvider>
           </LocaleProvider>
         </AuthProvider>
       </body>
