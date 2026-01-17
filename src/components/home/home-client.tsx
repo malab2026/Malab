@@ -219,7 +219,7 @@ export function HomeClient({ session, sortedFields, bookedFieldIds }: any) {
                                                     )}
                                                 </div>
 
-                                                <div className={`absolute bottom-8 ${isRtl ? 'right-8 text-right' : 'left-8 text-left'} right-8`}>
+                                                <div className={`absolute bottom-8 ${isRtl ? 'right-8 text-right' : 'left-8 text-left'}`}>
                                                     <h3 className="text-3xl font-black text-white tracking-tight">
                                                         {isRtl ? field.name : (field.nameEn || field.name)}
                                                     </h3>
@@ -227,8 +227,8 @@ export function HomeClient({ session, sortedFields, bookedFieldIds }: any) {
                                                         {field.area && (
                                                             <span className="bg-white/10 px-2 py-0.5 rounded backdrop-blur-sm">🏢 {field.area}</span>
                                                         )}
-                                                        {field.address && (
-                                                            <span className="bg-white/10 px-2 py-0.5 rounded backdrop-blur-sm">📍 {field.address.split(',')[0]}</span>
+                                                        {(field.address || field.addressEn) && (
+                                                            <span className="bg-white/10 px-2 py-0.5 rounded backdrop-blur-sm">📍 {(isRtl ? field.address : (field.addressEn || field.address))?.split(',')[0]}</span>
                                                         )}
                                                     </div>
                                                 </div>

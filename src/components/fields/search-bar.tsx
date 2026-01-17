@@ -1,10 +1,12 @@
 "use client"
 
 import { Input } from "@/components/ui/input"
+import { useTranslation } from "@/components/providers/locale-context"
 import { useSearchParams, usePathname, useRouter } from "next/navigation"
 import { useDebouncedCallback } from "use-debounce"
 
 export function SearchBar() {
+    const { t } = useTranslation()
     const searchParams = useSearchParams()
     const pathname = usePathname()
     const { replace } = useRouter()
@@ -22,7 +24,7 @@ export function SearchBar() {
     return (
         <div className="relative mb-6">
             <Input
-                placeholder="Search fields by name or location..."
+                placeholder={t('searchByName')}
                 onChange={(e) => handleSearch(e.target.value)}
                 defaultValue={searchParams.get('q')?.toString()}
                 className="max-w-md w-full"

@@ -9,6 +9,8 @@ import { SearchBar } from "@/components/fields/search-bar"
 
 export const dynamic = 'force-dynamic'
 
+import { FieldsListClient } from "@/components/fields/fields-list-client"
+
 export default async function FieldsPage({
     searchParams,
 }: {
@@ -17,7 +19,7 @@ export default async function FieldsPage({
     }
 }) {
     const query = searchParams?.q || ""
-    const fields = await prisma.field.findMany({
+    const fields = await (prisma.field.findMany({
         where: {
             OR: [
                 { name: { contains: query } },
@@ -28,55 +30,28 @@ export default async function FieldsPage({
         select: {
             id: true,
             name: true,
+            nameEn: true,
             description: true,
+            descriptionEn: true,
             address: true,
+            addressEn: true,
             pricePerHour: true,
-            // imageUrl is EXCLUDED here to keep payload small
         },
         orderBy: { createdAt: "desc" }
-    })
+    }) as any)
 
     return (
-        <main className="min-h-screen pb-10">
+        <main className="min-h-screen pb-10 flex flex-col">
             <Navbar />
 
             <div className="container mx-auto py-10 px-4">
-                <h1 className="text-3xl font-bold mb-8">Available Fields</h1>
+                <h1 className="text-3xl font-black mb-8">Available Fields</h1>
 
-                <SearchBar />
-
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {fields.map((field: any) => (
-                        <Card key={field.id} className="overflow-hidden flex flex-col hover:shadow-lg transition-shadow">
-                            <div className="relative h-48 w-full bg-gray-200">
-                                <Image
-                                    src={`/api/field-image/${field.id}`}
-                                    alt={field.name}
-                                    fill
-                                    className="object-cover"
-                                />
-                            </div>
-                            <CardHeader>
-                                <CardTitle>{field.name}</CardTitle>
-                                <CardDescription>{field.description}</CardDescription>
-                            </CardHeader>
-                            <CardContent className="flex-1">
-                                <p className="font-semibold text-lg text-green-600">
-                                    {field.pricePerHour} EGP <span className="text-sm font-normal text-gray-500">/ hour</span>
-                                </p>
-                            </CardContent>
-                            <CardFooter>
-                                <Link href={`/fields/${field.id}`} className="w-full">
-                                    <Button className="w-full">Book Now</Button>
-                                </Link>
-                            </CardFooter>
-                        </Card>
-                    ))}
-
-                    {fields.length === 0 && (
-                        <p className="text-gray-500">No fields available at the moment.</p>
-                    )}
+                <div className="mb-8">
+                    <SearchBar />
                 </div>
+
+                <FieldsListClient fields={fields} />
             </div>
         </main>
     )
