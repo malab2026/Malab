@@ -26,7 +26,10 @@ export function LoginForm() {
     useEffect(() => {
         if (state?.redirectUrl) {
             router.push(state.redirectUrl)
-            router.refresh()
+            // Force a slight delay then refresh or redirect to ensure session is picked up
+            setTimeout(() => {
+                window.location.href = state.redirectUrl || '/'
+            }, 100)
         }
     }, [state, router])
 
