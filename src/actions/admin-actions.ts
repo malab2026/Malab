@@ -471,65 +471,78 @@ export async function getFinancialReport(filters: { startDate?: string, endDate?
         if (endDate) where.startTime.lte = new Date(`${endDate}T23:59:59`)
     }
 
-    const bookings = await (prisma.booking as any).findMany({
-        where,
-        select: {
-            id: true,
-            startTime: true,
-            endTime: true,
-            status: true,
-            refundAmount: true,
-            isSettled: true,
-            field: {
-                select: {
-                    id: true,
-                    name: true,
-                    pricePerHour: true
+    try {
+        const bookings = await (prisma.booking as any).findMany({
+            where,
+            select: {
+                id: true,
+                startTime: true,
+                endTime: true,
+                status: true,
+                refundAmount: true,
+                isSettled: true,
+                field: {
+                    select: {
+                        id: true,
+                        name: true,
+                        pricePerHour: true
+                    }
+                }
+            },
+            orderBy: { startTime: 'desc' }
+        })
+
+        const report: any = {
+            totalGross: 0,
+            totalRefunds: 0,
+            totalNet: 0,
+            totalBookings: (bookings as any).length,
+            fieldBreakdown: {} as Record<string, any>,
+            bookings: bookings // Include individual bookings for the UI
+        };
+
+        (bookings as any).forEach((booking: any) => {
+            const durationHours = (booking.endTime.getTime() - booking.startTime.getTime()) / (1000 * 60 * 60)
+            const gross = durationHours * booking.field.pricePerHour
+            const refund = booking.refundAmount || 0
+            const net = gross - refund
+
+            report.totalGross += gross
+            report.totalRefunds += refund
+            report.totalNet += net
+
+            if (!report.fieldBreakdown[booking.field.id]) {
+                report.fieldBreakdown[booking.field.id] = {
+                    name: booking.field.name,
+                    bookings: 0,
+                    hours: 0,
+                    gross: 0,
+                    refunds: 0,
+                    net: 0
                 }
             }
-        },
-        orderBy: { startTime: 'desc' }
-    })
 
-    const report: any = {
-        totalGross: 0,
-        totalRefunds: 0,
-        totalNet: 0,
-        totalBookings: (bookings as any).length,
-        fieldBreakdown: {} as Record<string, any>,
-        bookings: bookings // Include individual bookings for the UI
-    };
+            const fb = report.fieldBreakdown[booking.field.id]
+            fb.bookings += 1
+            fb.hours += durationHours
+            fb.gross += gross
+            fb.refunds += refund
+            fb.net += net
+        })
 
-    (bookings as any).forEach((booking: any) => {
-        const durationHours = (booking.endTime.getTime() - booking.startTime.getTime()) / (1000 * 60 * 60)
-        const gross = durationHours * booking.field.pricePerHour
-        const refund = booking.refundAmount || 0
-        const net = gross - refund
-
-        report.totalGross += gross
-        report.totalRefunds += refund
-        report.totalNet += net
-
-        if (!report.fieldBreakdown[booking.field.id]) {
-            report.fieldBreakdown[booking.field.id] = {
-                name: booking.field.name,
-                bookings: 0,
-                hours: 0,
-                gross: 0,
-                refunds: 0,
-                net: 0
-            }
+        return report
+    } catch (error) {
+        console.error("Financial Report Error:", error)
+        return {
+            totalGross: 0,
+            totalRefunds: 0,
+            totalNet: 0,
+            totalBookings: 0,
+            fieldBreakdown: {},
+            bookings: [],
+            error: "Failed to load financial data. Please ensure database is migrated."
         }
-
-        const fb = report.fieldBreakdown[booking.field.id]
-        fb.bookings += 1
-        fb.hours += durationHours
-        fb.gross += gross
-        fb.refunds += refund
-        fb.net += net
-    })
-
-    return report
+    }
 }
 
 export async function markBookingsSettled(bookingIds: string[]) {
