@@ -18,10 +18,25 @@ model User {
   createdAt DateTime  @default(now())
   bookings  Booking[]
   fields    Field[]   @relation("OwnerFields")
+  notifications Notification[]
+}
+
+model Club {
+  id          String   @id @default(cuid())
+  name        String
+  nameEn      String?
+  logoUrl     String?
+  address     String?
+  addressEn   String?
+  description String?
+  descriptionEn String?
+  createdAt   DateTime @default(now())
+  fields      Field[]
 }
 
 model Field {
   id                 String    @id @default(cuid())
+  clubId             String?
   name               String
   nameEn             String?
   pricePerHour       Float
@@ -42,6 +57,7 @@ model Field {
   createdAt          DateTime  @default(now())
   bookings           Booking[]
   owner              User?     @relation("OwnerFields", fields: [ownerId], references: [id])
+  club               Club?     @relation(fields: [clubId], references: [id], onDelete: SetNull)
 }
 
 model Booking {
@@ -67,4 +83,16 @@ model GlobalSettings {
   id         String   @id @default("global")
   serviceFee Float    @default(10.0)
   updatedAt  DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String?
+  title     String
+  message   String
+  type      String   // BOOKING, FIELD, ANNOUNCEMENT
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

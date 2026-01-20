@@ -9,41 +9,46 @@ export default async function Home() {
   const session = await auth()
   const userId = session?.user?.id
 
-  // Fetch all fields
-  const allFields = await prisma.field.findMany({
+  // Fetch all clubs with their fields count
+  const clubs = await prisma.club.findMany({
     select: {
       id: true,
       name: true,
       nameEn: true,
-      description: true,
-      descriptionEn: true,
+      logoUrl: true,
       address: true,
       addressEn: true,
-      area: true,
-      lat: true,
-      lng: true,
-      pricePerHour: true,
+      description: true,
+      descriptionEn: true,
+      _count: {
+        select: { fields: true }
+      }
     },
-  } as any)
+    orderBy: { createdAt: 'desc' }
+  })
 
-  // Fetch user's bookings to determine sorting and previous bookings
+  // Fetch user's bookings to determine sorting
   const userBookings = userId ? await prisma.booking.findMany({
     where: { userId },
     include: {
       field: {
-        select: { id: true }
+        select: { id: true, clubId: true }
       }
     },
     orderBy: { createdAt: 'desc' }
   }) : []
 
-  // Get unique field IDs user has booked before
-  const bookedFieldIds = Array.from(new Set(userBookings.map(b => b.field.id)))
+  // Get unique club IDs user has booked before
+  const bookedClubIds = Array.from(new Set(
+    userBookings
+      .filter(b => b.field.clubId)
+      .map(b => b.field.clubId as string)
+  ))
 
-  // Sort fields: Previously booked first, then by name
-  const sortedFields = [...allFields].sort((a, b) => {
-    const aBooked = bookedFieldIds.includes(a.id)
-    const bBooked = bookedFieldIds.includes(b.id)
+  // Sort clubs: Previously booked first, then by name
+  const sortedClubs = [...clubs].sort((a, b) => {
+    const aBooked = bookedClubIds.includes(a.id)
+    const bBooked = bookedClubIds.includes(b.id)
 
     if (aBooked && !bBooked) return -1
     if (!aBooked && bBooked) return 1
@@ -55,8 +60,8 @@ export default async function Home() {
       <Navbar />
       <HomeClient
         session={session}
-        sortedFields={sortedFields}
-        bookedFieldIds={bookedFieldIds}
+        clubs={sortedClubs}
+        bookedClubIds={bookedClubIds}
       />
     </main>
   )
