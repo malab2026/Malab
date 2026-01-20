@@ -1,10 +1,11 @@
 import prisma from "@/lib/prisma"
 import { auth } from "@/auth"
 import { Navbar } from "@/components/layout/navbar"
-import { FieldCard } from "@/components/fields/field-card"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 
 export const dynamic = 'force-dynamic'
 
@@ -30,8 +31,6 @@ export default async function ClubPage({ params }: ClubPageProps) {
                     address: true,
                     addressEn: true,
                     area: true,
-                    lat: true,
-                    lng: true,
                 },
                 orderBy: { createdAt: 'desc' }
             }
@@ -117,11 +116,40 @@ export default async function ClubPage({ params }: ClubPageProps) {
                 ) : (
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {club.fields.map((field: any) => (
-                            <FieldCard
-                                key={field.id}
-                                field={field}
-                                isBooked={bookedFieldIds.includes(field.id)}
-                            />
+                            <Link key={field.id} href={`/fields/${field.id}`}>
+                                <Card className="group hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 hover:border-green-500 cursor-pointer h-full">
+                                    <div className="relative h-48 w-full bg-gray-100">
+                                        <Image
+                                            src={`/api/field-image/${field.id}`}
+                                            alt={field.name}
+                                            fill
+                                            className="object-cover group-hover:scale-110 transition-transform duration-300"
+                                        />
+                                        {bookedFieldIds.includes(field.id) && (
+                                            <Badge className="absolute top-3 right-3 bg-green-500 text-white shadow-lg">
+                                                Booked Before ⚽
+                                            </Badge>
+                                        )}
+                                    </div>
+                                    <CardContent className="p-6">
+                                        <h3 className="font-black text-xl text-gray-900 group-hover:text-green-600 transition-colors mb-2">
+                                            {field.name}
+                                        </h3>
+                                        {field.address && (
+                                            <p className="text-sm text-gray-500 mb-3 flex items-center gap-1">
+                                                <span>📍</span>
+                                                <span className="truncate">{field.address}</span>
+                                            </p>
+                                        )}
+                                        <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
+                                            <span className="text-2xl font-black text-green-600">
+                                                {field.pricePerHour} EGP
+                                            </span>
+                                            <span className="text-xs text-gray-500 font-semibold">/ Hour</span>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </Link>
                         ))}
                     </div>
                 )}
