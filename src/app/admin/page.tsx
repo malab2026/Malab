@@ -17,6 +17,7 @@ import { CreateOwnerForm } from "@/components/admin/create-owner-form"
 import { ProcessCancellationDialog } from "@/components/admin/process-cancellation-dialog"
 import { ServiceFeeForm } from "@/components/admin/service-fee-form"
 import { EditUserDialog } from "@/components/admin/edit-user-dialog"
+import { AddClubForm } from "@/components/admin/add-club-form"
 
 export default async function AdminPage() {
     const session = await auth()
@@ -32,7 +33,8 @@ export default async function AdminPage() {
         fields,
         owners,
         users,
-        settings
+        settings,
+        clubs
     ] = await Promise.all([
         prisma.booking.findMany({
             where: { status: 'PENDING' },
@@ -86,7 +88,8 @@ export default async function AdminPage() {
                 address: true,
                 locationUrl: true,
                 _count: { select: { bookings: true } },
-                owner: { select: { name: true, email: true } }
+                owner: { select: { name: true, email: true } },
+                club: { select: { name: true } }
             }
         }),
         prisma.user.findMany({
@@ -101,6 +104,10 @@ export default async function AdminPage() {
             where: { id: 'global' },
             update: {},
             create: { id: 'global', serviceFee: 10.0 }
+        }),
+        prisma.club.findMany({
+            orderBy: { createdAt: 'desc' },
+            select: { id: true, name: true, nameEn: true, _count: { select: { fields: true } } }
         })
     ]) as any
 
@@ -188,6 +195,27 @@ export default async function AdminPage() {
                             </div>
                         </div>
                     </section>
+
+                    {/* Club Management Section */}
+                    <section>
+                        <div className="flex justify-between items-center mb-4">
+                            <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-xl shadow-sm border border-white/20">
+                                <h2 className="text-2xl font-semibold text-gray-900">🏟️ Manage Clubs</h2>
+                            </div>
+                        </div>
+                        <div className="grid lg:grid-cols-3 gap-8">
+                            <div className="lg:col-span-1">
+                                <AddClubForm />
+                            </div>
+                            <div className="lg:col-span-2 grid sm:grid-cols-2 gap-4">
+                                {/* Clubs will be displayed here */}
+                                <p className="col-span-2 text-gray-500 text-sm italic">Clubs list coming soon...</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <hr />
+
                     {/* Field Management Section */}
                     <section>
                         <div className="flex justify-between items-center mb-4">
@@ -197,7 +225,7 @@ export default async function AdminPage() {
                         </div>
                         <div className="grid lg:grid-cols-3 gap-8">
                             <div className="lg:col-span-1">
-                                <AddFieldForm owners={owners} />
+                                <AddFieldForm owners={owners} clubs={clubs} />
                             </div>
                             <div className="lg:col-span-2 grid sm:grid-cols-2 gap-4">
                                 {fields.map((field: any) => (

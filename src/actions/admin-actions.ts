@@ -122,6 +122,8 @@ export async function createField(prevState: any, formData: FormData) {
     }
 
     try {
+        const clubId = formData.get("clubId") as string || null
+
         await prisma.field.create({
             data: {
                 name,
@@ -138,6 +140,7 @@ export async function createField(prevState: any, formData: FormData) {
                 imageUrl2: images[1] || null,
                 imageUrl3: images[2] || null,
                 ownerId: finalOwnerId,
+                clubId: clubId || null,
             }
         } as any)
     } catch (e) {
