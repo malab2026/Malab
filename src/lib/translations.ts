@@ -101,6 +101,14 @@ export const translations = {
         noFieldsFound: "لم يتم العثور على ملاعب تطابق بحثك.",
         distance: "على بعد",
         km: "كم",
+        // Notifications
+        notifications: "الإشعارات",
+        noNotifications: "لا توجد إشعارات جديدة",
+        markAllRead: "تحديد الكل كمقروء",
+        newFieldAdded: "تم إضافة ملعب جديد!",
+        newClubAdded: "تم إضافة نادى جديد!",
+        bookingConfirmed: "تم تأكيد حجزك!",
+        bookingRejected: "تم رفض حجزك",
     },
     en: {
         // Navbar
@@ -214,6 +222,14 @@ export const translations = {
         serviceFeeConfigDesc: "Configure platform-wide booking parameters",
         serviceFeeLabel: "Booking Service Fee (EGP)",
         serviceFeeHelp: "* This fee is added to every booking slot created by users.",
+        // Notifications
+        notifications: "Notifications",
+        noNotifications: "No new notifications",
+        markAllRead: "Mark all as read",
+        newFieldAdded: "New field added!",
+        newClubAdded: "New club added!",
+        bookingConfirmed: "Your booking is confirmed!",
+        bookingRejected: "Your booking was rejected",
     }
 };
 

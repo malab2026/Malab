@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { useTranslation } from "@/components/providers/locale-context"
 import { Globe } from "lucide-react"
+import { NotificationBell } from "./notification-bell"
 
 export function Navbar() {
     const { data: session, status } = useSession()
@@ -41,6 +42,7 @@ export function Navbar() {
                         <div className="w-20 h-9 bg-white/10 animate-pulse rounded-xl" />
                     ) : session ? (
                         <div className="flex items-center gap-1 md:gap-3">
+                            <NotificationBell />
                             {session.user?.role === 'admin' ? (
                                 <Button variant="secondary" className={buttonClass + " px-2 md:px-4"} asChild>
                                     <Link href="/admin">

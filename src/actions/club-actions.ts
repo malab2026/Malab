@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma"
 import { auth } from "@/auth"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
+import { broadcastNotification } from "./notification-actions"
 
 const ClubSchema = z.object({
     name: z.string().min(1),
@@ -46,6 +47,14 @@ export async function createClub(formData: FormData) {
 
         revalidatePath('/admin')
         revalidatePath('/')
+
+        // Notify all users about new club
+        await broadcastNotification(
+            "نادى جديد انضم إلينا! 🆕🏟️",
+            `تم افتتاح نادى "${data.name}" الجديد. استكشف الملاعب المتاحة الآن!`,
+            "CLUB"
+        )
+
         return { message: "Club created successfully", success: true }
     } catch (e) {
         console.error(e)

@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache"
 import { z } from "zod"
 import { writeFile } from "fs/promises"
 import path from "path"
+import { broadcastNotification, createNotification } from "./notification-actions"
 
 const FieldSchema = z.object({
     name: z.string().min(1),
@@ -152,6 +153,14 @@ export async function createField(prevState: any, formData: FormData) {
 
     revalidatePath('/admin')
     revalidatePath('/fields')
+
+    // Notify all users about new field
+    await broadcastNotification(
+        "ملعب جديد متاح! 🏟️",
+        `تمت إضافة ملعب "${name}" في منطقتك. احجز الآن!`,
+        "FIELD"
+    )
+
     return { message: "Field Created Successfully!", success: true }
 }
 
@@ -249,11 +258,21 @@ export async function updateBookingStatus(bookingId: string, status: "CONFIRMED"
         const booking = await prisma.booking.update({
             where: { id: bookingId },
             data: { status },
-            select: { fieldId: true }
+            include: { field: true }
         })
+
+        // Notify user about booking status change
+        const title = status === "CONFIRMED" ? "تم تأكيد حجزك! ✅" : "تم رفض حجزك ❌"
+        const message = status === "CONFIRMED"
+            ? `تمت الموافقة على حجزك في ملعب ${booking.field.name}. نتمنى لك مباراة ممتعة!`
+            : `للأسف تم رفض حجزك في ملعب ${booking.field.name}. يرجى التواصل مع الإدارة للمزيد من التفاصيل.`
+
+        await createNotification(booking.userId, title, message, "BOOKING")
+
         revalidatePath('/admin')
         revalidatePath('/dashboard')
         revalidatePath(`/fields/${booking.fieldId}`)
+        return { success: true }
     } catch (e) {
         console.error(e)
         return { message: "Database Error" }
