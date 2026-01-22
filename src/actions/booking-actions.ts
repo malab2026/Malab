@@ -131,9 +131,24 @@ export async function createBooking(prevState: any, formData: FormData) {
         const field = await prisma.field.findUnique({ where: { id: fieldId }, select: { pricePerHour: true } })
         if (!field) return { message: "Field not found." }
 
-        const bookingData: any[] = []
+        // Group slots into continuous blocks to apply service fee correctly on server-side
+        const sortedSlotsForData = [...slots].sort((a, b) => {
+            const timeA = new Date(`${a.date}T${a.startTime}:00`).getTime()
+            const timeB = new Date(`${b.date}T${b.startTime}:00`).getTime()
+            return timeA - timeB
+        })
 
-        for (const slot of slots) {
+        const settings = await prisma.globalSettings.upsert({
+            where: { id: 'global' },
+            update: {},
+            create: { id: 'global', serviceFee: 10.0 }
+        })
+        const globalServiceFee = settings.serviceFee
+
+        const bookingData: any[] = []
+        let lastEndTimestamp = 0
+
+        for (const slot of sortedSlotsForData) {
             const startDateTime = new Date(`${slot.date}T${slot.startTime}:00`)
             const endDateTime = new Date(startDateTime.getTime() + slot.duration * 60 * 60 * 1000)
 
@@ -156,18 +171,9 @@ export async function createBooking(prevState: any, formData: FormData) {
                 return { message: `Slot at ${slot.startTime} on ${slot.date} is already taken.` }
             }
 
-            const settings = await prisma.globalSettings.upsert({
-                where: { id: 'global' },
-                update: {},
-                create: { id: 'global', serviceFee: 10.0 }
-            })
-            const globalServiceFee = settings.serviceFee
-
-            // Calculate total price for the entire booking to store consistently
-            // However, since we store each slot as a row, we'll apply the fee to the FIRST slot
-            // and the others will have 0 service fee, making the total sum correct.
-            const isFirstSlot = bookingData.length === 0
-            const serviceFee = isFirstSlot ? globalServiceFee : 0
+            // Determine if this is the start of a new block
+            const isNewBlock = startDateTime.getTime() !== lastEndTimestamp
+            const serviceFee = isNewBlock ? globalServiceFee : 0
             const slotPrice = field.pricePerHour * slot.duration
             const totalPrice = slotPrice + serviceFee
 
@@ -180,6 +186,8 @@ export async function createBooking(prevState: any, formData: FormData) {
                 serviceFee,
                 totalPrice
             })
+
+            lastEndTimestamp = endDateTime.getTime()
         }
 
         let receiptUrl = null

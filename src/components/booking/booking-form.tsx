@@ -36,10 +36,38 @@ export function BookingForm({
 
     const isOwner = userRole === 'owner' || userRole === 'admin'
 
+    const totalServiceFee = useMemo(() => {
+        if (slots.length === 0) return 0
+
+        // Sort slots by date and time
+        const sortedSlots = [...slots].sort((a, b) => {
+            const timeA = new Date(`${a.date}T${a.startTime}:00`).getTime()
+            const timeB = new Date(`${b.date}T${b.startTime}:00`).getTime()
+            return timeA - timeB
+        })
+
+        let blocks = 1
+        for (let i = 1; i < sortedSlots.length; i++) {
+            const prev = sortedSlots[i - 1]
+            const curr = sortedSlots[i]
+
+            const prevStart = new Date(`${prev.date}T${prev.startTime}:00`)
+            const prevEnd = new Date(prevStart.getTime() + prev.duration * 60 * 60 * 1000)
+            const currStart = new Date(`${curr.date}T${curr.startTime}:00`)
+
+            // If not connected (end of prev != start of curr), it's a new block
+            if (prevEnd.getTime() !== currStart.getTime()) {
+                blocks++
+            }
+        }
+
+        return blocks * serviceFeePerBooking
+    }, [slots, serviceFeePerBooking])
+
     const totalPrice = useMemo(() => {
         const pitchSubtotal = slots.reduce((acc, slot) => acc + (field.pricePerHour * slot.duration), 0)
-        return pitchSubtotal + (slots.length > 0 ? serviceFeePerBooking : 0)
-    }, [slots, field.pricePerHour, serviceFeePerBooking])
+        return pitchSubtotal + totalServiceFee
+    }, [slots, field.pricePerHour, totalServiceFee])
 
     const handleSlotSelect = (slot: any) => {
         setSlots(prev => [...prev, slot])
@@ -210,7 +238,7 @@ export function BookingForm({
                             {slots.length > 0 && (
                                 <div className="px-4 py-2 flex justify-between items-center text-sm font-bold bg-green-50/50 rounded-xl border border-green-100 text-green-700">
                                     <span className="uppercase tracking-tight">{t('serviceFee')}</span>
-                                    <span>{serviceFeePerBooking} {t('egp')}</span>
+                                    <span>{totalServiceFee} {t('egp')}</span>
                                 </div>
                             )}
 
@@ -230,7 +258,7 @@ export function BookingForm({
                         <div className="space-y-4 border rounded-lg p-4 bg-yellow-50 border-yellow-200">
                             <h3 className="font-semibold text-yellow-800">{t('paymentInstructions')}</h3>
                             <p className="text-sm text-yellow-700 leading-relaxed font-medium">
-                                {t('transferText', { amount: totalPrice, fee: serviceFeePerBooking })}
+                                {t('transferText', { amount: totalPrice, fee: totalServiceFee })}
                             </p>
                             <div className="space-y-2">
                                 <Label htmlFor="receipt">{t('uploadReceipt')}</Label>
