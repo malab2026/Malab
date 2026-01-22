@@ -23,6 +23,7 @@ const FieldSchema = z.object({
     newManagerName: z.string().optional().nullable(),
     newManagerEmail: z.string().email().optional().or(z.literal('')).nullable(),
     newManagerPassword: z.string().min(6).optional().or(z.literal('')).nullable(),
+    clubId: z.string().optional().or(z.literal('')).nullable(),
 })
 
 export async function createField(prevState: any, formData: FormData) {
@@ -51,6 +52,7 @@ export async function createField(prevState: any, formData: FormData) {
         newManagerName: formData.get("newManagerName"),
         newManagerEmail: formData.get("newManagerEmail"),
         newManagerPassword: formData.get("newManagerPassword"),
+        clubId: formData.get("clubId"),
     })
 
     if (!validatedFields.success) {
@@ -171,6 +173,7 @@ export async function updateField(fieldId: string, prevState: any, formData: For
         cancellationPolicy: formData.get("cancellationPolicy"),
         cancellationPolicyEn: formData.get("cancellationPolicyEn"),
         ownerId: formData.get("ownerId"),
+        clubId: formData.get("clubId"),
     })
 
     if (!validatedFields.success) {
@@ -182,7 +185,7 @@ export async function updateField(fieldId: string, prevState: any, formData: For
     }
 
     const { name, nameEn, price, address, addressEn, locationUrl, description, descriptionEn,
-        cancellationPolicy, cancellationPolicyEn, ownerId } = validatedFields.data
+        cancellationPolicy, cancellationPolicyEn, ownerId, clubId } = validatedFields.data
 
     // Handle Multiple Image Uploads (Base64) - Only update if new image provided
     const imageUpdates: any = {}
@@ -220,6 +223,7 @@ export async function updateField(fieldId: string, prevState: any, formData: For
                 cancellationPolicyEn: cancellationPolicyEn || null,
                 ...imageUpdates,
                 ownerId: ownerId || null,
+                clubId: clubId || null,
             }
         } as any)
     } catch (e) {

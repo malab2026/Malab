@@ -25,11 +25,16 @@ export default async function EditFieldPage({ params }: { params: { id: string }
         select: { id: true, name: true, email: true }
     })
 
+    const clubs = await prisma.club.findMany({
+        orderBy: { name: 'asc' },
+        select: { id: true, name: true }
+    })
+
     return (
         <main className="min-h-screen pb-10">
             <Navbar />
             <div className="container mx-auto py-10 px-4">
-                <EditFieldForm field={field} owners={owners} />
+                <EditFieldForm field={field} owners={owners} clubs={clubs} />
             </div>
         </main>
     )

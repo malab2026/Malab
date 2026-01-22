@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 
-export function EditFieldForm({ field, owners }: { field: any, owners: any[] }) {
+export function EditFieldForm({ field, owners, clubs }: { field: any, owners: any[], clubs?: any[] }) {
     const updateFieldWithId = updateField.bind(null, field.id)
     const [state, dispatch] = useActionState(updateFieldWithId, null)
     const [imagePreview, setImagePreview] = useState<string | null>(field.imageUrl)
@@ -126,6 +126,22 @@ export function EditFieldForm({ field, owners }: { field: any, owners: any[] }) 
                                     </option>
                                 ))}
                             </select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="clubId">Assign to Club (Optional)</Label>
+                            <select
+                                id="clubId"
+                                name="clubId"
+                                defaultValue={field.clubId || ''}
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                <option value="">No Club (Independent Field)</option>
+                                {clubs?.map((club: any) => (
+                                    <option key={club.id} value={club.id}>{club.name}</option>
+                                ))}
+                            </select>
+                            {state?.errors?.clubId && <p className="text-red-500 text-xs">{state.errors.clubId[0]}</p>}
                         </div>
                     </div>
 
