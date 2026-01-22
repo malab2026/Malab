@@ -15,13 +15,11 @@ export function NotificationBell() {
 
     const fetchNotifications = async () => {
         const data = await getNotifications()
-        console.log("Fetched notifications:", data)
         setNotifications(data)
         setUnreadCount(data.filter((n: any) => !n.isRead).length)
     }
 
     useEffect(() => {
-        console.log("NotificationBell mounted")
         fetchNotifications()
         // Poll for new notifications every 60 seconds
         const interval = setInterval(fetchNotifications, 60000)
@@ -50,7 +48,6 @@ export function NotificationBell() {
                 variant="ghost"
                 size="icon"
                 onClick={() => {
-                    console.log("Bell clicked, isOpen:", !isOpen)
                     setIsOpen(!isOpen)
                 }}
                 className="relative text-white hover:bg-white/10 rounded-xl h-10 w-10"
