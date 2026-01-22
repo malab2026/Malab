@@ -48,9 +48,9 @@ export function AddClubForm() {
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="logoUrl">Logo URL</Label>
-                        <Input id="logoUrl" name="logoUrl" type="url" placeholder="https://..." />
-                        <p className="text-xs text-gray-500">Upload logo separately and paste URL</p>
+                        <Label htmlFor="logo">Club Logo (Upload) *</Label>
+                        <Input id="logo" name="logo" type="file" accept="image/*" required />
+                        <p className="text-xs text-gray-500">Upload a square logo (e.g. 400x400px)</p>
                     </div>
 
                     <div className="space-y-2">

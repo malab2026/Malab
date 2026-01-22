@@ -22,6 +22,16 @@ export async function createClub(formData: FormData) {
     }
 
     try {
+        const logoFile = formData.get('logo') as File
+        let logoUrl = null
+
+        if (logoFile && logoFile.size > 0) {
+            const buffer = Buffer.from(await logoFile.arrayBuffer())
+            const base64String = buffer.toString('base64')
+            const mimeType = logoFile.type || 'image/jpeg'
+            logoUrl = `data:${mimeType};base64,${base64String}`
+        }
+
         const data = {
             name: formData.get('name') as string,
             nameEn: formData.get('nameEn') as string || null,
@@ -29,7 +39,7 @@ export async function createClub(formData: FormData) {
             addressEn: formData.get('addressEn') as string || null,
             description: formData.get('description') as string || null,
             descriptionEn: formData.get('descriptionEn') as string || null,
-            logoUrl: formData.get('logoUrl') as string || null
+            logoUrl: logoUrl
         }
 
         await prisma.club.create({ data })
@@ -50,6 +60,16 @@ export async function updateClub(clubId: string, formData: FormData) {
     }
 
     try {
+        const logoFile = formData.get('logo') as File
+        let logoUrl = formData.get('logoUrl') as string || null
+
+        if (logoFile && logoFile.size > 0) {
+            const buffer = Buffer.from(await logoFile.arrayBuffer())
+            const base64String = buffer.toString('base64')
+            const mimeType = logoFile.type || 'image/jpeg'
+            logoUrl = `data:${mimeType};base64,${base64String}`
+        }
+
         const data = {
             name: formData.get('name') as string,
             nameEn: formData.get('nameEn') as string || null,
@@ -57,7 +77,7 @@ export async function updateClub(clubId: string, formData: FormData) {
             addressEn: formData.get('addressEn') as string || null,
             description: formData.get('description') as string || null,
             descriptionEn: formData.get('descriptionEn') as string || null,
-            logoUrl: formData.get('logoUrl') as string || null
+            logoUrl: logoUrl
         }
 
         await prisma.club.update({
