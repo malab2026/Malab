@@ -5,6 +5,7 @@ import Image from "next/image"
 import { useState } from "react"
 import { BookingForm } from "@/components/booking/booking-form"
 import { useTranslation } from "@/components/providers/locale-context"
+import { BackButton } from "@/components/ui/back-button"
 
 export function FieldDetailsClient({ field, initialBookings, serviceFee, userRole }: any) {
     const { t, isRtl } = useTranslation()
@@ -21,6 +22,9 @@ export function FieldDetailsClient({ field, initialBookings, serviceFee, userRol
             <Navbar />
 
             <div className="container mx-auto py-10 px-4">
+                <div className="mb-6 max-w-5xl mx-auto">
+                    <BackButton variant="ghost" className="hover:bg-gray-100/50" />
+                </div>
                 <div className="flex flex-col gap-10 max-w-5xl mx-auto">
                     {/* Top: Image & Info */}
                     <div className="space-y-6">

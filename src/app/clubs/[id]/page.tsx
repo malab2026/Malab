@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { BackButton } from "@/components/ui/back-button"
 
 export const dynamic = 'force-dynamic'
 
@@ -67,8 +68,14 @@ export default async function ClubPage({ params }: ClubPageProps) {
             <Navbar />
 
             {/* Club Header */}
-            <div className="bg-gradient-to-br from-green-600 to-green-800 text-white py-16">
-                <div className="container mx-auto px-4">
+            <div className="bg-gradient-to-br from-green-600 to-green-800 text-white py-12 relative overflow-hidden">
+                {/* Background Decor */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl pointer-events-none" />
+
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="mb-6">
+                        <BackButton variant="secondary" className="bg-white/10 hover:bg-white/20 text-white border-white/20 backdrop-blur-md" fallbackUrl="/" />
+                    </div>
                     <div className="flex items-center gap-6">
                         {club.logoUrl && (
                             <div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-white shadow-xl">
@@ -104,9 +111,6 @@ export default async function ClubPage({ params }: ClubPageProps) {
                     <h2 className="text-2xl font-bold text-gray-900">
                         Available Fields ({club.fields.length})
                     </h2>
-                    <Button asChild variant="outline">
-                        <Link href="/">← Back to Clubs</Link>
-                    </Button>
                 </div>
 
                 {club.fields.length === 0 ? (
