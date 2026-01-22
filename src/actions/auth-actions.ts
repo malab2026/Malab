@@ -88,7 +88,7 @@ export async function authenticate(
             redirect: false,
         })
 
-        const redirectUrl = user?.role === 'admin' ? '/admin' : (user?.role === 'owner' ? '/owner' : '/fields')
+        const redirectUrl = user?.role === 'admin' ? '/admin' : (user?.role === 'owner' ? '/owner' : '/')
         return { redirectUrl }
 
     } catch (error) {

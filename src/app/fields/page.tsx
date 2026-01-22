@@ -10,6 +10,7 @@ import { SearchBar } from "@/components/fields/search-bar"
 export const dynamic = 'force-dynamic'
 
 import { FieldsListClient } from "@/components/fields/fields-list-client"
+import { redirect } from "next/navigation"
 
 export default async function FieldsPage({
     searchParams,
@@ -18,6 +19,7 @@ export default async function FieldsPage({
         q?: string
     }
 }) {
+    redirect('/')
     const query = searchParams?.q || ""
     const fields = await (prisma.field.findMany({
         where: {
