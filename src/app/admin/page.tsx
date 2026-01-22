@@ -18,6 +18,7 @@ import { ProcessCancellationDialog } from "@/components/admin/process-cancellati
 import { ServiceFeeForm } from "@/components/admin/service-fee-form"
 import { EditUserDialog } from "@/components/admin/edit-user-dialog"
 import { AddClubForm } from "@/components/admin/add-club-form"
+import { BroadcastForm } from "@/components/admin/broadcast-form"
 
 export default async function AdminPage() {
     const session = await auth()
