@@ -26,7 +26,7 @@ export function Navbar() {
                     <Image src="/logo.png" alt="MALA3EBNA" width={100} height={100} className="rounded-lg shadow-lg w-[80px] md:w-[120px]" />
                 </Link>
 
-                <nav className="flex items-center gap-1 md:gap-3 overflow-hidden justify-end">
+                <nav className="flex items-center gap-1 md:gap-3 justify-end">
                     {/* Language Toggle */}
                     <Button
                         variant="ghost"
