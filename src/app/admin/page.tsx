@@ -373,9 +373,14 @@ function BookingCard({ booking, isAdmin = false, isCancelRequest = false }: { bo
                     )}
                     {booking.receiptUrl && (
                         <div className="mt-1">
-                            <Link href={`/receipt/${booking.id}`} target="_blank" className="text-blue-600 hover:underline text-xs">
-                                View Receipt Full
-                            </Link>
+                            <div className="flex gap-3">
+                                <Link href={`/receipt/${booking.id}`} target="_blank" className="text-blue-600 hover:underline text-xs flex items-center gap-1">
+                                    <span>📄</span> View Full
+                                </Link>
+                                <a href={`/api/receipt-image/${booking.id}?download=true`} className="text-green-600 hover:underline text-xs flex items-center gap-1" download>
+                                    <span>⬇️</span> Download
+                                </a>
+                            </div>
                         </div>
                     )}
                 </div>
