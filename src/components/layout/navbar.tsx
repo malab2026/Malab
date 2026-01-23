@@ -65,7 +65,7 @@ export function Navbar() {
 
                             <Button variant="secondary" className={buttonClass + " px-2 md:px-4"} asChild>
                                 <Link href="/dashboard">
-                                    <span className="md:hidden text-[10px] whitespace-nowrap">{t('bookingHistory')}</span>
+                                    <span className="md:hidden text-[10px] whitespace-nowrap">{t('previousBooking')}</span>
                                     <span className="hidden md:inline">{t('bookingHistory')}</span>
                                 </Link>
                             </Button>
@@ -81,9 +81,9 @@ export function Navbar() {
                         </div>
                     ) : (
                         <div className="flex gap-1 md:gap-3">
-                            <Button variant="secondary" className={buttonClass + " px-2 md:px-3 h-9 md:h-10 flex md:hidden"} asChild title={t('bookingHistory')}>
+                            <Button variant="secondary" className={buttonClass + " px-2 md:px-3 h-9 md:h-10 flex md:hidden"} asChild title={t('previousBooking')}>
                                 <Link href="/dashboard">
-                                    <span className="text-[10px] whitespace-nowrap">{t('bookingHistory')}</span>
+                                    <span className="text-[10px] whitespace-nowrap">{t('previousBooking')}</span>
                                 </Link>
                             </Button>
                             <Button variant="secondary" className={buttonClass + " px-3 md:px-6 h-9 md:h-10"} asChild>

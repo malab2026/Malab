@@ -9,6 +9,7 @@ export const translations = {
         login: "تسجيل الدخول",
         signUp: "إنشاء حساب",
         languageToggle: "English",
+        previousBooking: "الحجز السابق",
 
         // Home Page
         heroTitle: "ملاعبنا",
@@ -120,6 +121,7 @@ export const translations = {
         login: "Login",
         signUp: "Sign Up",
         languageToggle: "عربي",
+        previousBooking: "Previous Booking",
 
         // Home Page
         heroTitle: "Mala3ebna",
