@@ -197,6 +197,18 @@ export default async function AdminPage() {
                         </div>
                     </section>
 
+                    {/* Broadcast Section */}
+                    <section>
+                        <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-xl shadow-sm border border-white/20 inline-flex items-center gap-2 mb-6">
+                            <h2 className="text-2xl font-semibold text-gray-900">
+                                📢 Broadcast Announcements
+                            </h2>
+                        </div>
+                        <div className="max-w-2xl">
+                            <BroadcastForm />
+                        </div>
+                    </section>
+
                     {/* Club Management Section */}
                     <section>
                         <div className="flex justify-between items-center mb-4">
