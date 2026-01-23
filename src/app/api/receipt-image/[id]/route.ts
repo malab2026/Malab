@@ -44,11 +44,19 @@ export async function GET(
     const base64Data = matches[2]
     const buffer = Buffer.from(base64Data, 'base64')
 
-    return new NextResponse(buffer, {
-        headers: {
-            'Content-Type': mimeType,
-            'Content-Length': buffer.length.toString(),
-            'Cache-Control': 'public, max-age=31536000, immutable',
-        },
-    })
+    const searchParams = request.nextUrl.searchParams
+    const isDownload = searchParams.get('download') === 'true'
+
+    const headers: Record<string, string> = {
+        'Content-Type': mimeType,
+        'Content-Length': buffer.length.toString(),
+        'Cache-Control': 'public, max-age=31536000, immutable',
+    }
+
+    if (isDownload) {
+        const extension = mimeType.split('/')[1] || 'png'
+        headers['Content-Disposition'] = `attachment; filename="receipt-${booking.id.slice(-6)}.${extension}"`
+    }
+
+    return new NextResponse(buffer, { headers })
 }

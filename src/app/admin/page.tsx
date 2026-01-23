@@ -350,19 +350,13 @@ function BookingCard({ booking, isAdmin = false, isCancelRequest = false }: { bo
     return (
         <Card className="flex flex-col md:flex-row items-center overflow-hidden border-l-4 border-l-transparent data-[cancel=true]:border-l-orange-500" data-cancel={isCancelRequest}>
             <div className="relative w-full md:w-32 h-24 shrink-0 bg-gray-100 flex items-center justify-center text-xs text-gray-400">
-                {booking.receiptUrl ? (
-                    <Image
-                        src={`/api/receipt-image/${booking.id}`}
-                        alt="Receipt"
-                        fill
-                        className="object-cover"
-                    />
-                ) : (
-                    <span className="flex flex-col items-center gap-1">
-                        <span>🧾</span>
-                        <span>No Receipt</span>
-                    </span>
-                )}
+                <Image
+                    src={`/api/receipt-image/${booking.id}`}
+                    alt="Receipt"
+                    fill
+                    className="object-cover"
+                />
+                <span>No Receipt</span>
             </div>
             <div className="flex-1 p-4 grid md:grid-cols-2 gap-4 w-full">
                 <div>
@@ -378,17 +372,10 @@ function BookingCard({ booking, isAdmin = false, isCancelRequest = false }: { bo
                         </p>
                     )}
                     {booking.receiptUrl && (
-                        <div className="mt-2 flex items-center gap-3">
-                            <Link href={`/receipt/${booking.id}`} target="_blank" className="text-blue-600 hover:underline text-xs flex items-center gap-1 font-medium bg-blue-50 px-2 py-1 rounded">
-                                👁️ View Full
+                        <div className="mt-1">
+                            <Link href={`/receipt/${booking.id}`} target="_blank" className="text-blue-600 hover:underline text-xs">
+                                View Receipt Full
                             </Link>
-                            <a
-                                href={`/api/receipt-image/${booking.id}`}
-                                download={`receipt-${booking.id}.png`}
-                                className="text-green-600 hover:underline text-xs flex items-center gap-1 font-medium bg-green-50 px-2 py-1 rounded"
-                            >
-                                ⬇️ Download
-                            </a>
                         </div>
                     )}
                 </div>

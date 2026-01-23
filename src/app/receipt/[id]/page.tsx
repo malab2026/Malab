@@ -46,13 +46,14 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
                     />
                 </div>
 
-                <div className="mt-4 flex justify-end">
-                    <button
-                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 print:hidden"
-                    // onClick={() => window.print()} - Cannot use onClick in Server Component without client wrapper, simpler to just let user use browser print
+                <div className="mt-4 flex justify-end gap-2">
+                    <a
+                        href={`/api/receipt-image/${booking.id}?download=true`}
+                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2"
+                        download
                     >
-                        Print / Save
-                    </button>
+                        <span>📥</span> Download Receipt
+                    </a>
                     <a href="/dashboard" className="ml-2 text-gray-600 hover:underline flex items-center">
                         Back to Dashboard
                     </a>
