@@ -4,7 +4,7 @@ export const translations = {
         dashboard: "لوحة التحكم",
         admin: "الأدمن",
         owner: "صاحب الملعب",
-        bookingHistory: "تاريخ الحجوزات",
+        bookingHistory: "الحجوزات السابقة",
         signOut: "تسجيل الخروج",
         login: "تسجيل الدخول",
         signUp: "إنشاء حساب",
@@ -20,7 +20,7 @@ export const translations = {
         ratePerHour: "سعر الساعة",
         bookNow: "حجز",
         youBookedThisBefore: "لقد حجزت هذا من قبل ⚽",
-        myBookingHistory: "سجل حجزاتي",
+        myBookingHistory: "الحجوزات السابقة",
         fullHistory: "كل السجلات ←",
 
         // Booking Details
