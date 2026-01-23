@@ -46,6 +46,7 @@ export default async function AdminPage() {
                 status: true,
                 cancellationReason: true,
                 createdAt: true,
+                receiptUrl: true,
                 field: { select: { id: true, name: true, pricePerHour: true } },
                 user: { select: { id: true, name: true, email: true, phone: true } }
             },
@@ -74,6 +75,7 @@ export default async function AdminPage() {
                 status: true,
                 cancellationReason: true,
                 createdAt: true,
+                receiptUrl: true,
                 field: { select: { id: true, name: true, pricePerHour: true } },
                 user: { select: { id: true, name: true, email: true, phone: true } }
             },
