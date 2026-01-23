@@ -110,6 +110,9 @@ export const translations = {
         newClubAdded: "تم إضافة نادى جديد!",
         bookingConfirmed: "تم تأكيد حجزك!",
         bookingRejected: "تم رفض حجزك",
+        blockSlots: "إغلاق مواعيد",
+        confirmBlockSlots: "تأكيد الإغلاق",
+        blockingSlots: "جاري الإغلاق...",
     },
     en: {
         // Navbar
@@ -232,6 +235,9 @@ export const translations = {
         newClubAdded: "New club added!",
         bookingConfirmed: "Your booking is confirmed!",
         bookingRejected: "Your booking was rejected",
+        blockSlots: "Block Slots",
+        confirmBlockSlots: "Confirm Block",
+        blockingSlots: "Blocking...",
     }
 };
 

@@ -19,6 +19,7 @@ import { ServiceFeeForm } from "@/components/admin/service-fee-form"
 import { EditUserDialog } from "@/components/admin/edit-user-dialog"
 import { AddClubForm } from "@/components/admin/add-club-form"
 import { BroadcastForm } from "@/components/admin/broadcast-form"
+import { AdminBlockSlotsDialog } from "@/components/admin/admin-block-slots-dialog"
 
 export default async function AdminPage() {
     const session = await auth()
@@ -277,6 +278,7 @@ export default async function AdminPage() {
                                                 )}
 
                                                 <div className="flex gap-2">
+                                                    <AdminBlockSlotsDialog field={field} />
                                                     <Button asChild size="sm" variant="outline" className="h-8 text-xs">
                                                         <Link href={`/admin/edit/${field.id}`}>
                                                             Edit
