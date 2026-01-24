@@ -62,11 +62,8 @@ export function NotificationBell() {
             </Button>
 
             {isOpen && (
-                <div className={`absolute top-full mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-gray-100 py-4 overflow-hidden z-[60] 
-                    ${isRtl
-                        ? 'left-0 md:left-auto md:right-0'
-                        : 'right-0 md:right-auto md:left-0'
-                    }`}
+                <div className={`fixed md:absolute top-16 md:top-full mt-2 w-auto md:w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 py-4 overflow-hidden z-[60] 
+                    left-4 right-4 md:left-auto ${isRtl ? 'md:right-0' : 'md:left-0'}`}
                 >
                     <div className="px-4 pb-3 border-b border-gray-50 flex justify-between items-center">
                         <h3 className="font-black text-gray-900 text-sm uppercase tracking-tight">{t('notifications')}</h3>
