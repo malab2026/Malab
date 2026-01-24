@@ -23,12 +23,12 @@ export function Navbar() {
         <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/20 backdrop-blur-xl transition-all pt-[var(--safe-area-inset-top)]">
             <div className="container flex h-16 items-center justify-between px-2 md:px-4">
                 <div className="flex items-center gap-1 md:gap-4 shrink-0">
-                    {session && (
-                        <NotificationBell />
-                    )}
                     <Link href="/" className="flex items-center font-black text-2xl text-white tracking-tight shrink-0">
                         <Image src="/logo.png" alt="MALA3EBNA" width={100} height={100} className="rounded-lg shadow-lg w-[60px] md:w-[120px]" />
                     </Link>
+                    {session && (
+                        <NotificationBell />
+                    )}
                 </div>
 
                 <nav className="flex items-center gap-0.5 md:gap-3 justify-end min-w-0">
