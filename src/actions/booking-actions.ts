@@ -25,7 +25,7 @@ const OCCUPYING_STATUSES = ['PENDING', 'CONFIRMED', 'CANCEL_REQUESTED', 'BLOCKED
 export async function checkAvailability(fieldId: string, slots: any[]) {
     try {
         for (const slot of slots) {
-            const startDateTime = new Date(`${slot.date}T${slot.startTime}:00`)
+            const startDateTime = slot.isoString ? new Date(slot.isoString) : new Date(`${slot.date}T${slot.startTime}:00`)
             const endDateTime = new Date(startDateTime.getTime() + slot.duration * 60 * 60 * 1000)
 
             if (isNaN(startDateTime.getTime())) {
@@ -133,8 +133,8 @@ export async function createBooking(prevState: any, formData: FormData) {
 
         // Group slots into continuous blocks to apply service fee correctly on server-side
         const sortedSlotsForData = [...slots].sort((a, b) => {
-            const timeA = new Date(`${a.date}T${a.startTime}:00`).getTime()
-            const timeB = new Date(`${b.date}T${b.startTime}:00`).getTime()
+            const timeA = a.isoString ? new Date(a.isoString).getTime() : new Date(`${a.date}T${a.startTime}:00`).getTime()
+            const timeB = b.isoString ? new Date(b.isoString).getTime() : new Date(`${b.date}T${b.startTime}:00`).getTime()
             return timeA - timeB
         })
 
@@ -149,7 +149,7 @@ export async function createBooking(prevState: any, formData: FormData) {
         let lastEndTimestamp = 0
 
         for (const slot of sortedSlotsForData) {
-            const startDateTime = new Date(`${slot.date}T${slot.startTime}:00`)
+            const startDateTime = slot.isoString ? new Date(slot.isoString) : new Date(`${slot.date}T${slot.startTime}:00`)
             const endDateTime = new Date(startDateTime.getTime() + slot.duration * 60 * 60 * 1000)
 
             if (isNaN(startDateTime.getTime())) {

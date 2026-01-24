@@ -81,7 +81,12 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
         if (isSelected(date, time)) {
             onSlotRemove(dateStr, time)
         } else {
-            onSlotSelect({ date: dateStr, startTime: time, duration: 1 })
+            onSlotSelect({
+                date: dateStr,
+                startTime: time,
+                duration: 1,
+                isoString: slotStart.toISOString()
+            })
         }
     }
 
