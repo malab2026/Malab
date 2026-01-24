@@ -113,6 +113,9 @@ export const translations = {
         blockSlots: "إغلاق مواعيد",
         confirmBlockSlots: "تأكيد الإغلاق",
         blockingSlots: "جاري الإغلاق...",
+        thisWeekOnly: "هذا الأسبوع فقط",
+        everyWeek: "كل أسبوع (لمدة شهرين)",
+        blockType: "نوع القفل",
     },
     en: {
         // Navbar
@@ -238,6 +241,9 @@ export const translations = {
         blockSlots: "Block Slots",
         confirmBlockSlots: "Confirm Block",
         blockingSlots: "Blocking...",
+        thisWeekOnly: "This Week Only",
+        everyWeek: "Every Week (for 2 months)",
+        blockType: "Block Type",
     }
 };
 

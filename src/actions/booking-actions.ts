@@ -146,6 +146,8 @@ export async function createBooking(prevState: any, formData: FormData) {
         })
         const globalServiceFee = settings.serviceFee
 
+        const isBlock = formData.get("isBlock") === "true"
+        const isRecurring = formData.get("isRecurring") === "true" && isBlock
         const bookingData: any[] = []
         let lastEndTimestamp = 0
 
@@ -178,8 +180,6 @@ export async function createBooking(prevState: any, formData: FormData) {
             const slotPrice = field.pricePerHour * slot.duration
             const totalPrice = slotPrice + serviceFee
 
-            const isBlock = formData.get("isBlock") === "true"
-
             bookingData.push({
                 userId: session.user.id,
                 fieldId,
@@ -211,13 +211,38 @@ export async function createBooking(prevState: any, formData: FormData) {
         }
 
         await prisma.$transaction(async (tx) => {
-            for (const data of bookingData) {
-                await tx.booking.create({
-                    data: {
-                        ...data,
-                        receiptUrl
+            const weeksToCreate = isRecurring ? 12 : 1 // Create for 3 months if recurring
+
+            for (let week = 0; week < weeksToCreate; week++) {
+                const weekOffset = week * 7 * 24 * 60 * 60 * 1000
+
+                for (const data of bookingData) {
+                    const startTime = new Date(data.startTime.getTime() + weekOffset)
+                    const endTime = new Date(data.endTime.getTime() + weekOffset)
+
+                    // For recurring, we should also check availability for all weeks
+                    if (week > 0) {
+                        const conflict = await tx.booking.findFirst({
+                            where: {
+                                fieldId,
+                                status: { in: OCCUPYING_STATUSES },
+                                OR: [
+                                    { startTime: { lt: endTime }, endTime: { gt: startTime } },
+                                ],
+                            },
+                        })
+                        if (conflict) continue // Skip conflicting weeks for recurring blocks
                     }
-                })
+
+                    await tx.booking.create({
+                        data: {
+                            ...data,
+                            startTime,
+                            endTime,
+                            receiptUrl
+                        }
+                    })
+                }
             }
         })
         console.log(`[${new Date().toISOString()}] Transaction Success: Created ${bookingData.length} bookings`)

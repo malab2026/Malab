@@ -17,6 +17,8 @@ export function AdminBlockSlotsDialog({ field }: { field: any }) {
     const [existingBookings, setExistingBookings] = useState<any[]>([])
     const [fetchingBookings, setFetchingBookings] = useState(false)
 
+    const [isRecurring, setIsRecurring] = useState(false)
+
     const handleOpenChange = async (newOpen: boolean) => {
         setOpen(newOpen)
         if (newOpen) {
@@ -28,6 +30,7 @@ export function AdminBlockSlotsDialog({ field }: { field: any }) {
             setFetchingBookings(false)
         } else {
             setSlots([])
+            setIsRecurring(false)
         }
     }
 
@@ -47,6 +50,9 @@ export function AdminBlockSlotsDialog({ field }: { field: any }) {
         formData.append('fieldId', field.id)
         formData.append('slots', JSON.stringify(slots))
         formData.append('isBlock', 'true')
+        if (isRecurring) {
+            formData.append('isRecurring', 'true')
+        }
 
         // Note: createBooking on server will handle admin-specific logic 
         // (no receipt required, auto-confirmation)
@@ -60,6 +66,7 @@ export function AdminBlockSlotsDialog({ field }: { field: any }) {
             toast.success(t('slotsAvailable')) // Reuse success message
             setOpen(false)
             setSlots([])
+            setIsRecurring(false)
         }
     }
 
@@ -82,7 +89,25 @@ export function AdminBlockSlotsDialog({ field }: { field: any }) {
                     </DialogTitle>
                 </DialogHeader>
 
-                <div className="py-4">
+                <div className="py-2 mt-4 space-y-4">
+                    <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                        <label className="text-sm font-bold text-gray-700 mb-3 block">{t('blockType')}</label>
+                        <div className="flex gap-4">
+                            <button
+                                onClick={() => setIsRecurring(false)}
+                                className={`flex-1 p-3 rounded-xl border-2 transition-all flex items-center justify-center gap-2 ${!isRecurring ? 'bg-white border-blue-500 text-blue-700 shadow-md' : 'bg-gray-50 border-gray-200 text-gray-500 hover:border-blue-200'}`}
+                            >
+                                <span className="font-bold text-sm">{t('thisWeekOnly')}</span>
+                            </button>
+                            <button
+                                onClick={() => setIsRecurring(true)}
+                                className={`flex-1 p-3 rounded-xl border-2 transition-all flex items-center justify-center gap-2 ${isRecurring ? 'bg-white border-blue-500 text-blue-700 shadow-md' : 'bg-gray-50 border-gray-200 text-gray-500 hover:border-blue-200'}`}
+                            >
+                                <span className="font-bold text-sm text-center">{t('everyWeek')}</span>
+                            </button>
+                        </div>
+                    </div>
+
                     {fetchingBookings ? (
                         <div className="flex justify-center items-center h-64">
                             <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
