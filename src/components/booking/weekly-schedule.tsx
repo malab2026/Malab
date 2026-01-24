@@ -12,6 +12,7 @@ interface Slot {
     date: string
     startTime: string
     duration: number
+    isoString?: string
 }
 
 interface WeeklyScheduleProps {

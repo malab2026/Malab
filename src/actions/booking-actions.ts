@@ -13,6 +13,7 @@ const SlotSchema = z.object({
     date: z.string(),
     startTime: z.string(),
     duration: z.coerce.number().min(1).max(3),
+    isoString: z.string().optional(),
 })
 
 const MultiBookingSchema = z.object({
