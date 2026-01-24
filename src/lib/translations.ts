@@ -118,6 +118,10 @@ export const translations = {
         blockType: "نوع القفل",
         repeatWeekly: "تكرار أسبوعي",
         unblockConfirm: "هل أنت متأكد من رغبتك في فتح هذا الموعد مرة أخرى؟",
+        forgotPasswordLink: "نسيت كلمة المرور؟ استعادة عبر واتساب",
+        resetPasswordTitle: "إعادة تعيين كلمة المرور",
+        enterPhoneToReset: "أدخل رقم هاتفك لإرسال كود الاستعادة",
+        sendCodeWhatsApp: "إرسال الكود عبر واتساب",
     },
     en: {
         // Navbar
@@ -248,6 +252,10 @@ export const translations = {
         blockType: "Block Type",
         repeatWeekly: "Repeat Weekly",
         unblockConfirm: "Are you sure you want to unblock this slot?",
+        forgotPasswordLink: "Forgot Password? Reset via WhatsApp",
+        resetPasswordTitle: "Reset Password",
+        enterPhoneToReset: "Enter your phone number to receive recovery code",
+        sendCodeWhatsApp: "Send Code via WhatsApp",
     }
 };
 

@@ -599,21 +599,21 @@ export async function markBookingsSettled(bookingIds: string[]) {
     }
 }
 
-export async function getServiceFee() {
+export async function getGlobalSettings() {
     try {
         const settings = await prisma.globalSettings.upsert({
             where: { id: 'global' },
             update: {},
-            create: { id: 'global', serviceFee: 10.0 }
+            create: { id: 'global', serviceFee: 10.0, adminPhone: "201000000000", whatsappEnabled: true }
         })
-        return { success: true, serviceFee: settings.serviceFee }
+        return { success: true, settings }
     } catch (e) {
         console.error(e)
-        return { success: false, message: "Failed to fetch service fee" }
+        return { success: false, message: "Failed to fetch settings" }
     }
 }
 
-export async function updateServiceFee(prevState: any, formData: FormData) {
+export async function updateGlobalSettings(prevState: any, formData: FormData) {
     const session = await auth()
 
     if (!session || session.user.role !== 'admin') {
@@ -621,6 +621,8 @@ export async function updateServiceFee(prevState: any, formData: FormData) {
     }
 
     const serviceFee = parseFloat(formData.get("serviceFee") as string)
+    const adminPhone = formData.get("adminPhone") as string
+    const whatsappEnabled = formData.get("whatsappEnabled") === "true"
 
     if (isNaN(serviceFee)) {
         return { message: "Invalid service fee amount", success: false }
@@ -629,12 +631,12 @@ export async function updateServiceFee(prevState: any, formData: FormData) {
     try {
         await prisma.globalSettings.upsert({
             where: { id: 'global' },
-            update: { serviceFee },
-            create: { id: 'global', serviceFee }
+            update: { serviceFee, adminPhone, whatsappEnabled },
+            create: { id: 'global', serviceFee, adminPhone, whatsappEnabled }
         })
 
         revalidatePath('/admin')
-        return { message: "Service fee updated successfully", success: true }
+        return { message: "Settings updated successfully", success: true }
     } catch (e) {
         console.error(e)
         return { message: "Database Error", success: false }

@@ -114,3 +114,35 @@ export async function handleSignOut() {
     const { signOut } = await import("@/auth")
     await signOut({ redirectTo: '/login' })
 }
+
+export async function sendWhatsAppReset(phone: string) {
+    try {
+        const user = await prisma.user.findUnique({
+            where: { phone: phone.trim() },
+            select: { id: true, name: true, phone: true }
+        })
+
+        if (!user) {
+            return { success: false, message: "Phone number not found." }
+        }
+
+        const settings = await prisma.globalSettings.findUnique({ where: { id: 'global' } })
+
+        // In a real app, you'd generate a secure token and save it to the DB
+        // For now, we'll generate a wa.me link with a message for the admin to reset it
+        // Or generate a temporary 6-digit code (simulated)
+        const resetCode = Math.floor(100000 + Math.random() * 900000).toString()
+
+        // Store code/token for validation (schema update would be better, but we can use a simple check or link)
+        // Let's assume the admin resets it manually via WhatsApp for now as requested "resettlement via WhatsApp"
+
+        return {
+            success: true,
+            adminPhone: settings?.adminPhone || "201000000000",
+            message: `مرحباً، الاسم: ${user.name}\nرقم الهاتف: ${user.phone}\nأريد إعادة تعيين كلمة المرور الخاصة بي.`
+        }
+    } catch (e) {
+        console.error(e)
+        return { success: false, message: "Database Error" }
+    }
+}

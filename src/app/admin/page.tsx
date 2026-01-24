@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic'
 import { AddFieldForm } from "@/components/admin/add-field-form"
 import { CreateOwnerForm } from "@/components/admin/create-owner-form"
 import { ProcessCancellationDialog } from "@/components/admin/process-cancellation-dialog"
-import { ServiceFeeForm } from "@/components/admin/service-fee-form"
+import { GlobalSettingsForm } from "@/components/admin/global-settings-form"
 import { EditUserDialog } from "@/components/admin/edit-user-dialog"
 import { AddClubForm } from "@/components/admin/add-club-form"
 import { BroadcastForm } from "@/components/admin/broadcast-form"
@@ -108,7 +108,7 @@ export default async function AdminPage() {
         prisma.globalSettings.upsert({
             where: { id: 'global' },
             update: {},
-            create: { id: 'global', serviceFee: 10.0 }
+            create: { id: 'global', serviceFee: 10.0, adminPhone: "201000000000", whatsappEnabled: true }
         }),
         prisma.club.findMany({
             orderBy: { createdAt: 'desc' },
@@ -117,6 +117,8 @@ export default async function AdminPage() {
     ]) as any
 
     const initialServiceFee = settings?.serviceFee ?? 10
+    const initialPhone = settings?.adminPhone ?? "201000000000"
+    const initialWhatsappEnabled = settings?.whatsappEnabled ?? true
 
     return (
         <main className="min-h-screen pb-10">
@@ -152,7 +154,11 @@ export default async function AdminPage() {
                         </div>
                         <div className="grid lg:grid-cols-3 gap-8">
                             <div className="lg:col-span-1 space-y-8">
-                                <ServiceFeeForm initialFee={initialServiceFee} />
+                                <GlobalSettingsForm
+                                    initialFee={initialServiceFee}
+                                    initialPhone={initialPhone}
+                                    initialWhatsappEnabled={initialWhatsappEnabled}
+                                />
                                 <CreateOwnerForm />
                             </div>
                             <div className="lg:col-span-2">

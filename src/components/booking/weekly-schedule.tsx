@@ -184,6 +184,7 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
                         const past = isBefore(slotDateTime, new Date())
 
                         const canClickBooked = onBookedSlotClick && (status === 'BLOCKED' || status === 'CONFIRMED')
+                        const isAdminView = !!onBookedSlotClick
 
                         return (
                             <button
@@ -193,7 +194,7 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
                                 onClick={() => handleSlotClick(selectedDay, time)}
                                 className={cn(
                                     "relative h-16 rounded-2xl border text-xs font-black transition-all flex flex-col items-center justify-center gap-1.5",
-                                    booked ? (status === 'BLOCKED' ? "bg-orange-600 border-orange-700 text-white shadow-sm" : "bg-red-600 border-red-700 text-white cursor-not-allowed shadow-sm") :
+                                    booked ? (isAdminView && status === 'BLOCKED' ? "bg-orange-600 border-orange-700 text-white shadow-sm" : "bg-red-600 border-red-700 text-white cursor-not-allowed shadow-sm") :
                                         selected ? "bg-blue-600 border-blue-700 text-white shadow-lg scale-[1.05] z-10" :
                                             past ? "bg-gray-50 border-gray-100 text-gray-300 cursor-default" :
                                                 "bg-green-500 border-green-600 text-white hover:bg-green-600 active:scale-95 shadow-sm"
@@ -204,10 +205,10 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
                                 {booked && (
                                     <span className={cn(
                                         "absolute -top-1 text-[8px] bg-white px-2 py-0.5 rounded-full border-2 font-bold leading-none border-red-600",
-                                        status === 'BLOCKED' ? "text-orange-600 border-orange-600" : "text-red-600 border-red-600",
+                                        (isAdminView && status === 'BLOCKED') ? "text-orange-600 border-orange-600" : "text-red-600 border-red-600",
                                         isRtl ? "-left-1" : "-right-1"
                                     )}>
-                                        {status === 'BLOCKED' ? t('blockSlots') : t('booked')}
+                                        {(isAdminView && status === 'BLOCKED') ? t('blockSlots') : t('booked')}
                                     </span>
                                 )}
                             </button>

@@ -53,6 +53,18 @@ export async function createNotification(userId: string | null, title: string, m
                 type
             }
         })
+
+        // WhatsApp Integration
+        const settings = await prisma.globalSettings.findUnique({ where: { id: 'global' } })
+        if (settings?.whatsappEnabled && userId) {
+            const user = await prisma.user.findUnique({ where: { id: userId }, select: { phone: true } })
+            if (user?.phone) {
+                console.log(`[WhatsApp] Triggering message to ${user.phone}: ${title} - ${message}`)
+                // In a production app, we would call an external API here
+                // e.g., sendWhatsAppAPI(user.phone, `${title}\n\n${message}`)
+            }
+        }
+
         revalidatePath('/')
     } catch (e) {
         console.error("Error creating notification:", e)
