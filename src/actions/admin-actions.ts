@@ -544,7 +544,9 @@ export async function getFinancialReport(filters: { startDate?: string, endDate?
                     hours: 0,
                     gross: 0,
                     refunds: 0,
-                    net: 0
+                    net: 0,
+                    settled: 0,
+                    pending: 0
                 }
             }
 
@@ -554,6 +556,12 @@ export async function getFinancialReport(filters: { startDate?: string, endDate?
             fb.gross += gross
             fb.refunds += refund
             fb.net += net
+
+            if (booking.isSettled) {
+                fb.settled += net
+            } else {
+                fb.pending += net
+            }
         })
 
         return report

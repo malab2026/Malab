@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
+import { SettlementManager } from "@/components/admin/settlement-manager"
+import { Badge } from "@/components/ui/badge"
 
 export const dynamic = 'force-dynamic'
 
@@ -113,6 +115,11 @@ export default async function OwnerAccountsPage({
                     </Card>
                 </div>
 
+                {/* Individual Bookings Detail */}
+                <div className="mb-10">
+                    <SettlementManager bookings={report.bookings} isAdmin={false} />
+                </div>
+
                 {/* Table Breakdown */}
                 <Card className="border-0 shadow-2xl overflow-hidden rounded-2xl">
                     <CardHeader className="bg-white border-b">
@@ -127,7 +134,7 @@ export default async function OwnerAccountsPage({
                                         <th className="px-6 py-5"># Bookings</th>
                                         <th className="px-6 py-5">Total Hours</th>
                                         <th className="px-6 py-5">Gross</th>
-                                        <th className="px-6 py-5">Refunds</th>
+                                        <th className="px-6 py-5">Settled</th>
                                         <th className="px-6 py-5 text-right">Net Income</th>
                                     </tr>
                                 </thead>
@@ -138,7 +145,12 @@ export default async function OwnerAccountsPage({
                                             <td className="px-6 py-5 font-medium text-gray-600">{fb.bookings}</td>
                                             <td className="px-6 py-5 font-medium text-gray-600">{fb.hours.toFixed(1)} hrs</td>
                                             <td className="px-6 py-5 font-medium text-gray-600">{fb.gross.toFixed(2)} EGP</td>
-                                            <td className="px-6 py-5 text-red-500 font-bold">-{fb.refunds.toFixed(2)}</td>
+                                            <td className="px-6 py-5">
+                                                <div className="flex flex-col gap-1">
+                                                    <span className="text-[10px] font-black text-green-600 tracking-tighter uppercase whitespace-nowrap">Settled: {fb.settled.toFixed(2)} ج.م</span>
+                                                    <span className="text-[10px] font-black text-gray-400 tracking-tighter uppercase whitespace-nowrap">Pending: {fb.pending.toFixed(2)} ج.م</span>
+                                                </div>
+                                            </td>
                                             <td className="px-6 py-5 text-right font-black text-green-700">{fb.net.toFixed(2)} EGP</td>
                                         </tr>
                                     ))}

@@ -9,9 +9,10 @@ import { format } from "date-fns"
 
 interface SettlementManagerProps {
     bookings: any[]
+    isAdmin?: boolean
 }
 
-export function SettlementManager({ bookings }: SettlementManagerProps) {
+export function SettlementManager({ bookings, isAdmin = true }: SettlementManagerProps) {
     const [isPending, setIsPending] = useState(false)
 
     const unsettledBookings = bookings.filter(b => !b.isSettled)
@@ -42,13 +43,15 @@ export function SettlementManager({ bookings }: SettlementManagerProps) {
         <div className="space-y-6">
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold text-gray-900">Bookings Detail</h2>
-                <Button
-                    onClick={handleSettleAll}
-                    disabled={isPending || unsettledIds.length === 0}
-                    className="bg-green-600 hover:bg-green-700 font-bold"
-                >
-                    {isPending ? "Processing..." : "Mark All as Settled (تم المحاسبة)"}
-                </Button>
+                {isAdmin && (
+                    <Button
+                        onClick={handleSettleAll}
+                        disabled={isPending || unsettledIds.length === 0}
+                        className="bg-green-600 hover:bg-green-700 font-bold"
+                    >
+                        {isPending ? "Processing..." : "Mark All as Settled (تم المحاسبة)"}
+                    </Button>
+                )}
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
