@@ -46,6 +46,7 @@ export function AdminBlockSlotsDialog({ field }: { field: any }) {
         const formData = new FormData()
         formData.append('fieldId', field.id)
         formData.append('slots', JSON.stringify(slots))
+        formData.append('isBlock', 'true')
 
         // Note: createBooking on server will handle admin-specific logic 
         // (no receipt required, auto-confirmation)

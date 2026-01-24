@@ -178,12 +178,14 @@ export async function createBooking(prevState: any, formData: FormData) {
             const slotPrice = field.pricePerHour * slot.duration
             const totalPrice = slotPrice + serviceFee
 
+            const isBlock = formData.get("isBlock") === "true"
+
             bookingData.push({
                 userId: session.user.id,
                 fieldId,
                 startTime: startDateTime,
                 endTime: endDateTime,
-                status: session.user.role === "admin" ? "CONFIRMED" : "PENDING",
+                status: isBlock ? "BLOCKED" : (session.user.role === "admin" ? "CONFIRMED" : "PENDING"),
                 serviceFee,
                 totalPrice
             })
