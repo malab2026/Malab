@@ -114,8 +114,10 @@ export const translations = {
         confirmBlockSlots: "تأكيد الإغلاق",
         blockingSlots: "جاري الإغلاق...",
         thisWeekOnly: "هذا الأسبوع فقط",
-        everyWeek: "كل أسبوع (لمدة شهرين)",
+        everyWeek: "كل يوم في هذا الوقت (لمدة شهرين)",
         blockType: "نوع القفل",
+        repeatWeekly: "تكرار أسبوعي",
+        unblockConfirm: "هل أنت متأكد من رغبتك في فتح هذا الموعد مرة أخرى؟",
     },
     en: {
         // Navbar
@@ -242,8 +244,10 @@ export const translations = {
         confirmBlockSlots: "Confirm Block",
         blockingSlots: "Blocking...",
         thisWeekOnly: "This Week Only",
-        everyWeek: "Every Week (for 2 months)",
+        everyWeek: "Every week at this time (for 2 months)",
         blockType: "Block Type",
+        repeatWeekly: "Repeat Weekly",
+        unblockConfirm: "Are you sure you want to unblock this slot?",
     }
 };
 

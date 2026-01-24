@@ -640,3 +640,25 @@ export async function updateServiceFee(prevState: any, formData: FormData) {
         return { message: "Database Error", success: false }
     }
 }
+
+export async function deleteBookingAdmin(bookingId: string) {
+    const session = await auth()
+    if (!session || session.user.role !== 'admin') {
+        return { message: "Unauthorized", success: false }
+    }
+
+    try {
+        const booking = await prisma.booking.delete({
+            where: { id: bookingId }
+        })
+
+        revalidatePath('/admin')
+        revalidatePath('/admin/accounts')
+        revalidatePath('/dashboard')
+        revalidatePath(`/fields/${booking.fieldId}`)
+        return { message: "Booking deleted successfully", success: true }
+    } catch (e) {
+        console.error(e)
+        return { message: "Failed to delete booking", success: false }
+    }
+}

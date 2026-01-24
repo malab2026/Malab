@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button"
 import { WeeklySchedule } from "@/components/booking/weekly-schedule"
 import { createBooking, getFieldBookings } from "@/actions/booking-actions"
+import { deleteBookingAdmin } from "@/actions/admin-actions"
 import { useTranslation } from "@/components/providers/locale-context"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
@@ -16,18 +17,21 @@ export function AdminBlockSlotsDialog({ field }: { field: any }) {
     const [loading, setLoading] = useState(false)
     const [existingBookings, setExistingBookings] = useState<any[]>([])
     const [fetchingBookings, setFetchingBookings] = useState(false)
-
     const [isRecurring, setIsRecurring] = useState(false)
+
+    const fetchExistingBookings = async () => {
+        setFetchingBookings(true)
+        const result = await getFieldBookings(field.id, new Date().toISOString().split('T')[0], new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+        if (result.success) {
+            setExistingBookings(result.bookings || [])
+        }
+        setFetchingBookings(false)
+    }
 
     const handleOpenChange = async (newOpen: boolean) => {
         setOpen(newOpen)
         if (newOpen) {
-            setFetchingBookings(true)
-            const result = await getFieldBookings(field.id, new Date().toISOString().split('T')[0], new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
-            if (result.success) {
-                setExistingBookings(result.bookings || [])
-            }
-            setFetchingBookings(false)
+            await fetchExistingBookings()
         } else {
             setSlots([])
             setIsRecurring(false)
@@ -40,6 +44,21 @@ export function AdminBlockSlotsDialog({ field }: { field: any }) {
 
     const handleSlotRemove = (date: string, startTime: string) => {
         setSlots(prev => prev.filter(s => !(s.date === date && s.startTime === startTime)))
+    }
+
+    const handleUnblock = async (bookingId: string) => {
+        if (!confirm(t('unblockConfirm'))) return
+
+        setLoading(true)
+        const result = await deleteBookingAdmin(bookingId)
+        setLoading(false)
+
+        if (result.success) {
+            toast.success(result.message)
+            await fetchExistingBookings()
+        } else {
+            toast.error(result.message)
+        }
     }
 
     const handleConfirm = async () => {
@@ -90,21 +109,15 @@ export function AdminBlockSlotsDialog({ field }: { field: any }) {
                 </DialogHeader>
 
                 <div className="py-2 mt-4 space-y-4">
-                    <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                        <label className="text-sm font-bold text-gray-700 mb-3 block">{t('blockType')}</label>
-                        <div className="flex gap-4">
-                            <button
-                                onClick={() => setIsRecurring(false)}
-                                className={`flex-1 p-3 rounded-xl border-2 transition-all flex items-center justify-center gap-2 ${!isRecurring ? 'bg-white border-blue-500 text-blue-700 shadow-md' : 'bg-gray-50 border-gray-200 text-gray-500 hover:border-blue-200'}`}
-                            >
-                                <span className="font-bold text-sm">{t('thisWeekOnly')}</span>
-                            </button>
-                            <button
-                                onClick={() => setIsRecurring(true)}
-                                className={`flex-1 p-3 rounded-xl border-2 transition-all flex items-center justify-center gap-2 ${isRecurring ? 'bg-white border-blue-500 text-blue-700 shadow-md' : 'bg-gray-50 border-gray-200 text-gray-500 hover:border-blue-200'}`}
-                            >
-                                <span className="font-bold text-sm text-center">{t('everyWeek')}</span>
-                            </button>
+                    <div className="bg-blue-50/50 p-4 rounded-2xl border border-blue-100 flex items-center justify-between group cursor-pointer active:scale-[0.98] transition-all" onClick={() => setIsRecurring(!isRecurring)}>
+                        <div className="flex items-center gap-3">
+                            <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${isRecurring ? 'bg-blue-600 border-blue-600' : 'bg-white border-blue-200'}`}>
+                                {isRecurring && <div className="w-2.5 h-2.5 bg-white rounded-sm"></div>}
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-black text-blue-900 leading-tight">{t('repeatWeekly')}</h4>
+                                <p className="text-[10px] text-blue-600 font-bold uppercase tracking-tight">{t('everyWeek')}</p>
+                            </div>
                         </div>
                     </div>
 
@@ -118,6 +131,7 @@ export function AdminBlockSlotsDialog({ field }: { field: any }) {
                             selectedSlots={slots}
                             onSlotSelect={handleSlotSelect}
                             onSlotRemove={handleSlotRemove}
+                            onBookedSlotClick={handleUnblock}
                         />
                     )}
                 </div>

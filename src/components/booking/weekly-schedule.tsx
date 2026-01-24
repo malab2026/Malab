@@ -20,9 +20,10 @@ interface WeeklyScheduleProps {
     selectedSlots: Slot[]
     onSlotSelect: (slot: Slot) => void
     onSlotRemove: (date: string, startTime: string) => void
+    onBookedSlotClick?: (bookingId: string) => void
 }
 
-export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, onSlotRemove }: WeeklyScheduleProps) {
+export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, onSlotRemove, onBookedSlotClick }: WeeklyScheduleProps) {
     const { t, locale, isRtl } = useTranslation()
     const [viewDate, setViewDate] = useState(new Date())
     const [selectedDay, setSelectedDay] = useState<Date>(new Date())
@@ -57,14 +58,13 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
         return d
     }
 
-    const getBookingStatus = (date: Date, time: string) => {
+    const getBooking = (date: Date, time: string) => {
         const slotStart = getSlotDateTime(date, time)
-        const booking = existingBookings.find(b => {
+        return existingBookings.find(b => {
             const bStart = new Date(b.startTime)
             const bEnd = new Date(b.endTime)
             return slotStart >= bStart && slotStart < bEnd
         })
-        return booking?.status
     }
 
     const isSelected = (date: Date, time: string) => {
@@ -77,7 +77,13 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
         const slotStart = getSlotDateTime(date, time)
         const dateStr = format(slotStart, 'yyyy-MM-dd')
 
-        if (getBookingStatus(date, time)) return
+        const booking = getBooking(date, time)
+        if (booking) {
+            if (onBookedSlotClick && (booking.status === 'BLOCKED' || booking.status === 'CONFIRMED')) {
+                onBookedSlotClick(booking.id)
+            }
+            return
+        }
 
         if (isSelected(date, time)) {
             onSlotRemove(dateStr, time)
@@ -170,21 +176,24 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
                 {/* Slots Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                     {hours.map((time) => {
-                        const status = getBookingStatus(selectedDay, time)
+                        const booking = getBooking(selectedDay, time)
+                        const status = booking?.status
                         const booked = !!status
                         const selected = isSelected(selectedDay, time)
                         const slotDateTime = getSlotDateTime(selectedDay, time)
                         const past = isBefore(slotDateTime, new Date())
 
+                        const canClickBooked = onBookedSlotClick && (status === 'BLOCKED' || status === 'CONFIRMED')
+
                         return (
                             <button
                                 key={time}
                                 type="button"
-                                disabled={booked || past}
+                                disabled={(booked && !canClickBooked) || past}
                                 onClick={() => handleSlotClick(selectedDay, time)}
                                 className={cn(
                                     "relative h-16 rounded-2xl border text-xs font-black transition-all flex flex-col items-center justify-center gap-1.5",
-                                    booked ? "bg-red-600 border-red-700 text-white cursor-not-allowed shadow-sm" :
+                                    booked ? (status === 'BLOCKED' ? "bg-orange-600 border-orange-700 text-white shadow-sm" : "bg-red-600 border-red-700 text-white cursor-not-allowed shadow-sm") :
                                         selected ? "bg-blue-600 border-blue-700 text-white shadow-lg scale-[1.05] z-10" :
                                             past ? "bg-gray-50 border-gray-100 text-gray-300 cursor-default" :
                                                 "bg-green-500 border-green-600 text-white hover:bg-green-600 active:scale-95 shadow-sm"
@@ -194,10 +203,11 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
                                 <span dir="ltr">{formatTimeDisplay(time)}</span>
                                 {booked && (
                                     <span className={cn(
-                                        "absolute -top-1 text-[8px] bg-white px-2 py-0.5 rounded-full border-2 font-bold leading-none text-red-600 border-red-600",
+                                        "absolute -top-1 text-[8px] bg-white px-2 py-0.5 rounded-full border-2 font-bold leading-none border-red-600",
+                                        status === 'BLOCKED' ? "text-orange-600 border-orange-600" : "text-red-600 border-red-600",
                                         isRtl ? "-left-1" : "-right-1"
                                     )}>
-                                        {t('booked')}
+                                        {status === 'BLOCKED' ? t('blockSlots') : t('booked')}
                                     </span>
                                 )}
                             </button>
@@ -215,6 +225,10 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
                         <div className="flex items-center gap-1.5">
                             <div className="w-3 h-3 rounded bg-red-600 shadow-sm"></div>
                             <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">{t('occupied')}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <div className="w-3 h-3 rounded bg-orange-600 shadow-sm"></div>
+                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">{t('blockSlots')}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
                             <div className="w-3 h-3 rounded bg-blue-600 shadow-sm"></div>
