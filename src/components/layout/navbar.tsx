@@ -14,7 +14,7 @@ import { getGlobalSettings } from "@/actions/admin-actions"
 export function Navbar() {
     const { data: session, status } = useSession()
     const { locale, setLocale, t } = useTranslation()
-    const [adminPhone, setAdminPhone] = useState("201000000000")
+    const [adminPhone, setAdminPhone] = useState("201009410112")
 
     useEffect(() => {
         getGlobalSettings().then(res => {

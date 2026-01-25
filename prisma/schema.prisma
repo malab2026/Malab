@@ -82,7 +82,7 @@ model Booking {
 model GlobalSettings {
   id              String   @id @default("global")
   serviceFee      Float    @default(10.0)
-  adminPhone      String   @default("201000000000") // Default with country code
+  adminPhone      String   @default("201009410112") // Updated default
   whatsappEnabled Boolean  @default(true)
   updatedAt       DateTime @updatedAt
 }

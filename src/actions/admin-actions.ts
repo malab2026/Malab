@@ -604,7 +604,7 @@ export async function getGlobalSettings() {
         const settings = await prisma.globalSettings.upsert({
             where: { id: 'global' },
             update: {},
-            create: { id: 'global', serviceFee: 10.0, adminPhone: "201000000000", whatsappEnabled: true }
+            create: { id: 'global', serviceFee: 10.0, adminPhone: "201009410112", whatsappEnabled: true }
         })
         return { success: true, settings }
     } catch (e) {
