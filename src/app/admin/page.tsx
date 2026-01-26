@@ -23,6 +23,7 @@ import { BroadcastForm } from "@/components/admin/broadcast-form"
 import { AdminBlockSlotsDialog } from "@/components/admin/admin-block-slots-dialog"
 import { AdminHistoryManager } from "@/components/admin/admin-history-manager"
 import { ShieldAlert } from "lucide-react"
+import { AdminBookingCard } from "@/components/admin/admin-booking-card"
 
 export default async function AdminPage() {
     const session = await auth()
@@ -322,7 +323,7 @@ export default async function AdminPage() {
 
                         <div className="space-y-4">
                             {pendingBookings.map((booking: any) => (
-                                <BookingCard key={booking.id} booking={booking} isAdmin />
+                                <AdminBookingCard key={booking.id} booking={booking} isAdmin />
                             ))}
                             {pendingBookings.length === 0 && (
                                 <p className="text-gray-500 italic">No pending bookings.</p>
@@ -341,7 +342,7 @@ export default async function AdminPage() {
 
                         <div className="space-y-4">
                             {cancelRequests.map((booking: any) => (
-                                <BookingCard key={booking.id} booking={booking} isAdmin isCancelRequest />
+                                <AdminBookingCard key={booking.id} booking={booking} isAdmin isCancelRequest />
                             ))}
                             {cancelRequests.length === 0 && (
                                 <p className="text-gray-500 italic">No cancellation requests.</p>
@@ -353,94 +354,10 @@ export default async function AdminPage() {
                     <section className="bg-white/30 backdrop-blur-sm p-4 sm:p-6 rounded-2xl border border-white/40 shadow-xl">
                         <AdminHistoryManager
                             bookings={historyBookings}
-                            renderBookingCard={(booking) => (
-                                <BookingCard booking={booking} isAdmin />
-                            )}
                         />
                     </section>
                 </div>
             </div>
         </main>
-    )
-}
-
-function BookingCard({ booking, isAdmin = false, isCancelRequest = false }: { booking: any, isAdmin?: boolean, isCancelRequest?: boolean }) {
-    return (
-        <Card className="flex flex-col md:flex-row items-center overflow-hidden border-l-4 border-l-transparent data-[cancel=true]:border-l-orange-500" data-cancel={isCancelRequest}>
-            <div className="relative w-full md:w-32 h-24 shrink-0 bg-gray-100 flex items-center justify-center text-xs text-gray-400">
-                <Image
-                    src={`/api/receipt-image/${booking.id}`}
-                    alt="Receipt"
-                    fill
-                    className="object-cover"
-                />
-                <span>No Receipt</span>
-            </div>
-            <div className="flex-1 p-4 grid md:grid-cols-2 gap-4 w-full">
-                <div>
-                    <h3 className="font-bold">{booking.field.name}</h3>
-                    <p className="text-sm text-gray-500">
-                        {formatInEgyptDate(booking.startTime)} • {formatInEgyptTime(booking.startTime)}
-                    </p>
-                    <p className="text-sm">User: <span className="font-medium">{booking.user.name}</span> ({booking.user.email})</p>
-                    <p className="text-sm text-gray-600">Phone: {booking.user.phone || 'N/A'}</p>
-                    {isCancelRequest && booking.cancellationReason && (
-                        <p className="text-xs mt-2 p-2 bg-orange-50 text-orange-800 rounded border border-orange-100 italic">
-                            Reason: {booking.cancellationReason}
-                        </p>
-                    )}
-                    {booking.receiptUrl && (
-                        <div className="mt-1">
-                            <div className="flex gap-3">
-                                <Link href={`/receipt/${booking.id}`} target="_blank" className="text-blue-600 hover:underline text-xs flex items-center gap-1">
-                                    <span>📄</span> View Full
-                                </Link>
-                                <a href={`/api/receipt-image/${booking.id}?download=true`} className="text-green-600 hover:underline text-xs flex items-center gap-1" download>
-                                    <span>⬇️</span> Download
-                                </a>
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                <div className="flex items-center justify-end gap-2">
-                    <StatusBadge status={booking.status} />
-
-                    {isAdmin && booking.status === 'PENDING' && (
-                        <div className="flex gap-2 ml-4">
-                            <form action={updateBookingStatus.bind(null, booking.id, 'CONFIRMED') as any}>
-                                <Button size="sm" className="bg-green-600 hover:bg-green-700">Confirm</Button>
-                            </form>
-                            <form action={updateBookingStatus.bind(null, booking.id, 'REJECTED') as any}>
-                                <Button size="sm" variant="destructive">Reject</Button>
-                            </form>
-                        </div>
-                    )}
-
-                    {isAdmin && isCancelRequest && (
-                        <div className="ml-4">
-                            <ProcessCancellationDialog booking={booking} />
-                        </div>
-                    )}
-                </div>
-            </div>
-        </Card>
-    )
-}
-
-function StatusBadge({ status }: { status: string }) {
-    const styles = {
-        PENDING: "bg-yellow-100 text-yellow-800",
-        CONFIRMED: "bg-green-100 text-green-800",
-        REJECTED: "bg-red-100 text-red-800",
-        CANCEL_REQUESTED: "bg-orange-100 text-orange-800",
-        CANCEL_APPROVED: "bg-gray-100 text-gray-800",
-        CANCELLED: "bg-gray-100 text-gray-800",
-        BLOCKED: "bg-orange-100 text-orange-800 border border-orange-200"
-    }
-    return (
-        <Badge className={(styles[status as keyof typeof styles] || "") + " hover:none shadow-none border-0"}>
-            {status.replace('_', ' ')}
-        </Badge>
     )
 }

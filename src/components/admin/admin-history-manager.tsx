@@ -6,22 +6,22 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Filter, X } from "lucide-react"
+import { AdminBookingCard } from "./admin-booking-card"
 
 interface AdminHistoryManagerProps {
     bookings: any[]
-    renderBookingCard: (booking: any) => React.ReactNode
 }
 
-export function AdminHistoryManager({ bookings, renderBookingCard }: AdminHistoryManagerProps) {
+export function AdminHistoryManager({ bookings }: AdminHistoryManagerProps) {
     const [selectedStatuses, setSelectedStatuses] = useState<string[]>([])
     const [showFilters, setShowFilters] = useState(false)
 
     const statuses = [
-        { id: 'CONFIRMED', label: 'Confirmed', color: 'bg-green-100 text-green-800' },
-        { id: 'REJECTED', label: 'Rejected', color: 'bg-red-100 text-red-800' },
-        { id: 'CANCEL_REQUESTED', label: 'Cancel Requested', color: 'bg-orange-100 text-orange-800' },
-        { id: 'CANCEL_APPROVED', label: 'Cancelled', color: 'bg-gray-100 text-gray-800' },
-        { id: 'BLOCKED', label: 'Manual Block', color: 'bg-orange-100 text-orange-800 border-orange-200' },
+        { id: 'CONFIRMED', label: 'Confirmed' },
+        { id: 'REJECTED', label: 'Rejected' },
+        { id: 'CANCEL_REQUESTED', label: 'Cancel Requested' },
+        { id: 'CANCEL_APPROVED', label: 'Cancelled' },
+        { id: 'BLOCKED', label: 'Manual Block' },
     ]
 
     const filteredBookings = selectedStatuses.length > 0
@@ -93,14 +93,12 @@ export function AdminHistoryManager({ bookings, renderBookingCard }: AdminHistor
                 </div>
             )}
 
-            <div className="space-y-4 opacity-100 transition-opacity">
+            <div className="space-y-4">
                 {filteredBookings.map((booking) => (
-                    <div key={booking.id}>
-                        {renderBookingCard(booking)}
-                    </div>
+                    <AdminBookingCard key={booking.id} booking={booking} isAdmin />
                 ))}
                 {filteredBookings.length === 0 && (
-                    <div className="bg-white/50 rounded-xl p-10 text-center border border-dashed text-gray-400 font-medium">
+                    <div className="bg-white/50 rounded-xl p-10 text-center border border-dashed text-gray-400 font-medium font-bold">
                         No results match your filters.
                     </div>
                 )}
