@@ -9,6 +9,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { updateBookingStatus, updateUserRole } from "@/actions/admin-actions"
 import { DeleteFieldButton } from "@/components/admin/delete-field-button"
+import { formatInEgyptDate, formatInEgyptTime } from "@/lib/utils"
 
 export const dynamic = 'force-dynamic'
 
@@ -373,7 +374,7 @@ function BookingCard({ booking, isAdmin = false, isCancelRequest = false }: { bo
                 <div>
                     <h3 className="font-bold">{booking.field.name}</h3>
                     <p className="text-sm text-gray-500">
-                        {booking.startTime.toLocaleDateString()} • {booking.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {formatInEgyptDate(booking.startTime)} • {formatInEgyptTime(booking.startTime)}
                     </p>
                     <p className="text-sm">User: <span className="font-medium">{booking.user.name}</span> ({booking.user.email})</p>
                     <p className="text-sm text-gray-600">Phone: {booking.user.phone || 'N/A'}</p>

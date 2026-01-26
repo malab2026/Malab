@@ -2,6 +2,7 @@ import { auth } from "@/auth"
 import prisma from "@/lib/prisma"
 import { notFound, redirect } from "next/navigation"
 import Image from "next/image"
+import { formatInEgyptDate, formatInEgyptTime } from "@/lib/utils"
 
 export default async function ReceiptPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
@@ -33,8 +34,9 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
             <div className="bg-white p-4 rounded-lg shadow-lg max-w-4xl w-full">
                 <div className="flex justify-between items-center mb-4 border-b pb-4">
                     <h1 className="text-xl font-bold">Booking Receipt</h1>
-                    <div className="text-sm text-gray-500">
-                        Date: {booking.startTime.toLocaleDateString()}
+                    <div className="text-sm text-gray-500 flex flex-col items-end">
+                        <span>Date: {formatInEgyptDate(booking.startTime)}</span>
+                        <span>Time: {formatInEgyptTime(booking.startTime)}</span>
                     </div>
                 </div>
 

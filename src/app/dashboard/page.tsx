@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import Image from "next/image"
 import { CancellationRequestButton } from "@/components/booking/cancellation-request-button"
+import { formatInEgyptDate, formatInEgyptTime } from "@/lib/utils"
 
 export const dynamic = 'force-dynamic'
 
@@ -60,7 +61,7 @@ export default async function DashboardPage() {
                                     <div>
                                         <h3 className="font-bold text-xl">{booking.field.name}</h3>
                                         <p className="text-gray-500">
-                                            {booking.startTime.toLocaleDateString()} at {booking.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            {formatInEgyptDate(booking.startTime)} at {formatInEgyptTime(booking.startTime)}
                                         </p>
                                         <p className="text-gray-500">
                                             Duration: {(booking.endTime.getTime() - booking.startTime.getTime()) / (1000 * 60 * 60)} Hours
