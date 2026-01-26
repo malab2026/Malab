@@ -37,7 +37,8 @@ export default async function AdminPage() {
         owners,
         users,
         settings,
-        clubs
+        clubs,
+        blockedBookings
     ] = await Promise.all([
         prisma.booking.findMany({
             where: { status: 'PENDING' },
@@ -70,7 +71,7 @@ export default async function AdminPage() {
             orderBy: { createdAt: 'desc' }
         }),
         prisma.booking.findMany({
-            where: { status: { not: 'PENDING' } },
+            where: { status: { notIn: ['PENDING', 'BLOCKED'] } },
             select: {
                 id: true,
                 startTime: true,
@@ -114,6 +115,19 @@ export default async function AdminPage() {
         prisma.club.findMany({
             orderBy: { createdAt: 'desc' },
             select: { id: true, name: true, nameEn: true, _count: { select: { fields: true } } }
+        }),
+        prisma.booking.findMany({
+            where: { status: 'BLOCKED' },
+            select: {
+                id: true,
+                startTime: true,
+                endTime: true,
+                status: true,
+                createdAt: true,
+                field: { select: { id: true, name: true } },
+                user: { select: { id: true, name: true, phone: true } }
+            },
+            orderBy: { startTime: 'desc' }
         })
     ]) as any
 
@@ -340,6 +354,52 @@ export default async function AdminPage() {
                             )}
                         </div>
                     </section>
+
+                    {/* Manual Blocks Report Section */}
+                    <section>
+                        <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-xl shadow-sm border border-white/20 inline-flex items-center gap-2 mb-4">
+                            <h2 className="text-2xl font-semibold text-gray-900">
+                                🔒 Manual Blocks Report
+                            </h2>
+                            <Badge variant="secondary" className="bg-gray-100">{blockedBookings.length}</Badge>
+                        </div>
+                        <div className="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-100">
+                            <table className="w-full text-sm text-left">
+                                <thead className="bg-gray-50 text-gray-700 uppercase text-xs">
+                                    <tr>
+                                        <th className="px-6 py-3">Field</th>
+                                        <th className="px-6 py-3">Date & Time</th>
+                                        <th className="px-6 py-3">Blocked By</th>
+                                        <th className="px-6 py-3 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y">
+                                    {blockedBookings.map((block: any) => (
+                                        <tr key={block.id} className="hover:bg-gray-50">
+                                            <td className="px-6 py-4 font-semibold">{block.field.name}</td>
+                                            <td className="px-6 py-4">
+                                                {formatInEgyptDate(block.startTime)} @ {formatInEgyptTime(block.startTime)}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="text-xs">{block.user.name}</div>
+                                                <div className="text-[10px] text-gray-500">{block.user.phone}</div>
+                                            </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <AdminBlockSlotsDialog field={block.field} />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    {blockedBookings.length === 0 && (
+                                        <tr>
+                                            <td colSpan={4} className="px-6 py-10 text-center text-gray-500 italic">No manual blocks recorded.</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <hr />
 
                     {/* Recent History Section */}
                     <section>
