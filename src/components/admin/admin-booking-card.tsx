@@ -53,13 +53,13 @@ export function AdminBookingCard({ booking, isAdmin = false, isCancelRequest = f
 
                     {isAdmin && booking.status === 'PENDING' && (
                         <div className="flex gap-2 ml-4">
-                            <form action={async () => {
-                                await updateBookingStatus(booking.id, 'CONFIRMED')
+                            <form action={async (formData) => {
+                                await updateBookingStatus(booking.id, 'CONFIRMED', formData)
                             }}>
                                 <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">Confirm</Button>
                             </form>
-                            <form action={async () => {
-                                await updateBookingStatus(booking.id, 'REJECTED')
+                            <form action={async (formData) => {
+                                await updateBookingStatus(booking.id, 'REJECTED', formData)
                             }}>
                                 <Button size="sm" variant="destructive">Reject</Button>
                             </form>
