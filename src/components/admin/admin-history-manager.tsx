@@ -14,6 +14,7 @@ interface AdminHistoryManagerProps {
 
 export function AdminHistoryManager({ bookings }: AdminHistoryManagerProps) {
     const [selectedStatuses, setSelectedStatuses] = useState<string[]>([])
+    const [selectedFieldId, setSelectedFieldId] = useState<string>("all")
     const [showFilters, setShowFilters] = useState(false)
 
     const statuses = [
@@ -24,9 +25,16 @@ export function AdminHistoryManager({ bookings }: AdminHistoryManagerProps) {
         { id: 'BLOCKED', label: 'Manual Block' },
     ]
 
-    const filteredBookings = selectedStatuses.length > 0
-        ? bookings.filter(b => selectedStatuses.includes(b.status))
-        : bookings
+    // Extract unique fields from bookings
+    const fields = Array.from(new Set(bookings.map(b => JSON.stringify(b.field))))
+        .map(s => JSON.parse(s))
+        .sort((a, b) => a.name.localeCompare(b.name))
+
+    const filteredBookings = bookings.filter(b => {
+        const statusMatch = selectedStatuses.length === 0 || selectedStatuses.includes(b.status)
+        const fieldMatch = selectedFieldId === "all" || b.field.id === selectedFieldId
+        return statusMatch && fieldMatch
+    })
 
     const toggleStatus = (status: string) => {
         setSelectedStatuses(prev =>
@@ -36,7 +44,10 @@ export function AdminHistoryManager({ bookings }: AdminHistoryManagerProps) {
         )
     }
 
-    const clearFilters = () => setSelectedStatuses([])
+    const clearFilters = () => {
+        setSelectedStatuses([])
+        setSelectedFieldId("all")
+    }
 
     return (
         <div className="space-y-6">
@@ -57,13 +68,13 @@ export function AdminHistoryManager({ bookings }: AdminHistoryManagerProps) {
                     >
                         <Filter className="h-4 w-4" />
                         Filters
-                        {selectedStatuses.length > 0 && (
+                        {(selectedStatuses.length > 0 || selectedFieldId !== "all") && (
                             <Badge variant="default" className="ml-1 h-5 min-w-5 flex items-center justify-center p-0 rounded-full font-bold">
-                                {selectedStatuses.length}
+                                {(selectedStatuses.length > 0 ? 1 : 0) + (selectedFieldId !== "all" ? 1 : 0)}
                             </Badge>
                         )}
                     </Button>
-                    {selectedStatuses.length > 0 && (
+                    {(selectedStatuses.length > 0 || selectedFieldId !== "all") && (
                         <Button variant="ghost" size="sm" onClick={clearFilters} className="text-gray-500 hover:text-red-500">
                             <X className="h-4 w-4 mr-1" /> Clear
                         </Button>
@@ -72,23 +83,40 @@ export function AdminHistoryManager({ bookings }: AdminHistoryManagerProps) {
             </div>
 
             {showFilters && (
-                <div className="bg-white/50 backdrop-blur-sm p-4 rounded-xl border border-white/20 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                        {statuses.map(status => (
-                            <div key={status.id} className="flex items-center space-x-2 bg-white p-2 rounded-lg border border-gray-100 shadow-xs hover:shadow-sm transition-shadow">
-                                <Checkbox
-                                    id={`status-${status.id}`}
-                                    checked={selectedStatuses.includes(status.id)}
-                                    onCheckedChange={() => toggleStatus(status.id)}
-                                />
-                                <Label
-                                    htmlFor={`status-${status.id}`}
-                                    className="text-xs font-semibold cursor-pointer flex-1"
-                                >
-                                    {status.label}
-                                </Label>
-                            </div>
-                        ))}
+                <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-white/20 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300 space-y-4">
+                    <div className="space-y-2">
+                        <Label className="text-sm font-bold text-gray-700">Filter by Status</Label>
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                            {statuses.map(status => (
+                                <div key={status.id} className="flex items-center space-x-2 bg-white p-2 rounded-lg border border-gray-100 shadow-xs hover:shadow-sm transition-shadow">
+                                    <Checkbox
+                                        id={`status-${status.id}`}
+                                        checked={selectedStatuses.includes(status.id)}
+                                        onCheckedChange={() => toggleStatus(status.id)}
+                                    />
+                                    <Label
+                                        htmlFor={`status-${status.id}`}
+                                        className="text-xs font-semibold cursor-pointer flex-1"
+                                    >
+                                        {status.label}
+                                    </Label>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label className="text-sm font-bold text-gray-700">Filter by Stadium</Label>
+                        <select
+                            className="w-full md:w-1/3 h-10 bg-white border border-gray-200 rounded-lg px-3 focus:ring-2 focus:ring-blue-500 transition-all outline-none text-sm font-medium"
+                            value={selectedFieldId}
+                            onChange={(e) => setSelectedFieldId(e.target.value)}
+                        >
+                            <option value="all">All Stadiums</option>
+                            {fields.map((field: any) => (
+                                <option key={field.id} value={field.id}>{field.name}</option>
+                            ))}
+                        </select>
                     </div>
                 </div>
             )}

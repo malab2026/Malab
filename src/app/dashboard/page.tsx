@@ -7,8 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import Image from "next/image"
-import { CancellationRequestButton } from "@/components/booking/cancellation-request-button"
-import { formatInEgyptDate, formatInEgyptTime } from "@/lib/utils"
+import { DashboardHistoryManager } from "@/components/dashboard/dashboard-history-manager"
 
 export const dynamic = 'force-dynamic'
 
@@ -26,7 +25,6 @@ export default async function DashboardPage() {
                 select: {
                     id: true,
                     name: true,
-                    // imageUrl excluded
                 }
             }
         },
@@ -38,83 +36,17 @@ export default async function DashboardPage() {
             <Navbar />
 
             <div className="container mx-auto py-10 px-4">
-                <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-3xl font-bold">My Bookings</h1>
-                    <Button asChild className="bg-green-600 hover:bg-green-700">
-                        <Link href="/fields">Book a New Field</Link>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+                    <div className="bg-white/90 backdrop-blur-sm px-6 py-4 rounded-2xl shadow-sm border border-white/20">
+                        <h1 className="text-3xl font-black text-gray-900 mb-1">My Bookings</h1>
+                        <p className="text-sm text-gray-400 font-bold uppercase tracking-wider">Manage your reservations and blocks</p>
+                    </div>
+                    <Button asChild className="bg-green-600 hover:bg-green-700 h-14 px-8 rounded-2xl font-black text-lg shadow-xl shadow-green-600/20 transition-all hover:scale-105 active:scale-95 border-0">
+                        <Link href="/fields">Book a New Field 🏟️</Link>
                     </Button>
                 </div>
 
-                <div className="space-y-4">
-                    {bookings.map((booking: any) => (
-                        <Card key={booking.id} className="flex flex-col md:flex-row items-center overflow-hidden">
-                            <div className="relative w-full md:w-48 h-32 md:h-auto shrink-0 bg-gray-200">
-                                <Image
-                                    src={`/api/field-image/${booking.field.id}`}
-                                    alt={booking.field.name}
-                                    fill
-                                    className="object-cover"
-                                />
-                            </div>
-                            <div className="flex-1 p-6">
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <h3 className="font-bold text-xl">{booking.field.name}</h3>
-                                        <p className="text-gray-500">
-                                            {formatInEgyptDate(booking.startTime)} at {formatInEgyptTime(booking.startTime)}
-                                        </p>
-                                        <p className="text-gray-500">
-                                            Duration: {(booking.endTime.getTime() - booking.startTime.getTime()) / (1000 * 60 * 60)} Hours
-                                        </p>
-                                    </div>
-                                    <StatusBadge status={booking.status} />
-                                </div>
-                                {booking.receiptUrl && (
-                                    <div className="mt-4 flex flex-wrap items-center gap-4">
-                                        <Link href={`/receipt/${booking.id}`} target="_blank" className="text-blue-600 hover:underline text-sm font-medium">
-                                            View Receipt
-                                        </Link>
-                                    </div>
-                                )}
-
-                                {booking.status === 'CONFIRMED' && (
-                                    <div className="mt-4">
-                                        <CancellationRequestButton bookingId={booking.id} />
-                                    </div>
-                                )}
-
-                                {booking.status === 'PENDING' && (
-                                    <div className="mt-4 flex gap-2">
-                                        <Button variant="outline" size="sm" asChild>
-                                            <Link href={`/dashboard/edit/${booking.id}`}>Edit</Link>
-                                        </Button>
-                                        <form action={async () => {
-                                            'use server'
-                                            const { cancelBooking } = await import("@/actions/booking-actions")
-                                            await cancelBooking(booking.id)
-                                        }}>
-                                            <Button variant="destructive" size="sm" type="submit">Cancel</Button>
-                                        </form>
-                                    </div>
-                                )}
-
-                                {booking.status === 'CANCEL_REQUESTED' && (
-                                    <div className="mt-4 p-4 bg-orange-50 rounded-xl border border-orange-100 flex items-center gap-3">
-                                        <span className="animate-pulse flex h-3 w-3 rounded-full bg-orange-400"></span>
-                                        <p className="text-sm font-medium text-orange-800">Cancellation request pending review...</p>
-                                    </div>
-                                )}
-                            </div>
-                        </Card>
-                    ))}
-
-                    {bookings.length === 0 && (
-                        <div className="text-center py-10 bg-white rounded-lg shadow">
-                            <p className="text-gray-500 mb-4">You haven't booked any fields yet.</p>
-                            <Link href="/fields" className="text-blue-600 hover:underline">Browse Fields</Link>
-                        </div>
-                    )}
-                </div>
+                <DashboardHistoryManager bookings={bookings} />
             </div>
         </main>
     )
