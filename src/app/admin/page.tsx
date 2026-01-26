@@ -91,7 +91,8 @@ export default async function AdminPage() {
         }),
         prisma.user.findMany({
             orderBy: { createdAt: 'desc' },
-            select: { id: true, name: true, email: true, phone: true, role: true, createdAt: true }
+            select: { id: true, name: true, email: true, phone: true, role: true, createdAt: true },
+            take: 50 // Limit to latest 50 for performance
         }),
         prisma.globalSettings.upsert({
             where: { id: 'global' },

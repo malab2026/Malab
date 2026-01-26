@@ -15,9 +15,10 @@ export function AdminBookingCard({ booking, isAdmin = false, isCancelRequest = f
             <div className="relative w-full md:w-32 h-24 shrink-0 bg-gray-100 flex items-center justify-center text-xs text-gray-400">
                 <Image
                     src={`/api/receipt-image/${booking.id}`}
-                    alt="Receipt"
+                    alt={`Receipt Thumbnail for ${booking.id}`}
                     fill
                     className="object-cover"
+                    loading="lazy"
                 />
                 <span>No Receipt</span>
             </div>
