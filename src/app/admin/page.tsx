@@ -7,7 +7,7 @@ import Link from "next/link"
 import {
     CheckSquare,
     Users,
-    Stadium,
+    LayoutGrid,
     Wallet,
     ChevronRight,
     LayoutDashboard,
@@ -61,7 +61,7 @@ export default async function AdminHubPage() {
             title: "Fields & Clubs",
             description: "Add or edit stadiums, clubs, and block slots.",
             href: "/admin/fields",
-            icon: Stadium,
+            icon: LayoutGrid,
             color: "bg-emerald-500",
             badge: `${fieldCount} Fields`,
             badgeColor: "bg-emerald-100 text-emerald-700"
