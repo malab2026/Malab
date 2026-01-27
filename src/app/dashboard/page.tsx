@@ -37,9 +37,9 @@ export default async function DashboardPage() {
 
             <div className="container mx-auto py-10 px-4">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
-                    <div className="bg-white/90 backdrop-blur-sm px-6 py-4 rounded-2xl shadow-sm border border-white/20">
-                        <h1 className="text-3xl font-black text-gray-900 mb-1">My Bookings</h1>
-                        <p className="text-sm text-gray-400 font-bold uppercase tracking-wider">Manage your reservations and blocks</p>
+                    <div className="bg-black/40 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10 shadow-2xl">
+                        <h1 className="text-3xl font-black text-white mb-1 drop-shadow-sm">My Bookings</h1>
+                        <p className="text-sm text-green-100/80 font-bold uppercase tracking-wider">Manage your reservations and blocks</p>
                     </div>
                     <Button asChild className="bg-green-600 hover:bg-green-700 h-14 px-8 rounded-2xl font-black text-lg shadow-xl shadow-green-600/20 transition-all hover:scale-105 active:scale-95 border-0">
                         <Link href="/fields">Book a New Field 🏟️</Link>
