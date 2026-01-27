@@ -58,12 +58,12 @@ export function DashboardHistoryManager({ bookings }: DashboardHistoryManagerPro
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div className="bg-black/40 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 shadow-2xl inline-flex items-center gap-2">
-                    <History className="h-5 w-5 text-green-400" />
-                    <h2 className="text-xl font-bold text-white">
+                <div className="px-2 py-2 inline-flex items-center gap-2">
+                    <History className="h-5 w-5 text-white drop-shadow-sm" />
+                    <h2 className="text-xl font-bold text-white drop-shadow-md">
                         Booking History
                     </h2>
-                    <Badge variant="secondary" className="bg-white/20 text-white border-white/10">{filteredBookings.length}</Badge>
+                    <Badge variant="secondary" className="bg-white/10 text-white border-white/20 backdrop-blur-sm">{filteredBookings.length}</Badge>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -71,18 +71,18 @@ export function DashboardHistoryManager({ bookings }: DashboardHistoryManagerPro
                         variant={showFilters ? "secondary" : "outline"}
                         size="sm"
                         onClick={() => setShowFilters(!showFilters)}
-                        className="rounded-xl h-10 gap-2 border-white/10 bg-black/40 text-white backdrop-blur-md shadow-xl hover:bg-black/60 transition-all font-bold"
+                        className="rounded-xl h-10 gap-2 border-white/20 bg-white/10 text-white backdrop-blur-sm shadow-sm hover:bg-white/20 transition-all font-bold"
                     >
-                        <Filter className="h-4 w-4 text-green-400" />
+                        <Filter className="h-4 w-4" />
                         Filters
                         {(selectedStatuses.length > 0 || selectedFieldId !== "all") && (
-                            <Badge variant="default" className="ml-1 h-5 min-w-5 flex items-center justify-center p-0 rounded-full font-black bg-green-500 text-black">
+                            <Badge variant="default" className="ml-1 h-5 min-w-5 flex items-center justify-center p-0 rounded-full font-black bg-white text-black">
                                 {(selectedStatuses.length > 0 ? 1 : 0) + (selectedFieldId !== "all" ? 1 : 0)}
                             </Badge>
                         )}
                     </Button>
                     {(selectedStatuses.length > 0 || selectedFieldId !== "all") && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters} className="text-white/60 hover:text-red-400 font-bold">
+                        <Button variant="ghost" size="sm" onClick={clearFilters} className="text-white drop-shadow-sm hover:text-red-400 font-bold">
                             <X className="h-4 w-4 mr-1" /> Clear
                         </Button>
                     )}
@@ -90,9 +90,9 @@ export function DashboardHistoryManager({ bookings }: DashboardHistoryManagerPro
             </div>
 
             {showFilters && (
-                <div className="bg-black/60 backdrop-blur-xl p-6 rounded-2xl border border-white/10 shadow-2xl animate-in fade-in slide-in-from-top-2 duration-300 space-y-6">
+                <div className="bg-white/5 backdrop-blur-md p-6 rounded-2xl border border-white/10 shadow-lg animate-in fade-in slide-in-from-top-2 duration-300 space-y-6">
                     <div className="space-y-3">
-                        <Label className="text-sm font-black text-green-400 uppercase tracking-wider">Status</Label>
+                        <Label className="text-sm font-black text-white uppercase tracking-wider">Status</Label>
                         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
                             {statuses.map(status => (
                                 <div key={status.id} className="flex items-center space-x-2 bg-white/50 p-2.5 rounded-xl border border-white/60 shadow-sm hover:shadow-md transition-all cursor-pointer group">
@@ -114,9 +114,9 @@ export function DashboardHistoryManager({ bookings }: DashboardHistoryManagerPro
                     </div>
 
                     <div className="space-y-3">
-                        <Label className="text-sm font-black text-green-400 uppercase tracking-wider">Stadium / Field</Label>
+                        <Label className="text-sm font-black text-white uppercase tracking-wider">Stadium / Field</Label>
                         <select
-                            className="w-full md:w-1/3 h-12 bg-white/10 border border-white/10 rounded-xl px-4 focus:ring-2 focus:ring-green-500 transition-all outline-none text-sm font-bold text-white shadow-sm"
+                            className="w-full md:w-1/3 h-12 bg-white/5 border border-white/10 rounded-xl px-4 focus:ring-2 focus:ring-green-500 transition-all outline-none text-sm font-bold text-white shadow-sm"
                             value={selectedFieldId}
                             onChange={(e) => setSelectedFieldId(e.target.value)}
                         >
@@ -201,12 +201,12 @@ export function DashboardHistoryManager({ bookings }: DashboardHistoryManagerPro
                 ))}
 
                 {filteredBookings.length === 0 && (
-                    <div className="text-center py-20 bg-black/40 backdrop-blur-md rounded-3xl border-2 border-dashed border-white/10 shadow-2xl">
+                    <div className="text-center py-20 bg-white/5 backdrop-blur-sm rounded-3xl border-2 border-dashed border-white/10">
                         <div className="bg-white/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <History className="h-8 w-8 text-green-400" />
+                            <History className="h-8 w-8 text-white/50" />
                         </div>
                         <h3 className="text-xl font-black text-white mb-2">No Bookings Found</h3>
-                        <p className="text-green-100/60 font-bold">Try adjusting your filters or stadium selection.</p>
+                        <p className="text-white/60 font-bold">Try adjusting your filters or stadium selection.</p>
                     </div>
                 )}
             </div>
