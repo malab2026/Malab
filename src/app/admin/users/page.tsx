@@ -1,4 +1,3 @@
-
 import { Navbar } from "@/components/layout/navbar"
 import prisma from "@/lib/prisma"
 import { auth } from "@/auth"
@@ -6,78 +5,135 @@ import { redirect } from "next/navigation"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { updateUserRole } from "@/actions/admin-actions"
+import Link from "next/link"
+import { ArrowLeft, Users, Shield, Settings2, UserPlus, Globe } from "lucide-react"
+import { GlobalSettingsForm } from "@/components/admin/global-settings-form"
 import { CreateOwnerForm } from "@/components/admin/create-owner-form"
 import { EditUserDialog } from "@/components/admin/edit-user-dialog"
+import { BroadcastForm } from "@/components/admin/broadcast-form"
+import { updateUserRole } from "@/actions/admin-actions"
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminUsersPage() {
     const session = await auth()
+
     if (!session?.user || session.user.role !== 'admin') {
         redirect("/")
     }
 
-    const users = await prisma.user.findMany({
-        orderBy: { createdAt: 'desc' },
-        select: { id: true, name: true, email: true, phone: true, role: true, createdAt: true },
-        take: 100
-    })
+    const [
+        users,
+        settings
+    ] = await Promise.all([
+        prisma.user.findMany({
+            orderBy: { createdAt: 'desc' },
+            select: { id: true, name: true, email: true, phone: true, role: true, createdAt: true },
+            take: 200
+        }),
+        prisma.globalSettings.upsert({
+            where: { id: 'global' },
+            update: {},
+            create: { id: 'global', serviceFee: 10.0, adminPhone: "201009410112", whatsappEnabled: true }
+        })
+    ]) as any
+
+    const initialServiceFee = settings?.serviceFee ?? 10
+    const initialPhone = settings?.adminPhone ?? "201009410112"
+    const initialWhatsappEnabled = settings?.whatsappEnabled ?? true
 
     return (
-        <main className="min-h-screen pb-10">
+        <main className="min-h-screen pb-10 bg-gray-50/50">
             <Navbar />
+
             <div className="container mx-auto py-10 px-4">
-                <div className="mb-8 flex justify-between items-center">
-                    <div>
-                        <h1 className="text-3xl font-bold mb-2">User Management</h1>
-                        <p className="text-gray-500">Manage users, owners, and roles.</p>
+                <div className="mb-8">
+                    <Link href="/admin" className="text-sm text-gray-500 hover:text-blue-600 flex items-center gap-1 mb-4 transition-colors">
+                        <ArrowLeft className="h-4 w-4" /> Back to Admin Dashboard
+                    </Link>
+                    <div className="flex flex-wrap items-center justify-between gap-4">
+                        <h1 className="text-3xl font-black text-gray-900">User Management</h1>
+                        <Badge variant="secondary" className="bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-lg">
+                            {users.length} Total Users
+                        </Badge>
                     </div>
                 </div>
 
-                <div className="grid lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-1">
-                        <CreateOwnerForm />
+                <div className="grid lg:grid-cols-12 gap-8">
+                    {/* Left Column: Settings & Direct Actions */}
+                    <div className="lg:col-span-4 space-y-8">
+                        <section className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 h-fit">
+                            <div className="flex items-center gap-2 mb-6">
+                                <div className="bg-blue-100 p-2 rounded-xl">
+                                    <Globe className="h-5 w-5 text-blue-700" />
+                                </div>
+                                <h2 className="text-xl font-black text-gray-800 uppercase tracking-tight">Global Settings</h2>
+                            </div>
+                            <GlobalSettingsForm
+                                initialFee={initialServiceFee}
+                                initialPhone={initialPhone}
+                                initialWhatsappEnabled={initialWhatsappEnabled}
+                            />
+                        </section>
+
+                        <section className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 h-fit">
+                            <div className="flex items-center gap-2 mb-6">
+                                <div className="bg-green-100 p-2 rounded-xl">
+                                    <UserPlus className="h-5 w-5 text-green-700" />
+                                </div>
+                                <h2 className="text-xl font-black text-gray-800 uppercase tracking-tight">Create Owner</h2>
+                            </div>
+                            <CreateOwnerForm />
+                        </section>
+
+                        <section className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 h-fit">
+                            <div className="flex items-center gap-2 mb-6">
+                                <div className="bg-purple-100 p-2 rounded-xl">
+                                    <Shield className="h-5 w-5 text-purple-700" />
+                                </div>
+                                <h2 className="text-xl font-black text-gray-800 uppercase tracking-tight">Broadcast</h2>
+                            </div>
+                            <BroadcastForm />
+                        </section>
                     </div>
-                    <div className="lg:col-span-2">
-                        <Card>
+
+                    {/* Right Column: User Table */}
+                    <div className="lg:col-span-8">
+                        <Card className="rounded-3xl border-gray-100 shadow-xl overflow-hidden">
                             <div className="overflow-x-auto">
-                                <table className="w-full text-sm text-left">
-                                    <thead className="bg-gray-50 text-gray-700 uppercase text-xs">
+                                <table className="w-full text-sm text-left border-collapse">
+                                    <thead className="bg-gray-50/50 text-gray-400 font-black uppercase tracking-widest text-[10px]">
                                         <tr>
-                                            <th className="px-6 py-3">User</th>
-                                            <th className="px-6 py-3">Role</th>
-                                            <th className="px-6 py-3 text-right">Actions</th>
+                                            <th className="px-6 py-4">User</th>
+                                            <th className="px-6 py-4">Role</th>
+                                            <th className="px-6 py-4 text-right">Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y">
-                                        {users.map((user) => (
-                                            <tr key={user.id} className="bg-white hover:bg-gray-50">
-                                                <td className="px-6 py-4">
-                                                    <div className="font-semibold">{user.name}</div>
-                                                    <div className="text-gray-500 text-xs">{user.email || user.phone}</div>
+                                    <tbody className="divide-y divide-gray-50">
+                                        {users.map((user: any) => (
+                                            <tr key={user.id} className="bg-white hover:bg-gray-50/80 transition-colors">
+                                                <td className="px-6 py-5">
+                                                    <div className="font-black text-gray-900 text-base">{user.name}</div>
+                                                    <div className="text-gray-400 font-bold text-xs">{user.email || user.phone}</div>
                                                 </td>
-                                                <td className="px-6 py-4">
-                                                    <Badge variant={user.role === 'admin' ? 'default' : user.role === 'owner' ? 'secondary' : 'outline'}>
+                                                <td className="px-6 py-5">
+                                                    <Badge className={`rounded-lg px-2 py-1 font-black text-[10px] uppercase tracking-wider ${user.role === 'admin' ? 'bg-red-50 text-red-600 border-red-100' :
+                                                            user.role === 'owner' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                                                                'bg-gray-50 text-gray-500 border-gray-100'
+                                                        } border hover:none shadow-none`}>
                                                         {user.role}
                                                     </Badge>
                                                 </td>
-                                                <td className="px-6 py-4 text-right flex justify-end gap-2">
+                                                <td className="px-6 py-5 text-right flex justify-end gap-2 items-center">
                                                     <EditUserDialog user={user} />
                                                     {user.role === 'user' && (
-                                                        <form action={async () => {
-                                                            'use server';
-                                                            await updateUserRole(user.id, 'owner', new FormData());
-                                                        }}>
-                                                            <Button size="sm" variant="outline">Promote</Button>
+                                                        <form action={updateUserRole.bind(null, user.id, 'owner') as any}>
+                                                            <Button size="sm" variant="outline" className="h-8 text-xs font-bold rounded-lg border-green-200 text-green-700 hover:bg-green-50">Promote</Button>
                                                         </form>
                                                     )}
                                                     {user.role === 'owner' && (
-                                                        <form action={async () => {
-                                                            'use server';
-                                                            await updateUserRole(user.id, 'user', new FormData());
-                                                        }}>
-                                                            <Button size="sm" variant="ghost" className="text-red-600">Demote</Button>
+                                                        <form action={updateUserRole.bind(null, user.id, 'user') as any}>
+                                                            <Button size="sm" variant="ghost" className="h-8 text-xs font-bold text-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg">Demote</Button>
                                                         </form>
                                                     )}
                                                 </td>

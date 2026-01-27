@@ -1,22 +1,20 @@
-
 import { Navbar } from "@/components/layout/navbar"
-import prisma from "@/lib/prisma"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import {
+    CheckSquare,
     Users,
-    CalendarCheck,
-    Settings,
-    History,
-    ShieldAlert,
-    Megaphone,
-    Trophy,
-    MapPin,
-    AlertCircle
+    Stadium,
+    Wallet,
+    ChevronRight,
+    LayoutDashboard,
+    AlertCircle,
+    ArrowUpRight
 } from "lucide-react"
+import prisma from "@/lib/prisma"
 
 export const dynamic = 'force-dynamic'
 
@@ -27,10 +25,10 @@ export default async function AdminHubPage() {
         redirect("/")
     }
 
-    // Lightweight queries for dashboard status
+    // Quick stats for the hub
     const [
         pendingCount,
-        cancelRequestCount,
+        cancelCount,
         userCount,
         fieldCount
     ] = await Promise.all([
@@ -40,126 +38,119 @@ export default async function AdminHubPage() {
         prisma.field.count()
     ])
 
-    const menuItems = [
+    const navItems = [
         {
-            title: "Pending Approvals",
+            title: "Approvals & History",
+            description: "Manage booking requests and cancellation tickets.",
             href: "/admin/approvals",
-            icon: CalendarCheck,
-            color: "text-blue-600",
-            bgColor: "bg-blue-50",
-            count: pendingCount,
-            countColor: "bg-blue-600",
-            description: "Review and approve new bookings"
-        },
-        {
-            title: "Cancellation Requests",
-            href: "/admin/cancellations",
-            icon: AlertCircle,
-            color: "text-orange-600",
-            bgColor: "bg-orange-50",
-            count: cancelRequestCount,
-            countColor: "bg-orange-600",
-            description: "Process booking cancellation requests"
+            icon: CheckSquare,
+            color: "bg-amber-500",
+            badge: pendingCount + cancelCount > 0 ? `${pendingCount + cancelCount} Action items` : null,
+            badgeColor: "bg-amber-100 text-amber-700"
         },
         {
             title: "User Management",
+            description: "Control user roles, global settings, and broadcasts.",
             href: "/admin/users",
             icon: Users,
-            color: "text-green-600",
-            bgColor: "bg-green-50",
-            count: userCount,
-            description: "Manage users, owners, and roles"
+            color: "bg-blue-500",
+            badge: `${userCount} Users`,
+            badgeColor: "bg-blue-100 text-blue-700"
         },
         {
-            title: "Manage Fields",
+            title: "Fields & Clubs",
+            description: "Add or edit stadiums, clubs, and block slots.",
             href: "/admin/fields",
-            icon: MapPin,
-            color: "text-emerald-600",
-            bgColor: "bg-emerald-50",
-            count: fieldCount,
-            description: "Add and manage sports fields"
+            icon: Stadium,
+            color: "bg-emerald-500",
+            badge: `${fieldCount} Fields`,
+            badgeColor: "bg-emerald-100 text-emerald-700"
         },
         {
-            title: "Manage Clubs",
-            href: "/admin/clubs",
-            icon: Trophy,
-            color: "text-purple-600",
-            bgColor: "bg-purple-50",
-            description: "Manage sports clubs and venues"
-        },
-        {
-            title: "Broadcasts",
-            href: "/admin/broadcasts",
-            icon: Megaphone,
-            color: "text-pink-600",
-            bgColor: "bg-pink-50",
-            description: "Send announcements to users"
-        },
-        {
-            title: "Blocked Slots",
-            href: "/admin/blocks",
-            icon: ShieldAlert,
-            color: "text-amber-600",
-            bgColor: "bg-amber-50",
-            description: "Manage manual field blocks"
-        },
-        {
-            title: "Booking History",
-            href: "/admin/history",
-            icon: History,
-            color: "text-gray-600",
-            bgColor: "bg-gray-50",
-            description: "View and filter past bookings"
-        },
-        {
-            title: "Global Settings",
-            href: "/admin/settings",
-            icon: Settings,
-            color: "text-slate-600",
-            bgColor: "bg-slate-50",
-            description: "App configuration and contacts"
+            title: "Finance & Settlements",
+            description: "Track revenue, fees, and process owner payouts.",
+            href: "/admin/finance",
+            icon: Wallet,
+            color: "bg-purple-500",
+            badge: "Economy",
+            badgeColor: "bg-purple-100 text-purple-700"
         }
     ]
 
     return (
-        <main className="min-h-screen bg-gray-50/50">
+        <main className="min-h-screen pb-20 bg-[#F8FAFC]">
             <Navbar />
 
-            <div className="container mx-auto py-10 px-4">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Admin Dashboard</h1>
-                        <p className="text-gray-500 mt-1">Welcome back. Select a module to manage.</p>
+            <div className="container mx-auto py-12 px-4">
+                <div className="mb-12">
+                    <div className="flex items-center gap-2 mb-2">
+                        <div className="bg-gray-900 p-2 rounded-lg">
+                            <LayoutDashboard className="h-5 w-5 text-white" />
+                        </div>
+                        <h2 className="text-sm font-black text-gray-400 uppercase tracking-[0.2em]">Management Hub</h2>
                     </div>
+                    <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight">
+                        Admin Dashboard
+                    </h1>
+                    <p className="text-gray-500 font-bold mt-2 text-lg">
+                        Select a module to manage your platform's core operations.
+                    </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {menuItems.map((item) => (
+                <div className="grid md:grid-cols-2 gap-8">
+                    {navItems.map((item) => (
                         <Link href={item.href} key={item.href} className="group">
-                            <Card className="h-full transition-all duration-200 hover:shadow-lg hover:-translate-y-1 border-gray-200/60">
-                                <CardContent className="p-6 flex items-start justify-between">
-                                    <div className="space-y-4">
-                                        <div className={`p-3 rounded-xl w-fit ${item.bgColor}`}>
-                                            <item.icon className={`h-6 w-6 ${item.color}`} />
-                                        </div>
-                                        <div>
-                                            <h3 className="font-semibold text-lg text-gray-900 group-hover:text-primary transition-colors">
-                                                {item.title}
-                                            </h3>
-                                            <p className="text-sm text-gray-500 mt-1 leading-relaxed">
-                                                {item.description}
-                                            </p>
-                                        </div>
+                            <Card className="p-8 rounded-[2.5rem] border-0 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 bg-white flex flex-col h-full relative overflow-hidden">
+                                {/* Decorative Gradient */}
+                                <div className={`absolute top-0 right-0 w-32 h-32 ${item.color} opacity-[0.03] rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700`} />
+
+                                <div className="flex justify-between items-start mb-6">
+                                    <div className={`${item.color} p-4 rounded-3xl text-white shadow-lg shadow-${item.color.split('-')[1]}-200/50`}>
+                                        <item.icon className="h-8 w-8" />
                                     </div>
-                                    {(item.count !== undefined && item.count > 0 || (item.title === "User Management" || item.title === "Manage Fields")) && (
-                                        <Badge variant="secondary" className={`${item.countColor || 'bg-gray-100 text-gray-600'} text-xs font-bold px-2 py-0.5 mt-1`}>
-                                            {item.count}
+                                    {item.badge && (
+                                        <Badge className={`${item.badgeColor} border-0 font-black px-3 py-1 rounded-xl`}>
+                                            {item.badge}
                                         </Badge>
                                     )}
-                                </CardContent>
+                                </div>
+
+                                <div className="flex-1">
+                                    <h2 className="text-2xl font-black text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                        {item.title}
+                                    </h2>
+                                    <p className="text-gray-400 font-bold leading-relaxed">
+                                        {item.description}
+                                    </p>
+                                </div>
+
+                                <div className="mt-8 flex items-center gap-2 text-sm font-black text-blue-600 uppercase tracking-widest pt-6 border-t border-gray-50 group-hover:gap-4 transition-all">
+                                    Open Module
+                                    <ArrowUpRight className="h-4 w-4" />
+                                </div>
                             </Card>
                         </Link>
                     ))}
+                </div>
+
+                {/* System Summary Quick Cards */}
+                <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col items-center justify-center text-center shadow-sm">
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Pending</p>
+                        <p className="text-2xl font-black text-amber-500">{pendingCount}</p>
+                    </div>
+                    <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col items-center justify-center text-center shadow-sm">
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Cancellations</p>
+                        <p className="text-2xl font-black text-red-500">{cancelCount}</p>
+                    </div>
+                    <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col items-center justify-center text-center shadow-sm">
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Capacity</p>
+                        <p className="text-2xl font-black text-emerald-500">{fieldCount}</p>
+                    </div>
+                    <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col items-center justify-center text-center shadow-sm">
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Accounts</p>
+                        <p className="text-2xl font-black text-blue-500">{userCount}</p>
+                    </div>
                 </div>
             </div>
         </main>
