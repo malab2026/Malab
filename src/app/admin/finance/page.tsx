@@ -18,23 +18,15 @@ export default async function AdminFinancePage() {
         redirect("/")
     }
 
-    const [
-        bookings,
-        settlements
-    ] = await Promise.all([
-        prisma.booking.findMany({
-            where: { status: 'CONFIRMED' },
-            include: { field: { select: { name: true, pricePerHour: true } } },
-            orderBy: { createdAt: 'desc' }
-        }),
-        prisma.settlement.findMany({
-            orderBy: { createdAt: 'desc' },
-            include: { owner: { select: { name: true } } }
-        })
-    ]) as any
+    const bookings = await prisma.booking.findMany({
+        where: { status: 'CONFIRMED' },
+        include: { field: { select: { name: true, pricePerHour: true } } },
+        orderBy: { createdAt: 'desc' }
+    }) as any
 
     const totalRevenue = bookings.reduce((acc: number, b: any) => acc + (b.totalPrice || 0), 0)
     const totalFees = bookings.reduce((acc: number, b: any) => acc + (b.serviceFee || 0), 0)
+    const settledCount = bookings.filter((b: any) => b.isSettled).length
 
     return (
         <main className="min-h-screen pb-10 bg-gray-50/50">
@@ -83,7 +75,7 @@ export default async function AdminFinancePage() {
                             </div>
                             <span className="font-black text-gray-400 text-xs uppercase tracking-widest">Settlement Log</span>
                         </div>
-                        <div className="text-2xl font-black text-gray-900">{settlements.length} Transactions</div>
+                        <div className="text-2xl font-black text-gray-900">{settledCount} Transactions</div>
                         <p className="text-[10px] font-bold text-gray-400">Total processed payouts to owners</p>
                     </Card>
                 </div>
@@ -98,7 +90,7 @@ export default async function AdminFinancePage() {
                             <p className="text-sm font-bold text-gray-400">Manage payouts and verify account balances</p>
                         </div>
                     </div>
-                    <SettlementManager />
+                    <SettlementManager bookings={bookings} />
                 </section>
             </div>
         </main>
