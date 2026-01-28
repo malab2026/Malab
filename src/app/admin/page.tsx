@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import {
     CheckSquare,
+    Landmark,
     Users,
     LayoutGrid,
     Wallet,
@@ -44,11 +45,20 @@ export default async function AdminHubPage() {
             color: "bg-blue-500",
         },
         {
-            title: "Fields & Clubs",
-            description: "Add or edit stadiums, clubs, and block slots.",
+            title: "Fields Management",
+            description: "Add or edit stadiums and block time slots.",
             href: "/admin/fields",
             icon: LayoutGrid,
             color: "bg-emerald-500",
+        },
+        {
+            title: "Clubs Management",
+            description: "Manage sports clubs portfolios and branding.",
+            href: "/admin/clubs",
+            icon: Landmark,
+            color: "bg-indigo-600",
+            badge: "New",
+            badgeColor: "bg-indigo-100 text-indigo-700"
         },
         {
             title: "Finance & Settlements",

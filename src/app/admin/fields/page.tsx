@@ -35,7 +35,13 @@ export default async function AdminFieldsPage() {
                         <ArrowLeft className="h-4 w-4" /> Back to Admin Dashboard
                     </Link>
                     <div className="flex flex-wrap items-center justify-between gap-4">
-                        <h1 className="text-3xl font-black text-gray-900 tracking-tight">Fields & Clubs</h1>
+                        <h1 className="text-3xl font-black text-gray-900 tracking-tight">Fields Management</h1>
+                        <Button asChild variant="outline" className="rounded-2xl border-blue-100 text-blue-600 hover:bg-blue-50 font-black uppercase tracking-widest text-xs">
+                            <Link href="/admin/clubs" className="flex items-center gap-2">
+                                <Landmark className="h-4 w-4" />
+                                Manage Clubs HUB
+                            </Link>
+                        </Button>
                     </div>
                 </div>
 
