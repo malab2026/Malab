@@ -85,58 +85,56 @@ async function FinanceContent({ searchParams }: { searchParams: { fieldId?: stri
         return acc
     }, 0)
 
+    const totalPayouts = totalRevenue - totalFees
+
     const settledCount = bookings.filter((b: any) => b.isSettled).length
 
     return (
         <div className="animate-in fade-in duration-700">
             <FinanceFilter clubs={clubs} fields={fields} />
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-                <Card className="p-8 rounded-[2.5rem] border-0 shadow-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
-                        <TrendingUp className="h-24 w-24" />
-                    </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+                <Card className="p-6 rounded-[2rem] border-0 shadow-xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white relative overflow-hidden group">
                     <div className="relative z-10">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="bg-white/20 p-2.5 rounded-2xl backdrop-blur-md">
-                                <TrendingUp className="h-6 w-6" />
-                            </div>
-                            <span className="font-black text-xs uppercase tracking-widest opacity-80 mt-1">Total Revenue</span>
+                        <div className="flex items-center gap-2 mb-4">
+                            <TrendingUp className="h-4 w-4 opacity-70" />
+                            <span className="font-black text-[10px] uppercase tracking-widest opacity-80">Gross Revenue</span>
                         </div>
-                        <div className="text-5xl font-black mb-2 tracking-tighter">{totalRevenue.toLocaleString()} <span className="text-xl">EGP</span></div>
-                        <p className="text-[11px] font-bold opacity-60 uppercase tracking-widest">Gross booking value (Filtered)</p>
+                        <div className="text-3xl font-black mb-1">{totalRevenue.toLocaleString()} <span className="text-sm">EGP</span></div>
+                        <p className="text-[10px] font-bold opacity-50 uppercase">Total Collected</p>
                     </div>
                 </Card>
 
-                <Card className="p-8 rounded-[2.5rem] border-0 shadow-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
-                        <DollarSign className="h-24 w-24" />
-                    </div>
+                <Card className="p-6 rounded-[2rem] border-0 shadow-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white relative overflow-hidden group">
                     <div className="relative z-10">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="bg-white/20 p-2.5 rounded-2xl backdrop-blur-md">
-                                <DollarSign className="h-6 w-6" />
-                            </div>
-                            <span className="font-black text-xs uppercase tracking-widest opacity-80 mt-1">Platform Fees</span>
+                        <div className="flex items-center gap-2 mb-4">
+                            <DollarSign className="h-4 w-4 opacity-70" />
+                            <span className="font-black text-[10px] uppercase tracking-widest opacity-80">Platform Fees</span>
                         </div>
-                        <div className="text-5xl font-black mb-2 tracking-tighter">{totalFees.toLocaleString()} <span className="text-xl">EGP</span></div>
-                        <p className="text-[11px] font-bold opacity-60 uppercase tracking-widest">Net platform income (Filtered)</p>
+                        <div className="text-3xl font-black mb-1">{totalFees.toLocaleString()} <span className="text-sm">EGP</span></div>
+                        <p className="text-[10px] font-bold opacity-50 uppercase">Admin Net Share</p>
                     </div>
                 </Card>
 
-                <Card className="p-8 rounded-[2.5rem] border-0 shadow-xl bg-white border-gray-100 flex flex-col justify-center relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform duration-500">
-                        <History className="h-24 w-24" />
-                    </div>
+                <Card className="p-6 rounded-[2rem] border-0 shadow-xl bg-white border-blue-50 relative overflow-hidden group ring-2 ring-blue-500/10">
                     <div className="relative z-10">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="bg-orange-100 p-2.5 rounded-2xl text-orange-600">
-                                <History className="h-6 w-6" />
-                            </div>
-                            <span className="font-black text-gray-400 text-xs uppercase tracking-widest mt-1">Settlement Status</span>
+                        <div className="flex items-center gap-2 mb-4 text-blue-600">
+                            <Wallet className="h-4 w-4" />
+                            <span className="font-black text-[10px] uppercase tracking-widest mt-0.5">Target Payouts</span>
                         </div>
-                        <div className="text-3xl font-black text-gray-900 mb-2">{settledCount} <span className="text-sm text-gray-400 uppercase">Settled</span></div>
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Processed payout transactions</p>
+                        <div className="text-3xl font-black mb-1 text-gray-900">{totalPayouts.toLocaleString()} <span className="text-sm text-gray-400">EGP</span></div>
+                        <p className="text-[10px] font-bold text-blue-500 uppercase">Owner Net Share</p>
+                    </div>
+                </Card>
+
+                <Card className="p-6 rounded-[2rem] border-0 shadow-lg bg-gray-50 flex flex-col justify-center relative overflow-hidden group">
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-2 mb-4 text-gray-400">
+                            <History className="h-4 w-4" />
+                            <span className="font-black text-[10px] uppercase tracking-widest mt-0.5">Settlements</span>
+                        </div>
+                        <div className="text-2xl font-black text-gray-900 mb-1">{settledCount} <span className="text-xs text-gray-400 uppercase">Transactions</span></div>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase">Processed</p>
                     </div>
                 </Card>
             </div>

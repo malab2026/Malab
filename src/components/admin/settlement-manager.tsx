@@ -88,20 +88,26 @@ export function SettlementManager({ bookings, isAdmin = true }: SettlementManage
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="font-bold text-gray-900">
-                                            {booking.status === 'CANCELLED'
-                                                ? ((booking.totalPrice || 0) - (booking.refundAmount || 0)).toFixed(2)
-                                                : (booking.totalPrice || 0).toFixed(2)
-                                            } EGP
+                                        <div className="font-extrabold text-gray-900 text-base">
+                                            {(() => {
+                                                const total = booking.totalPrice || 0;
+                                                const refund = booking.refundAmount || 0;
+                                                const fee = booking.serviceFee || 0;
+                                                const netCollected = total - refund;
+                                                // Owner gets the net minus the admin's fee
+                                                const ownerShare = Math.max(0, netCollected - fee);
+                                                return ownerShare.toFixed(2);
+                                            })()} EGP
                                         </div>
-                                        {booking.status === 'CANCELLED' && booking.refundAmount > 0 && (
-                                            <div className="text-[10px] text-gray-400 font-medium">
-                                                Refunded: {booking.refundAmount} EGP
+                                        {booking.status === 'CANCELLED' && (
+                                            <div className="text-[10px] text-gray-400 font-bold uppercase tracking-tight mt-1 flex flex-col gap-0.5">
+                                                <span>Penalty: {(booking.totalPrice - (booking.refundAmount || 0)).toFixed(2)}</span>
+                                                <span>Admin Fee: {booking.serviceFee}</span>
                                             </div>
                                         )}
-                                        {booking.status === 'CONFIRMED' && booking.refundAmount > 0 && (
-                                            <div className="text-xs text-red-500 font-bold">
-                                                Partial Refund: -{booking.refundAmount} EGP
+                                        {booking.status === 'CONFIRMED' && (
+                                            <div className="text-[10px] text-gray-400 font-bold uppercase tracking-tight mt-1">
+                                                Excl. {booking.serviceFee} Fee
                                             </div>
                                         )}
                                     </td>
