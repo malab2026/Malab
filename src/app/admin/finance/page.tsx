@@ -12,9 +12,15 @@ import { SettlementManager } from "@/components/admin/settlement-manager"
 import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 
+import { FinanceFilter } from "@/components/admin/finance-filter"
+
 export const dynamic = 'force-dynamic'
 
-export default async function AdminFinancePage() {
+export default async function AdminFinancePage({
+    searchParams
+}: {
+    searchParams: { fieldId?: string, clubId?: string }
+}) {
     const session = await auth()
 
     if (!session?.user || session.user.role !== 'admin') {
@@ -22,33 +28,49 @@ export default async function AdminFinancePage() {
     }
 
     return (
-        <main className="min-h-screen pb-20 bg-gray-50/50">
+        <main className="min-h-screen pb-20 bg-gray-50/50 leading-relaxed tracking-tight">
             <Navbar />
 
             <div className="container mx-auto py-12 px-4">
                 <div className="mb-12">
-                    <Link href="/admin" className="text-sm text-gray-500 hover:text-blue-600 flex items-center gap-1 mb-4 transition-colors">
-                        <ArrowLeft className="h-4 w-4" /> Back to Admin Dashboard
+                    <Link href="/admin" className="text-sm text-gray-400 hover:text-blue-600 flex items-center gap-1 mb-4 transition-colors font-bold uppercase tracking-widest">
+                        <ArrowLeft className="h-4 w-4" /> Back to Admin
                     </Link>
-                    <h1 className="text-4xl font-black text-gray-900 tracking-tight">Finance & Settlements</h1>
-                    <p className="text-gray-500 font-bold">Monitor platform revenue and settle payouts with managers.</p>
+                    <h1 className="text-5xl font-black text-gray-900 tracking-tight mb-2">Finance & Settlements</h1>
+                    <p className="text-gray-400 font-bold text-lg">Detailed financial oversight and management</p>
                 </div>
 
                 <Suspense fallback={<FinanceSkeleton />}>
-                    <FinanceContent />
+                    <FinanceContent searchParams={searchParams} />
                 </Suspense>
             </div>
         </main>
     )
 }
 
-async function FinanceContent() {
-    const bookings = await prisma.booking.findMany({
-        where: { status: { in: ['CONFIRMED', 'CANCELLED'] } },
-        include: { field: { select: { name: true, pricePerHour: true } } },
-        orderBy: { createdAt: 'desc' },
-        take: 100
-    }) as any
+async function FinanceContent({ searchParams }: { searchParams: { fieldId?: string, clubId?: string } }) {
+    const { fieldId, clubId } = searchParams
+
+    const whereClause: any = {
+        status: { in: ['CONFIRMED', 'CANCELLED'] }
+    }
+
+    if (fieldId) {
+        whereClause.fieldId = fieldId
+    } else if (clubId) {
+        whereClause.field = { clubId: clubId }
+    }
+
+    const [bookings, clubs, fields] = await Promise.all([
+        prisma.booking.findMany({
+            where: whereClause,
+            include: { field: { select: { name: true, pricePerHour: true, clubId: true } } },
+            orderBy: { createdAt: 'desc' },
+            take: 200
+        }),
+        prisma.club.findMany({ select: { id: true, name: true, nameEn: true } }),
+        prisma.field.findMany({ select: { id: true, name: true, nameEn: true } })
+    ]) as any
 
     const totalRevenue = bookings.reduce((acc: number, b: any) => {
         if (b.status === 'CONFIRMED') return acc + (b.totalPrice || 0)
@@ -56,11 +78,8 @@ async function FinanceContent() {
         return acc
     }, 0)
 
-    // Platform fees for cancelled bookings are only counted if there was a penalty
     const totalFees = bookings.reduce((acc: number, b: any) => {
         if (b.status === 'CONFIRMED') return acc + (b.serviceFee || 0)
-        // For cancellations, we assume the fee is part of the penalty if penalty >= fee
-        // but for simplicity and following user request, we count it if there's any net revenue
         const net = (b.totalPrice || 0) - (b.refundAmount || 0)
         if (b.status === 'CANCELLED' && net > 0) return acc + Math.min(b.serviceFee || 0, net)
         return acc
@@ -70,49 +89,68 @@ async function FinanceContent() {
 
     return (
         <div className="animate-in fade-in duration-700">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                <Card className="p-6 rounded-3xl border-0 shadow-sm bg-blue-600 text-white">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="bg-white/20 p-2 rounded-xl">
-                            <TrendingUp className="h-5 w-5" />
-                        </div>
-                        <span className="font-bold text-sm uppercase tracking-wider opacity-80">Total Revenue</span>
+            <FinanceFilter clubs={clubs} fields={fields} />
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                <Card className="p-8 rounded-[2.5rem] border-0 shadow-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
+                        <TrendingUp className="h-24 w-24" />
                     </div>
-                    <div className="text-4xl font-black mb-1">{totalRevenue.toLocaleString()} EGP</div>
-                    <p className="text-xs font-bold opacity-60">Gross booking value across all fields</p>
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="bg-white/20 p-2.5 rounded-2xl backdrop-blur-md">
+                                <TrendingUp className="h-6 w-6" />
+                            </div>
+                            <span className="font-black text-xs uppercase tracking-widest opacity-80 mt-1">Total Revenue</span>
+                        </div>
+                        <div className="text-5xl font-black mb-2 tracking-tighter">{totalRevenue.toLocaleString()} <span className="text-xl">EGP</span></div>
+                        <p className="text-[11px] font-bold opacity-60 uppercase tracking-widest">Gross booking value (Filtered)</p>
+                    </div>
                 </Card>
 
-                <Card className="p-6 rounded-3xl border-0 shadow-sm bg-emerald-600 text-white">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="bg-white/20 p-2 rounded-xl">
-                            <DollarSign className="h-5 w-5" />
-                        </div>
-                        <span className="font-bold text-sm uppercase tracking-wider opacity-80">Platform Fees</span>
+                <Card className="p-8 rounded-[2.5rem] border-0 shadow-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
+                        <DollarSign className="h-24 w-24" />
                     </div>
-                    <div className="text-4xl font-black mb-1">{totalFees.toLocaleString()} EGP</div>
-                    <p className="text-xs font-bold opacity-60">Revenue generated from service fees</p>
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="bg-white/20 p-2.5 rounded-2xl backdrop-blur-md">
+                                <DollarSign className="h-6 w-6" />
+                            </div>
+                            <span className="font-black text-xs uppercase tracking-widest opacity-80 mt-1">Platform Fees</span>
+                        </div>
+                        <div className="text-5xl font-black mb-2 tracking-tighter">{totalFees.toLocaleString()} <span className="text-xl">EGP</span></div>
+                        <p className="text-[11px] font-bold opacity-60 uppercase tracking-widest">Net platform income (Filtered)</p>
+                    </div>
                 </Card>
 
-                <Card className="p-6 rounded-3xl border-0 shadow-sm bg-white border-gray-100 flex flex-col justify-center">
-                    <div className="flex items-center gap-3 mb-2">
-                        <div className="bg-orange-100 p-2 rounded-xl text-orange-600">
-                            <History className="h-5 w-5" />
-                        </div>
-                        <span className="font-black text-gray-400 text-xs uppercase tracking-widest">Settlement Log</span>
+                <Card className="p-8 rounded-[2.5rem] border-0 shadow-xl bg-white border-gray-100 flex flex-col justify-center relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform duration-500">
+                        <History className="h-24 w-24" />
                     </div>
-                    <div className="text-2xl font-black text-gray-900">{settledCount} Transactions</div>
-                    <p className="text-[10px] font-bold text-gray-400">Total processed payouts to owners</p>
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="bg-orange-100 p-2.5 rounded-2xl text-orange-600">
+                                <History className="h-6 w-6" />
+                            </div>
+                            <span className="font-black text-gray-400 text-xs uppercase tracking-widest mt-1">Settlement Status</span>
+                        </div>
+                        <div className="text-3xl font-black text-gray-900 mb-2">{settledCount} <span className="text-sm text-gray-400 uppercase">Settled</span></div>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Processed payout transactions</p>
+                    </div>
                 </Card>
             </div>
 
-            <section className="bg-white p-6 sm:p-10 rounded-[3rem] shadow-xl border border-gray-100">
-                <div className="flex items-center gap-3 mb-10">
-                    <div className="bg-blue-100 p-3 rounded-2xl">
-                        <Wallet className="h-6 w-6 text-blue-700" />
-                    </div>
-                    <div>
-                        <h2 className="text-2xl font-black text-gray-900 leading-none mb-1">Owner Settlements</h2>
-                        <p className="text-sm font-bold text-gray-400">Manage payouts and verify account balances</p>
+            <section className="bg-white p-8 sm:p-12 rounded-[4rem] shadow-2xl border border-gray-50">
+                <div className="flex items-center justify-between mb-12">
+                    <div className="flex items-center gap-5">
+                        <div className="bg-blue-50 p-4 rounded-3xl">
+                            <Wallet className="h-8 w-8 text-blue-600" />
+                        </div>
+                        <div>
+                            <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-1">Owner Settlements</h2>
+                            <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest">Transaction level detail and payout management</p>
+                        </div>
                     </div>
                 </div>
                 <SettlementManager bookings={bookings} />
