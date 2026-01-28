@@ -122,6 +122,12 @@ export const translations = {
         resetPasswordTitle: "إعادة تعيين كلمة المرور",
         enterPhoneToReset: "أدخل رقم هاتفك لإرسال كود الاستعادة",
         sendCodeWhatsApp: "إرسال الكود عبر واتساب",
+
+        // Admin Actions
+        confirm: "تأكيد",
+        reject: "رفض",
+        download: "تحميل",
+        viewFull: "عرض كامل",
     },
     en: {
         // Navbar
@@ -256,6 +262,12 @@ export const translations = {
         resetPasswordTitle: "Reset Password",
         enterPhoneToReset: "Enter your phone number to receive recovery code",
         sendCodeWhatsApp: "Send Code via WhatsApp",
+
+        // Admin Actions
+        confirm: "Confirm",
+        reject: "Reject",
+        download: "Download",
+        viewFull: "View Full",
     }
 };
 

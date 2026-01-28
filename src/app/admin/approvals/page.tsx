@@ -82,7 +82,7 @@ async function ApprovalsContent() {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {pendingBookings.map((booking: any) => (
-                            <AdminBookingCard key={booking.id} booking={booking} />
+                            <AdminBookingCard key={booking.id} booking={booking} isAdmin />
                         ))}
                     </div>
                 </section>
@@ -97,7 +97,7 @@ async function ApprovalsContent() {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {cancelRequests.map((booking: any) => (
-                            <AdminBookingCard key={booking.id} booking={booking} />
+                            <AdminBookingCard key={booking.id} booking={booking} isAdmin isCancelRequest />
                         ))}
                     </div>
                 </section>
