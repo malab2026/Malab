@@ -19,7 +19,7 @@ export const dynamic = 'force-dynamic'
 export default async function AdminFinancePage({
     searchParams
 }: {
-    searchParams: { fieldId?: string, clubId?: string }
+    searchParams: { fieldId?: string, clubId?: string, startDate?: string, endDate?: string }
 }) {
     const session = await auth()
 
@@ -48,8 +48,8 @@ export default async function AdminFinancePage({
     )
 }
 
-async function FinanceContent({ searchParams }: { searchParams: { fieldId?: string, clubId?: string } }) {
-    const { fieldId, clubId } = searchParams
+async function FinanceContent({ searchParams }: { searchParams: { fieldId?: string, clubId?: string, startDate?: string, endDate?: string } }) {
+    const { fieldId, clubId, startDate, endDate } = searchParams
 
     const whereClause: any = {
         status: { in: ['CONFIRMED', 'CANCELLED'] }
@@ -59,6 +59,12 @@ async function FinanceContent({ searchParams }: { searchParams: { fieldId?: stri
         whereClause.fieldId = fieldId
     } else if (clubId) {
         whereClause.field = { clubId: clubId }
+    }
+
+    if (startDate || endDate) {
+        whereClause.startTime = {}
+        if (startDate) whereClause.startTime.gte = new Date(`${startDate}T00:00:00`)
+        if (endDate) whereClause.startTime.lte = new Date(`${endDate}T23:59:59`)
     }
 
     const [bookings, clubs, fields] = await Promise.all([
