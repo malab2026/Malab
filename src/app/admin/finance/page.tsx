@@ -44,14 +44,28 @@ export default async function AdminFinancePage() {
 
 async function FinanceContent() {
     const bookings = await prisma.booking.findMany({
-        where: { status: 'CONFIRMED' },
+        where: { status: { in: ['CONFIRMED', 'CANCELLED'] } },
         include: { field: { select: { name: true, pricePerHour: true } } },
         orderBy: { createdAt: 'desc' },
         take: 100
     }) as any
 
-    const totalRevenue = bookings.reduce((acc: number, b: any) => acc + (b.totalPrice || 0), 0)
-    const totalFees = bookings.reduce((acc: number, b: any) => acc + (b.serviceFee || 0), 0)
+    const totalRevenue = bookings.reduce((acc: number, b: any) => {
+        if (b.status === 'CONFIRMED') return acc + (b.totalPrice || 0)
+        if (b.status === 'CANCELLED') return acc + ((b.totalPrice || 0) - (b.refundAmount || 0))
+        return acc
+    }, 0)
+
+    // Platform fees for cancelled bookings are only counted if there was a penalty
+    const totalFees = bookings.reduce((acc: number, b: any) => {
+        if (b.status === 'CONFIRMED') return acc + (b.serviceFee || 0)
+        // For cancellations, we assume the fee is part of the penalty if penalty >= fee
+        // but for simplicity and following user request, we count it if there's any net revenue
+        const net = (b.totalPrice || 0) - (b.refundAmount || 0)
+        if (b.status === 'CANCELLED' && net > 0) return acc + Math.min(b.serviceFee || 0, net)
+        return acc
+    }, 0)
+
     const settledCount = bookings.filter((b: any) => b.isSettled).length
 
     return (

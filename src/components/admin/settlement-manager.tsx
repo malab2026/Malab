@@ -73,8 +73,11 @@ export function SettlementManager({ bookings, isAdmin = true }: SettlementManage
                                     className={`transition-colors ${booking.isSettled ? 'bg-red-50 hover:bg-red-100' : 'bg-white hover:bg-gray-50'}`}
                                 >
                                     <td className="px-6 py-4">
-                                        <Badge variant={booking.status === 'CONFIRMED' ? 'default' : 'destructive'}>
-                                            {booking.status}
+                                        <Badge
+                                            variant={booking.status === 'CONFIRMED' ? 'default' : 'destructive'}
+                                            className={booking.status === 'CANCELLED' ? 'bg-orange-100 text-orange-700 hover:bg-orange-200 border-orange-200' : ''}
+                                        >
+                                            {booking.status === 'CANCELLED' ? 'PENALTY (غرامة)' : booking.status}
                                         </Badge>
                                     </td>
                                     <td className="px-6 py-4 font-semibold">{booking.field.name}</td>
@@ -85,16 +88,28 @@ export function SettlementManager({ bookings, isAdmin = true }: SettlementManage
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        {((booking.endTime.getTime() - booking.startTime.getTime()) / (1000 * 60 * 60) * booking.field.pricePerHour).toFixed(2)} EGP
-                                        {booking.refundAmount > 0 && (
-                                            <div className="text-xs text-red-500">Refund: -{booking.refundAmount}</div>
+                                        <div className="font-bold text-gray-900">
+                                            {booking.status === 'CANCELLED'
+                                                ? ((booking.totalPrice || 0) - (booking.refundAmount || 0)).toFixed(2)
+                                                : (booking.totalPrice || 0).toFixed(2)
+                                            } EGP
+                                        </div>
+                                        {booking.status === 'CANCELLED' && booking.refundAmount > 0 && (
+                                            <div className="text-[10px] text-gray-400 font-medium">
+                                                Refunded: {booking.refundAmount} EGP
+                                            </div>
+                                        )}
+                                        {booking.status === 'CONFIRMED' && booking.refundAmount > 0 && (
+                                            <div className="text-xs text-red-500 font-bold">
+                                                Partial Refund: -{booking.refundAmount} EGP
+                                            </div>
                                         )}
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         {booking.isSettled ? (
-                                            <span className="text-red-600 font-bold text-xs uppercase tracking-wider">Settled (تمت المحاسبة)</span>
+                                            <span className="text-red-600 font-black text-[10px] uppercase tracking-widest bg-red-50 px-2 py-1 rounded-md border border-red-100">Settled (تمت المحاسبة)</span>
                                         ) : (
-                                            <span className="text-gray-400 text-xs italic">Unsettled</span>
+                                            <span className="text-gray-400 text-xs font-bold italic">Unsettled</span>
                                         )}
                                     </td>
                                 </tr>

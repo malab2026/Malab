@@ -505,6 +505,7 @@ export async function getFinancialReport(filters: { startDate?: string, endDate?
                 startTime: true,
                 endTime: true,
                 status: true,
+                totalPrice: true,
                 refundAmount: true,
                 isSettled: true,
                 field: {
@@ -529,8 +530,8 @@ export async function getFinancialReport(filters: { startDate?: string, endDate?
 
         bookings.forEach((booking: any) => {
             const durationHours = (booking.endTime.getTime() - booking.startTime.getTime()) / (1000 * 60 * 60)
-            const gross = durationHours * booking.field.pricePerHour
-            const refund = booking.refundAmount || 0
+            const gross = booking.totalPrice || (durationHours * booking.field.pricePerHour)
+            const refund = booking.status === 'CANCELLED' ? (booking.refundAmount || 0) : 0
             const net = gross - refund
 
             report.totalGross += gross
