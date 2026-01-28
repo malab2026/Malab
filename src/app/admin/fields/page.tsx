@@ -35,7 +35,6 @@ export default async function AdminFieldsPage() {
                 pricePerHour: true,
                 address: true,
                 locationUrl: true,
-                _count: { select: { bookings: true } },
                 owner: { select: { name: true, email: true } },
                 club: { select: { name: true } }
             }
@@ -112,9 +111,6 @@ export default async function AdminFieldsPage() {
                                     <div className="p-6">
                                         <div className="flex justify-between items-start mb-2">
                                             <h3 className="font-black text-xl text-gray-900">{field.name}</h3>
-                                            <Badge variant="outline" className="border-gray-100 text-gray-400 font-bold px-2 py-0">
-                                                {field._count.bookings} Bookings
-                                            </Badge>
                                         </div>
                                         <div className="flex items-center gap-1.5 text-xs text-gray-400 font-black uppercase tracking-wider mb-4">
                                             <MapPin className="h-3 w-3" />

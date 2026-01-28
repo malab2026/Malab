@@ -21,8 +21,7 @@ export default async function AdminApprovalsPage() {
 
     const [
         pendingBookings,
-        cancelRequests,
-        historyBookings
+        cancelRequests
     ] = await Promise.all([
         prisma.booking.findMany({
             where: { status: 'PENDING' },
@@ -39,15 +38,6 @@ export default async function AdminApprovalsPage() {
                 user: { select: { id: true, name: true, email: true, phone: true } }
             },
             orderBy: { createdAt: 'desc' }
-        }),
-        prisma.booking.findMany({
-            where: { status: { notIn: ['PENDING', 'CANCEL_REQUESTED'] } },
-            include: {
-                field: { select: { id: true, name: true, pricePerHour: true } },
-                user: { select: { id: true, name: true, email: true, phone: true } }
-            },
-            orderBy: { createdAt: 'desc' },
-            take: 200
         })
     ]) as any
 
@@ -117,13 +107,6 @@ export default async function AdminApprovalsPage() {
                             <p className="text-gray-500 font-bold">No pending approvals or cancellation requests at the moment.</p>
                         </div>
                     )}
-
-                    <hr className="border-gray-200" />
-
-                    {/* History Section */}
-                    <section className="bg-white/50 backdrop-blur-sm p-6 sm:p-8 rounded-3xl border border-white/60 shadow-xl">
-                        <AdminHistoryManager bookings={historyBookings} />
-                    </section>
                 </div>
             </div>
         </main>

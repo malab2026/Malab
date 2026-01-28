@@ -21,7 +21,8 @@ export default async function AdminFinancePage() {
     const bookings = await prisma.booking.findMany({
         where: { status: 'CONFIRMED' },
         include: { field: { select: { name: true, pricePerHour: true } } },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
+        take: 100
     }) as any
 
     const totalRevenue = bookings.reduce((acc: number, b: any) => acc + (b.totalPrice || 0), 0)

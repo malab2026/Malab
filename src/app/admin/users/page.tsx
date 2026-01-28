@@ -118,8 +118,8 @@ export default async function AdminUsersPage() {
                                                 </td>
                                                 <td className="px-6 py-5">
                                                     <Badge className={`rounded-lg px-2 py-1 font-black text-[10px] uppercase tracking-wider ${user.role === 'admin' ? 'bg-red-50 text-red-600 border-red-100' :
-                                                            user.role === 'owner' ? 'bg-blue-50 text-blue-600 border-blue-100' :
-                                                                'bg-gray-50 text-gray-500 border-gray-100'
+                                                        user.role === 'owner' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                                                            'bg-gray-50 text-gray-500 border-gray-100'
                                                         } border hover:none shadow-none`}>
                                                         {user.role}
                                                     </Badge>
