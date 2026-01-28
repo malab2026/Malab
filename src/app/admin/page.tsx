@@ -16,6 +16,9 @@ import {
 } from "lucide-react"
 import prisma from "@/lib/prisma"
 
+import { Suspense } from "react"
+import { Skeleton } from "@/components/ui/skeleton"
+
 export const dynamic = 'force-dynamic'
 
 export default async function AdminHubPage() {
@@ -25,19 +28,6 @@ export default async function AdminHubPage() {
         redirect("/")
     }
 
-    // Quick stats for the hub
-    const [
-        pendingCount,
-        cancelCount,
-        userCount,
-        fieldCount
-    ] = await Promise.all([
-        prisma.booking.count({ where: { status: 'PENDING' } }),
-        prisma.booking.count({ where: { status: 'CANCEL_REQUESTED' } }),
-        prisma.user.count(),
-        prisma.field.count()
-    ])
-
     const navItems = [
         {
             title: "Approvals & History",
@@ -45,8 +35,6 @@ export default async function AdminHubPage() {
             href: "/admin/approvals",
             icon: CheckSquare,
             color: "bg-amber-500",
-            badge: pendingCount + cancelCount > 0 ? `${pendingCount + cancelCount} Action items` : null,
-            badgeColor: "bg-amber-100 text-amber-700"
         },
         {
             title: "User Management",
@@ -54,8 +42,6 @@ export default async function AdminHubPage() {
             href: "/admin/users",
             icon: Users,
             color: "bg-blue-500",
-            badge: `${userCount} Users`,
-            badgeColor: "bg-blue-100 text-blue-700"
         },
         {
             title: "Fields & Clubs",
@@ -63,8 +49,6 @@ export default async function AdminHubPage() {
             href: "/admin/fields",
             icon: LayoutGrid,
             color: "bg-emerald-500",
-            badge: `${fieldCount} Fields`,
-            badgeColor: "bg-emerald-100 text-emerald-700"
         },
         {
             title: "Finance & Settlements",
@@ -101,7 +85,6 @@ export default async function AdminHubPage() {
                     {navItems.map((item) => (
                         <Link href={item.href} key={item.href} className="group">
                             <Card className="p-8 rounded-[2.5rem] border-0 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 bg-white flex flex-col h-full relative overflow-hidden">
-                                {/* Decorative Gradient */}
                                 <div className={`absolute top-0 right-0 w-32 h-32 ${item.color} opacity-[0.03] rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700`} />
 
                                 <div className="flex justify-between items-start mb-6">
@@ -133,26 +116,57 @@ export default async function AdminHubPage() {
                     ))}
                 </div>
 
-                {/* System Summary Quick Cards */}
-                <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col items-center justify-center text-center shadow-sm">
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Pending</p>
-                        <p className="text-2xl font-black text-amber-500">{pendingCount}</p>
-                    </div>
-                    <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col items-center justify-center text-center shadow-sm">
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Cancellations</p>
-                        <p className="text-2xl font-black text-red-500">{cancelCount}</p>
-                    </div>
-                    <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col items-center justify-center text-center shadow-sm">
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Capacity</p>
-                        <p className="text-2xl font-black text-emerald-500">{fieldCount}</p>
-                    </div>
-                    <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col items-center justify-center text-center shadow-sm">
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Accounts</p>
-                        <p className="text-2xl font-black text-blue-500">{userCount}</p>
-                    </div>
-                </div>
+                <Suspense fallback={<StatsSkeleton />}>
+                    <AdminStats />
+                </Suspense>
             </div>
         </main>
+    )
+}
+
+async function AdminStats() {
+    const [
+        pendingCount,
+        cancelCount,
+        userCount,
+        fieldCount
+    ] = await Promise.all([
+        prisma.booking.count({ where: { status: 'PENDING' } }),
+        prisma.booking.count({ where: { status: 'CANCEL_REQUESTED' } }),
+        prisma.user.count(),
+        prisma.field.count()
+    ])
+
+    return (
+        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in duration-700">
+            <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col items-center justify-center text-center shadow-sm">
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Pending</p>
+                <p className="text-2xl font-black text-amber-500">{pendingCount}</p>
+            </div>
+            <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col items-center justify-center text-center shadow-sm">
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Cancellations</p>
+                <p className="text-2xl font-black text-red-500">{cancelCount}</p>
+            </div>
+            <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col items-center justify-center text-center shadow-sm">
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Capacity</p>
+                <p className="text-2xl font-black text-emerald-500">{fieldCount}</p>
+            </div>
+            <div className="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col items-center justify-center text-center shadow-sm">
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Accounts</p>
+                <p className="text-2xl font-black text-blue-500">{userCount}</p>
+            </div>
+        </div>
+    )
+}
+
+function StatsSkeleton() {
+    return (
+        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map(i => (
+                <div key={i} className="bg-white p-6 rounded-3xl border border-gray-100 h-24 flex items-center justify-center">
+                    <Skeleton className="h-6 w-12 bg-gray-100" />
+                </div>
+            ))}
+        </div>
     )
 }

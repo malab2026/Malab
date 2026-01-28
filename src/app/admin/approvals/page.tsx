@@ -12,6 +12,9 @@ import { ProcessCancellationDialog } from "@/components/admin/process-cancellati
 
 export const dynamic = 'force-dynamic'
 
+import { Suspense } from "react"
+import { Skeleton } from "@/components/ui/skeleton"
+
 export default async function AdminApprovalsPage() {
     const session = await auth()
 
@@ -19,6 +22,33 @@ export default async function AdminApprovalsPage() {
         redirect("/")
     }
 
+    return (
+        <main className="min-h-screen pb-10 bg-gray-50/50">
+            <Navbar />
+            <div className="container mx-auto py-8 px-4">
+                <div className="flex flex-col gap-8">
+                    <div className="flex items-center gap-4">
+                        <Link href="/admin">
+                            <Button variant="ghost" size="icon" className="rounded-full hover:bg-white shadow-sm border border-transparent hover:border-gray-200 transition-all">
+                                <ArrowLeft className="h-5 w-5" />
+                            </Button>
+                        </Link>
+                        <div>
+                            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Approvals & History</h1>
+                            <p className="text-gray-500 font-bold">Manage booking requests and cancellation tickets.</p>
+                        </div>
+                    </div>
+
+                    <Suspense fallback={<ManagementSkeleton />}>
+                        <ApprovalsContent />
+                    </Suspense>
+                </div>
+            </div>
+        </main>
+    )
+}
+
+async function ApprovalsContent() {
     const [
         pendingBookings,
         cancelRequests
@@ -42,73 +72,63 @@ export default async function AdminApprovalsPage() {
     ]) as any
 
     return (
-        <main className="min-h-screen pb-10 bg-gray-50/50">
-            <Navbar />
-
-            <div className="container mx-auto py-10 px-4">
-                <div className="mb-8">
-                    <Link href="/admin" className="text-sm text-gray-500 hover:text-blue-600 flex items-center gap-1 mb-4 transition-colors">
-                        <ArrowLeft className="h-4 w-4" /> Back to Admin Dashboard
-                    </Link>
-                    <div className="flex flex-wrap items-center justify-between gap-4">
-                        <h1 className="text-3xl font-black text-gray-900">Approvals & History</h1>
-                        <div className="flex gap-2">
-                            <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200 font-bold px-3 py-1 rounded-lg">
-                                {pendingBookings.length} Pending
-                            </Badge>
-                            <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 font-bold px-3 py-1 rounded-lg">
-                                {cancelRequests.length} Cancellations
-                            </Badge>
-                        </div>
+        <div className="flex flex-col gap-12">
+            {pendingBookings.length > 0 && (
+                <section>
+                    <div className="flex items-center gap-2 mb-6">
+                        <Clock className="h-6 w-6 text-amber-500" />
+                        <h2 className="text-2xl font-black text-gray-900">New Booking Requests</h2>
+                        <Badge variant="secondary" className="bg-amber-100 text-amber-700 ml-2">{pendingBookings.length}</Badge>
                     </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {pendingBookings.map((booking: any) => (
+                            <AdminBookingCard key={booking.id} booking={booking} />
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {cancelRequests.length > 0 && (
+                <section>
+                    <div className="flex items-center gap-2 mb-6">
+                        <AlertCircle className="h-6 w-6 text-red-500" />
+                        <h2 className="text-2xl font-black text-gray-900">Cancellation Requests</h2>
+                        <Badge variant="secondary" className="bg-red-100 text-red-700 ml-2">{cancelRequests.length}</Badge>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {cancelRequests.map((booking: any) => (
+                            <AdminBookingCard key={booking.id} booking={booking} />
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {pendingBookings.length === 0 && cancelRequests.length === 0 && (
+                <div className="bg-white rounded-3xl p-12 text-center border-2 border-dashed border-gray-200">
+                    <div className="bg-green-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <CheckCircle2 className="h-10 w-10 text-green-600" />
+                    </div>
+                    <h3 className="text-2xl font-black text-gray-900 mb-2">Inbox is Clear!</h3>
+                    <p className="text-gray-500 font-bold">No pending approvals or cancellation requests at the moment.</p>
                 </div>
+            )}
+        </div>
+    )
+}
 
-                <div className="grid gap-12">
-                    {/* Pending Bookings Section */}
-                    {pendingBookings.length > 0 && (
-                        <section className="space-y-4">
-                            <div className="flex items-center gap-2 mb-2">
-                                <div className="bg-yellow-100 p-2 rounded-xl">
-                                    <Clock className="h-5 w-5 text-yellow-700" />
-                                </div>
-                                <h2 className="text-xl font-black text-gray-800 uppercase tracking-tight">New Booking Requests</h2>
-                            </div>
-                            <div className="grid gap-4">
-                                {pendingBookings.map((booking: any) => (
-                                    <AdminBookingCard key={booking.id} booking={booking} isAdmin />
-                                ))}
-                            </div>
-                        </section>
-                    )}
-
-                    {/* Cancellation Requests Section */}
-                    {cancelRequests.length > 0 && (
-                        <section className="space-y-4">
-                            <div className="flex items-center gap-2 mb-2">
-                                <div className="bg-orange-100 p-2 rounded-xl">
-                                    <AlertCircle className="h-5 w-5 text-orange-700" />
-                                </div>
-                                <h2 className="text-xl font-black text-gray-800 uppercase tracking-tight">Cancellation Requests</h2>
-                            </div>
-                            <div className="grid gap-4">
-                                {cancelRequests.map((booking: any) => (
-                                    <AdminBookingCard key={booking.id} booking={booking} isAdmin isCancelRequest />
-                                ))}
-                            </div>
-                        </section>
-                    )}
-
-                    {pendingBookings.length === 0 && cancelRequests.length === 0 && (
-                        <div className="bg-white rounded-3xl p-12 text-center border-2 border-dashed border-gray-200">
-                            <div className="bg-green-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <CheckCircle2 className="h-10 w-10 text-green-600" />
-                            </div>
-                            <h3 className="text-2xl font-black text-gray-900 mb-2">Inbox is Clear!</h3>
-                            <p className="text-gray-500 font-bold">No pending approvals or cancellation requests at the moment.</p>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </main>
+function ManagementSkeleton() {
+    return (
+        <div className="space-y-12">
+            {[1, 2].map(i => (
+                <section key={i}>
+                    <div className="h-8 w-64 bg-gray-200 rounded mb-6" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {[1, 2, 3].map(j => (
+                            <div key={j} className="h-48 bg-white rounded-3xl animate-pulse" />
+                        ))}
+                    </div>
+                </section>
+            ))}
+        </div>
     )
 }
