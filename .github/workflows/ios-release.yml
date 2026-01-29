@@ -61,6 +61,7 @@ jobs:
         run: |
           cd ios/App
           # Build .app with no signing required
+          # Xcode 15+ needs ENABLE_USER_SCRIPT_SANDBOXING=NO for some Capacitor plugins
           xcodebuild build \
             -workspace App.xcworkspace \
             -scheme App \
@@ -70,7 +71,10 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
-            AD_HOC_CODE_SIGNING_ALLOWED=YES
+            AD_HOC_CODE_SIGNING_ALLOWED=YES \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            ENABLE_USER_SCRIPT_SANDBOXING=NO \
+            GENERATE_INFOPLIST_FILE=YES
 
       - name: Package MALA3EBNA IPA
         run: |
