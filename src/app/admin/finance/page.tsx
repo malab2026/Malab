@@ -34,10 +34,10 @@ export default async function AdminFinancePage({
             <div className="container mx-auto py-12 px-4">
                 <div className="mb-12">
                     <Link href="/admin" className="text-sm text-gray-400 hover:text-blue-600 flex items-center gap-1 mb-4 transition-colors font-bold uppercase tracking-widest">
-                        <ArrowLeft className="h-4 w-4" /> Back to Admin
+                        <ArrowLeft className="h-4 w-4" /> العودة للوحة التحكم
                     </Link>
-                    <h1 className="text-5xl font-black text-gray-900 tracking-tight mb-2">Finance & Settlements</h1>
-                    <p className="text-gray-400 font-bold text-lg">Detailed financial oversight and management</p>
+                    <h1 className="text-5xl font-black text-gray-900 tracking-tight mb-2">المالية والتسويات</h1>
+                    <p className="text-gray-400 font-bold text-lg">إدارة ورقابة مالية شاملة للحجوزات</p>
                 </div>
 
                 <Suspense fallback={<FinanceSkeleton />}>
@@ -94,6 +94,7 @@ async function FinanceContent({ searchParams }: { searchParams: { fieldId?: stri
     const totalPayouts = totalRevenue - totalFees
 
     const settledCount = bookings.filter((b: any) => b.isSettled).length
+    const unsettledCount = bookings.filter((b: any) => !b.isSettled).length
 
     return (
         <div className="animate-in fade-in duration-700">
@@ -104,10 +105,10 @@ async function FinanceContent({ searchParams }: { searchParams: { fieldId?: stri
                     <div className="relative z-10">
                         <div className="flex items-center gap-2 mb-4">
                             <TrendingUp className="h-4 w-4 opacity-70" />
-                            <span className="font-black text-[10px] uppercase tracking-widest opacity-80">Gross Revenue</span>
+                            <span className="font-black text-[10px] uppercase tracking-widest opacity-80">إجمالي الإيرادات</span>
                         </div>
-                        <div className="text-3xl font-black mb-1">{totalRevenue.toLocaleString()} <span className="text-sm">EGP</span></div>
-                        <p className="text-[10px] font-bold opacity-50 uppercase">Total Collected</p>
+                        <div className="text-3xl font-black mb-1">{totalRevenue.toLocaleString()} <span className="text-sm">ج.م</span></div>
+                        <p className="text-[10px] font-bold opacity-50 uppercase tracking-widest">إجمالي ما تم تحصيله</p>
                     </div>
                 </Card>
 
@@ -115,45 +116,45 @@ async function FinanceContent({ searchParams }: { searchParams: { fieldId?: stri
                     <div className="relative z-10">
                         <div className="flex items-center gap-2 mb-4">
                             <DollarSign className="h-4 w-4 opacity-70" />
-                            <span className="font-black text-[10px] uppercase tracking-widest opacity-80">Platform Fees</span>
+                            <span className="font-black text-[10px] uppercase tracking-widest opacity-80">عمولة المنصة</span>
                         </div>
-                        <div className="text-3xl font-black mb-1">{totalFees.toLocaleString()} <span className="text-sm">EGP</span></div>
-                        <p className="text-[10px] font-bold opacity-50 uppercase">Admin Net Share</p>
+                        <div className="text-3xl font-black mb-1">{totalFees.toLocaleString()} <span className="text-sm">ج.م</span></div>
+                        <p className="text-[10px] font-bold opacity-50 uppercase tracking-widest">صافي ربح البرنامج</p>
                     </div>
                 </Card>
 
-                <Card className="p-6 rounded-[2rem] border-0 shadow-xl bg-white border-blue-50 relative overflow-hidden group ring-2 ring-blue-500/10">
+                <Card className="p-6 rounded-[2rem] border-0 shadow-xl bg-white border-blue-50 relative overflow-hidden group ring-2 ring-blue-500/10 text-right">
                     <div className="relative z-10">
-                        <div className="flex items-center gap-2 mb-4 text-blue-600">
+                        <div className="flex items-center gap-2 mb-4 text-blue-600 justify-end">
+                            <span className="font-black text-[10px] uppercase tracking-widest mt-0.5">مستحقات الملاك</span>
                             <Wallet className="h-4 w-4" />
-                            <span className="font-black text-[10px] uppercase tracking-widest mt-0.5">Target Payouts</span>
                         </div>
-                        <div className="text-3xl font-black mb-1 text-gray-900">{totalPayouts.toLocaleString()} <span className="text-sm text-gray-400">EGP</span></div>
-                        <p className="text-[10px] font-bold text-blue-500 uppercase">Owner Net Share</p>
+                        <div className="text-3xl font-black mb-1 text-gray-900">{totalPayouts.toLocaleString()} <span className="text-sm text-gray-400">ج.م</span></div>
+                        <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">نصيب المالك الصافي</p>
                     </div>
                 </Card>
 
-                <Card className="p-6 rounded-[2rem] border-0 shadow-lg bg-gray-50 flex flex-col justify-center relative overflow-hidden group">
+                <Card className="p-6 rounded-[2rem] border-0 shadow-lg bg-gray-50 flex flex-col justify-center relative overflow-hidden group text-right">
                     <div className="relative z-10">
-                        <div className="flex items-center gap-2 mb-4 text-gray-400">
+                        <div className="flex items-center gap-2 mb-4 text-gray-400 justify-end">
+                            <span className="font-black text-[10px] uppercase tracking-widest mt-0.5">عمليات التسوية</span>
                             <History className="h-4 w-4" />
-                            <span className="font-black text-[10px] uppercase tracking-widest mt-0.5">Settlements</span>
                         </div>
-                        <div className="text-2xl font-black text-gray-900 mb-1">{settledCount} <span className="text-xs text-gray-400 uppercase">Transactions</span></div>
-                        <p className="text-[10px] font-bold text-gray-400 uppercase">Processed</p>
+                        <div className="text-2xl font-black text-gray-900 mb-1">{settledCount} <span className="text-xs text-gray-400 uppercase tracking-widest">تمت محاسبتها</span></div>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{unsettledCount} في انتظار المحاسبة</p>
                     </div>
                 </Card>
             </div>
 
-            <section className="bg-white p-8 sm:p-12 rounded-[4rem] shadow-2xl border border-gray-50">
-                <div className="flex items-center justify-between mb-12">
-                    <div className="flex items-center gap-5">
+            <section className="bg-white p-8 sm:p-12 rounded-[4rem] shadow-2xl border border-gray-50 text-right" dir="rtl">
+                <div className="flex items-center justify-between mb-12 flex-row-reverse">
+                    <div className="flex items-center gap-5 flex-row-reverse">
                         <div className="bg-blue-50 p-4 rounded-3xl">
                             <Wallet className="h-8 w-8 text-blue-600" />
                         </div>
                         <div>
-                            <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-1">Owner Settlements</h2>
-                            <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest">Transaction level detail and payout management</p>
+                            <h2 className="text-3xl font-black text-gray-900 tracking-tight mb-1">تسويات الملاك</h2>
+                            <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest">تفاصيل العمليات وإدارة الدفع للملاك</p>
                         </div>
                     </div>
                 </div>
