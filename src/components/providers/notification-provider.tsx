@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { LocalNotifications } from '@capacitor/local-notifications'
-import { PushNotifications } from '@capacitor/push-notifications'
 import { Capacitor } from '@capacitor/core'
 
 interface NotificationContextType {
@@ -27,12 +26,6 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
             const perm = await LocalNotifications.requestPermissions()
             if (perm.display !== 'granted') {
                 console.warn('Notification permissions not granted')
-            }
-
-            // Also register for Push Notifications (standard scaffolding)
-            const pushPerm = await PushNotifications.requestPermissions()
-            if (pushPerm.receive === 'granted') {
-                await PushNotifications.register()
             }
         } catch (e) {
             console.error('Error requesting notification permissions:', e)

@@ -57,10 +57,15 @@ jobs:
           find Pods -name "*-frameworks.sh" -exec sed -i '' 's/code_sign_if_enabled/echo "Skipping code signing"/g' {} +
           find Pods -name "*-frameworks.sh" -exec sed -i '' 's/codesign /echo "Skipping codesign" /g' {} +
 
-      - name: Patch Project for Manual Signing
+      - name: Patch Project settings
         run: |
-          echo "🛠️ Patching project.pbxproj for Manual signing..."
+          echo "🛠️ Patching project.pbxproj..."
+          # Force Manual signing
           sed -i '' 's/ProvisioningStyle = Automatic;/ProvisioningStyle = Manual;/g' ios/App/App.xcodeproj/project.pbxproj
+          # Force bundle ID to match capacitor config
+          sed -i '' 's/PRODUCT_BUNDLE_IDENTIFIER = [^;]*;/PRODUCT_BUNDLE_IDENTIFIER = com.mala3ebna.booking;/g' ios/App/App.xcodeproj/project.pbxproj
+          # Clear any identities
+          sed -i '' 's/CODE_SIGN_IDENTITY = "iPhone Developer";/CODE_SIGN_IDENTITY = "";/g' ios/App/App.xcodeproj/project.pbxproj
 
       - name: Normalize & Validate Info.plist
         run: |
@@ -99,6 +104,8 @@ jobs:
             ALLOW_PROVISIONING_UPDATES=NO \
             COMPILER_INDEX_STORE_ENABLE=NO \
             ENABLE_USER_SCRIPT_SANDBOXING=NO \
+            MARKETING_VERSION=1.0.2 \
+            CURRENT_PROJECT_VERSION=1 \
             SKIP_INSTALL=NO
 
       - name: Package MALA3EBNA IPA
