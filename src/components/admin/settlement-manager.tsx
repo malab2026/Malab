@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
+import { useTranslation } from "@/components/providers/locale-context"
 
 interface SettlementManagerProps {
     bookings: any[]
@@ -14,6 +15,8 @@ interface SettlementManagerProps {
 
 export function SettlementManager({ bookings, isAdmin = true }: SettlementManagerProps) {
     const [isPending, setIsPending] = useState(false)
+    const { t, locale } = useTranslation()
+    const isRtl = locale === 'ar'
 
     // Aggregations
     const stats = bookings.reduce((acc, b) => {
@@ -49,17 +52,17 @@ export function SettlementManager({ bookings, isAdmin = true }: SettlementManage
 
     const handleSettleAll = async () => {
         if (stats.unsettledIds.length === 0) {
-            toast.info("لا توجد حجوزات في انتظار المحاسبة حالياً.")
+            toast.info(t('noUnsettledBookings'))
             return
         }
 
         const confirmationMessage = `
---- تفسير الحسابات المالية ---
-محاسبة عدد ${stats.unsettledCount} حجز:
-• إجمالي المستحق للمالك: ${stats.pendingOwnerPayout.toFixed(2)} ج.م
-• عمولة المنصة (مخصومة بالفعل): ${stats.platformProfit.toFixed(2)} ج.م
+--- ${t('settlementConfirmationTitle')} ---
+${t('settlementConfirmationDesc', { count: stats.unsettledCount })}
+• ${t('settlementConfirmationPending', { amount: stats.pendingOwnerPayout.toFixed(2) })}
+• ${t('settlementConfirmationPlatform', { amount: stats.platformProfit.toFixed(2) })}
 
-هل أنت متأكد من تأكيد المحاسبة وتحويل الحالة لـ "تمت المحاسبة"؟
+${t('settlementConfirmationCheck')}
 `.trim();
 
         if (!confirm(confirmationMessage)) {
@@ -71,61 +74,61 @@ export function SettlementManager({ bookings, isAdmin = true }: SettlementManage
         setIsPending(false)
 
         if (result.success) {
-            toast.success("تم تأكيد المحاسبة بنجاح")
+            toast.success(locale === 'ar' ? "تم تأكيد المحاسبة بنجاح" : "Settlement confirmed successfully")
         } else {
             toast.error(result.message)
         }
     }
 
     return (
-        <div className="space-y-8 text-right" dir="rtl">
+        <div className={`space-y-8 ${isRtl ? 'text-right' : 'text-left'}`} dir={isRtl ? 'rtl' : 'ltr'}>
             {/* Interpretation Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="bg-red-50/50 p-6 rounded-[2rem] border border-red-100/50 ring-2 ring-red-500/10">
-                    <p className="text-[10px] font-black text-red-400 uppercase tracking-widest mb-1 text-center">في انتظار المحاسبة</p>
-                    <div className="text-2xl font-black text-red-700 text-center">{stats.pendingOwnerPayout.toLocaleString()} <span className="text-xs">ج.م</span></div>
-                    <p className="text-[10px] font-bold text-red-300 uppercase text-center mt-1">مبالغ "عليك" دفعها للمالك</p>
+                <div className="bg-red-50/50 p-6 rounded-[2rem] border border-red-100/50 ring-2 ring-red-500/10 text-center">
+                    <p className="text-[10px] font-black text-red-400 uppercase tracking-widest mb-1">{t('pendingPayout')}</p>
+                    <div className="text-2xl font-black text-red-700">{stats.pendingOwnerPayout.toLocaleString()} <span className="text-xs">{t('egp')}</span></div>
+                    <p className="text-[10px] font-bold text-red-300 uppercase mt-1">{t('pendingPayoutDesc')}</p>
                 </div>
-                <div className="bg-blue-50/50 p-6 rounded-[2rem] border border-blue-100/50">
-                    <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1 text-center">تمت محاسبته</p>
-                    <div className="text-2xl font-black text-blue-700 text-center">{stats.alreadySettledPayout.toLocaleString()} <span className="text-xs">ج.م</span></div>
-                    <p className="text-[10px] font-bold text-blue-300 uppercase text-center mt-1">إجمالي ما دفعته للمالك</p>
+                <div className="bg-blue-50/50 p-6 rounded-[2rem] border border-blue-100/50 text-center">
+                    <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">{t('alreadySettled')}</p>
+                    <div className="text-2xl font-black text-blue-700">{stats.alreadySettledPayout.toLocaleString()} <span className="text-xs">{t('egp')}</span></div>
+                    <p className="text-[10px] font-bold text-blue-300 uppercase mt-1">{t('alreadySettledDesc')}</p>
                 </div>
-                <div className="bg-emerald-50/50 p-6 rounded-[2rem] border border-emerald-100/50">
-                    <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1 text-center">أرباح المنصة</p>
-                    <div className="text-2xl font-black text-emerald-700 text-center">{stats.platformProfit.toLocaleString()} <span className="text-xs">ج.م</span></div>
-                    <p className="text-[10px] font-bold text-emerald-300 uppercase text-center mt-1">مكسب البرنامج الصافي</p>
+                <div className="bg-emerald-50/50 p-6 rounded-[2rem] border border-emerald-100/50 text-center">
+                    <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1">{t('platformProfit')}</p>
+                    <div className="text-2xl font-black text-emerald-700">{stats.platformProfit.toLocaleString()} <span className="text-xs">{t('egp')}</span></div>
+                    <p className="text-[10px] font-bold text-emerald-300 uppercase mt-1">{t('platformProfitDesc')}</p>
                 </div>
-                <div className="bg-gray-50 p-6 rounded-[2rem] border border-gray-100">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 text-center">إجمالي التحصيل</p>
-                    <div className="text-2xl font-black text-gray-700 text-center">{stats.totalCollections.toLocaleString()} <span className="text-xs">ج.م</span></div>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase text-center mt-1">الصافي بعد المرتجعات</p>
+                <div className="bg-gray-50 p-6 rounded-[2rem] border border-gray-100 text-center">
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{t('totalCollections')}</p>
+                    <div className="text-2xl font-black text-gray-700">{stats.totalCollections.toLocaleString()} <span className="text-xs">{t('egp')}</span></div>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase mt-1">{t('totalCollectionsDesc')}</p>
                 </div>
             </div>
 
-            <div className="flex justify-between items-center px-4 flex-row-reverse">
-                <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">تفاصيل الحجوزات</h2>
+            <div className={`flex justify-between items-center px-4 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">{t('bookingsDetail')}</h2>
                 {isAdmin && (
                     <Button
                         onClick={handleSettleAll}
                         disabled={isPending || stats.unsettledIds.length === 0}
                         className="bg-gray-900 border-0 hover:bg-black text-white px-8 h-12 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-gray-200 transition-all hover:-translate-y-0.5"
                     >
-                        {isPending ? "جاري المعالجة..." : "تأكيد المحاسبة للفترة"}
+                        {isPending ? (isRtl ? "جاري المعالجة..." : "Processing...") : t('markPeriodSettled')}
                     </Button>
                 )}
             </div>
 
             <div className="bg-white rounded-[3rem] shadow-xl border border-gray-50 overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-right" dir="rtl">
+                    <table className="w-full text-sm" dir={isRtl ? 'rtl' : 'ltr'}>
                         <thead className="bg-gray-50/50 text-gray-400 uppercase text-[10px] font-black tracking-widest border-b border-gray-100">
                             <tr>
-                                <th className="px-8 py-6 text-right">الحالة</th>
-                                <th className="px-8 py-6 text-right">الملعب / النادي</th>
-                                <th className="px-8 py-6 text-center">التاريخ والوقت</th>
-                                <th className="px-8 py-6 text-right">نصيب المالك الصافي</th>
-                                <th className="px-8 py-6 text-left">المحاسبة</th>
+                                <th className={`px-8 py-6 ${isRtl ? 'text-right' : 'text-left'}`}>{t('bookingStatus')}</th>
+                                <th className={`px-8 py-6 ${isRtl ? 'text-right' : 'text-left'}`}>{t('fieldStadium')}</th>
+                                <th className="px-8 py-6 text-center">{t('dateAndTime')}</th>
+                                <th className={`px-8 py-6 ${isRtl ? 'text-right' : 'text-left'}`}>{t('netOwnerShare')}</th>
+                                <th className={`px-8 py-6 ${isRtl ? 'text-left' : 'text-right'}`}>{t('settlement')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
@@ -149,14 +152,14 @@ export function SettlementManager({ bookings, isAdmin = true }: SettlementManage
                                                     : 'bg-green-50 text-green-600 border-green-100'
                                                     }`}
                                             >
-                                                {booking.status === 'CANCELLED' ? 'غرامة' : 'نشط'}
+                                                {booking.status === 'CANCELLED' ? t('penalty') : t('active')}
                                             </Badge>
                                         </td>
-                                        <td className="px-8 py-6 font-black text-gray-900 text-lg group-hover:text-blue-600 transition-colors">
+                                        <td className={`px-8 py-6 font-black text-gray-900 text-lg group-hover:text-blue-600 transition-colors ${isRtl ? 'text-right' : 'text-left'}`}>
                                             {booking.field.name}
                                         </td>
-                                        <td className="px-8 py-6">
-                                            <div className="text-center">
+                                        <td className="px-8 py-6 text-center">
+                                            <div>
                                                 <div className="font-black text-gray-700">{format(new Date(booking.startTime), 'MMM d, yyyy')}</div>
                                                 <div className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">
                                                     {format(new Date(booking.startTime), 'h:mm a')} - {format(new Date(booking.endTime), 'h:mm a')}
@@ -165,21 +168,21 @@ export function SettlementManager({ bookings, isAdmin = true }: SettlementManage
                                         </td>
                                         <td className="px-8 py-6">
                                             <div className="font-black text-gray-900 text-xl tracking-tight leading-none mb-1">
-                                                {ownerShare.toFixed(2)} <span className="text-xs text-gray-400">ج.م</span>
+                                                {ownerShare.toFixed(2)} <span className="text-xs text-gray-400">{t('egp')}</span>
                                             </div>
-                                            <div className="flex gap-2 flex-row-reverse">
-                                                <span className="text-[10px] font-bold text-gray-400 uppercase">الإجمالي: {netCollected.toFixed(2)}</span>
-                                                <span className="text-[10px] font-bold text-blue-400 uppercase">العمولة: {fee}</span>
+                                            <div className={`flex gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                                                <span className="text-[10px] font-bold text-gray-400 uppercase">{t('grossAmount')}: {netCollected.toFixed(2)}</span>
+                                                <span className="text-[10px] font-bold text-blue-400 uppercase">{t('feeAmount')}: {fee}</span>
                                             </div>
                                         </td>
-                                        <td className="px-8 py-6 text-left">
+                                        <td className={`px-8 py-6 ${isRtl ? 'text-left' : 'text-right'}`}>
                                             {booking.isSettled ? (
                                                 <div className="inline-flex items-center gap-2 bg-blue-100/50 px-4 py-2 rounded-2xl border border-blue-200">
-                                                    <span className="text-blue-600 font-black text-[10px] uppercase tracking-[0.1em]">تمت المحاسبة</span>
+                                                    <span className="text-blue-600 font-black text-[10px] uppercase tracking-[0.1em]">{t('settledStatus')}</span>
                                                 </div>
                                             ) : (
                                                 <div className="inline-flex items-center gap-2 bg-red-100/50 px-4 py-2 rounded-2xl border border-red-100">
-                                                    <span className="text-red-600 font-black text-[10px] uppercase tracking-[0.1em]">لم يحاسب</span>
+                                                    <span className="text-red-600 font-black text-[10px] uppercase tracking-[0.1em]">{t('pendingStatus')}</span>
                                                 </div>
                                             )}
                                         </td>
@@ -189,7 +192,7 @@ export function SettlementManager({ bookings, isAdmin = true }: SettlementManage
                             {bookings.length === 0 && (
                                 <tr>
                                     <td colSpan={5} className="px-8 py-20 text-center">
-                                        <div className="text-gray-300 font-black text-lg uppercase tracking-widest">لا توجد سجلات مطابقة</div>
+                                        <div className="text-gray-300 font-black text-lg uppercase tracking-widest">{t('noMatchingRecords')}</div>
                                     </td>
                                 </tr>
                             )}

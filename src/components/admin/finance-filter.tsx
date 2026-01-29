@@ -39,11 +39,11 @@ export function FinanceFilter({ clubs, fields }: FinanceFilterProps) {
 
     return (
         <div className="bg-white/50 backdrop-blur-sm p-6 rounded-[2rem] border border-gray-100 shadow-sm mb-8 animate-in fade-in slide-in-from-top-2 duration-500">
-            <div className="flex flex-col md:flex-row items-end gap-4">
+            <div className={`flex flex-col md:flex-row items-end gap-4 ${locale === 'ar' ? 'md:flex-row-reverse' : ''}`} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
                 <div className="flex-[1.5] grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                     <div className="space-y-2">
-                        <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
-                            {locale === 'ar' ? 'من تاريخ' : 'Date From'}
+                        <Label className={`text-[10px] font-black text-gray-400 uppercase tracking-widest ${locale === 'ar' ? 'mr-1' : 'ml-1'}`}>
+                            {t('date')} ({locale === 'ar' ? 'من' : 'From'})
                         </Label>
                         <input
                             type="date"
@@ -53,8 +53,8 @@ export function FinanceFilter({ clubs, fields }: FinanceFilterProps) {
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
-                            {locale === 'ar' ? 'إلى تاريخ' : 'Date To'}
+                        <Label className={`text-[10px] font-black text-gray-400 uppercase tracking-widest ${locale === 'ar' ? 'mr-1' : 'ml-1'}`}>
+                            {t('date')} ({locale === 'ar' ? 'إلى' : 'To'})
                         </Label>
                         <input
                             type="date"
@@ -66,8 +66,8 @@ export function FinanceFilter({ clubs, fields }: FinanceFilterProps) {
                 </div>
 
                 <div className="flex-[1] space-y-2 w-full">
-                    <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
-                        {locale === 'ar' ? 'تصنيف حسب النادي' : 'Club'}
+                    <Label className={`text-[10px] font-black text-gray-400 uppercase tracking-widest ${locale === 'ar' ? 'mr-1' : 'ml-1'}`}>
+                        {t('area')} ({t('owner')})
                     </Label>
                     <select
                         className="w-full h-12 bg-white border border-gray-200 rounded-2xl px-4 focus:ring-2 focus:ring-blue-500 transition-all outline-none text-sm font-bold shadow-sm cursor-pointer appearance-none"
@@ -84,8 +84,8 @@ export function FinanceFilter({ clubs, fields }: FinanceFilterProps) {
                 </div>
 
                 <div className="flex-[1] space-y-2 w-full">
-                    <Label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
-                        {locale === 'ar' ? 'تصنيف حسب الملعب' : 'Stadium'}
+                    <Label className={`text-[10px] font-black text-gray-400 uppercase tracking-widest ${locale === 'ar' ? 'mr-1' : 'ml-1'}`}>
+                        {t('fieldStadium')}
                     </Label>
                     <select
                         className="w-full h-12 bg-white border border-gray-200 rounded-2xl px-4 focus:ring-2 focus:ring-blue-500 transition-all outline-none text-sm font-bold shadow-sm cursor-pointer appearance-none"
@@ -107,8 +107,8 @@ export function FinanceFilter({ clubs, fields }: FinanceFilterProps) {
                         onClick={clearFilters}
                         className="h-12 px-4 rounded-2xl text-red-500 hover:text-red-600 hover:bg-red-50 font-black text-[10px] uppercase tracking-widest transition-all shrink-0"
                     >
-                        <X className="h-4 w-4 mr-2" />
-                        {locale === 'ar' ? 'مسح' : 'Clear'}
+                        <X className={`h-4 w-4 ${locale === 'ar' ? 'ml-2' : 'mr-2'}`} />
+                        {t('cancel')}
                     </Button>
                 )}
             </div>
