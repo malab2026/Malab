@@ -8,6 +8,8 @@ import { writeFile } from "fs/promises"
 import path from "path"
 import { z } from "zod"
 import * as fs from "fs"
+import { createNotification } from "./notification-actions"
+import { formatInEgyptDate, formatInEgyptTime } from "@/lib/utils"
 
 const SlotSchema = z.object({
     date: z.string(),
@@ -123,7 +125,7 @@ export async function createBooking(prevState: any, formData: FormData) {
         }
 
         const { fieldId, slots } = validatedFields.data
-        const field = await prisma.field.findUnique({ where: { id: fieldId }, select: { pricePerHour: true } })
+        const field = await prisma.field.findUnique({ where: { id: fieldId }, select: { name: true, pricePerHour: true } })
         if (!field) return { message: "Field not found." }
 
         // Group slots into continuous blocks to apply service fee correctly on server-side
@@ -236,6 +238,21 @@ export async function createBooking(prevState: any, formData: FormData) {
                 }
             }
         })
+
+        // Notify user about booking creation
+        const firstSlot = sortedSlotsForData[0]
+        const bookingDate = firstSlot.date
+        const bookingTime = firstSlot.startTime
+
+        const title = isBlock ? "تم حجز الملعب (إغلاق) 🔒" : (session.user.role === "admin" ? "تم تأكيد حجزك! ✅" : "تم استلام طلب حجزك ⏳")
+        const message = isBlock
+            ? `تم إغلاق الملعب "${field.name}" بتاريخ ${bookingDate} الساعة ${bookingTime}.`
+            : (session.user.role === "admin"
+                ? `تم تأكيد حجزك في ملعب ${field.name} بتاريخ ${bookingDate} الساعة ${bookingTime}.`
+                : `تم استلام طلب حجزك في ملعب ${field.name} بتاريخ ${bookingDate} الساعة ${bookingTime}. يرجى انتظار التأكيد.`)
+
+        await createNotification(session.user.id, title, message, "BOOKING")
+
     } catch (e: any) {
         if (e.message?.includes('NEXT_REDIRECT')) throw e;
         return { message: "An error occurred while creating your booking." }
@@ -360,13 +377,25 @@ export async function requestCancellation(bookingId: string, reason: string) {
             return { message: "Cancellation already requested or processed", success: false }
         }
 
-        await prisma.booking.update({
+        const updatedBooking = await prisma.booking.update({
             where: { id: bookingId },
             data: {
                 status: "CANCEL_REQUESTED",
                 cancellationReason: reason
-            }
+            },
+            include: { field: true }
         })
+
+        // Notify user about cancellation request
+        const bookingDate = formatInEgyptDate(updatedBooking.startTime)
+        const bookingTime = formatInEgyptTime(updatedBooking.startTime)
+
+        await createNotification(
+            session.user.id,
+            "تم إرسال طلب إلغاء ⏳",
+            `تم إرسال طلب إلغاء حجزك في ملعب ${updatedBooking.field.name} بتاريخ ${bookingDate} الساعة ${bookingTime}.`,
+            "BOOKING"
+        )
 
         revalidatePath('/dashboard')
         revalidatePath('/admin')

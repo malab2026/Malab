@@ -8,6 +8,7 @@ import { z } from "zod"
 import { writeFile } from "fs/promises"
 import path from "path"
 import { broadcastNotification, createNotification } from "./notification-actions"
+import { formatInEgyptDate, formatInEgyptTime } from "@/lib/utils"
 
 const FieldSchema = z.object({
     name: z.string().min(1),
@@ -262,10 +263,13 @@ export async function updateBookingStatus(bookingId: string, status: "CONFIRMED"
         })
 
         // Notify user about booking status change
+        const bookingDate = formatInEgyptDate(booking.startTime)
+        const bookingTime = formatInEgyptTime(booking.startTime)
+
         const title = status === "CONFIRMED" ? "تم تأكيد حجزك! ✅" : "تم رفض حجزك ❌"
         const message = status === "CONFIRMED"
-            ? `تمت الموافقة على حجزك في ملعب ${booking.field.name}. نتمنى لك مباراة ممتعة!`
-            : `للأسف تم رفض حجزك في ملعب ${booking.field.name}. يرجى التواصل مع الإدارة للمزيد من التفاصيل.`
+            ? `تمت الموافقة على حجزك في ملعب ${booking.field.name} بتاريخ ${bookingDate} الساعة ${bookingTime}. نتمنى لك مباراة ممتعة!`
+            : `للأسف تم رفض حجزك في ملعب ${booking.field.name} بتاريخ ${bookingDate} الساعة ${bookingTime}. يرجى التواصل مع الإدارة للمزيد من التفاصيل.`
 
         await createNotification(booking.userId, title, message, "BOOKING")
 
@@ -432,14 +436,26 @@ export async function processCancellationRequest(
     try {
         const status = action === "APPROVE" ? "CANCELLED" : "CONFIRMED"
 
-        await prisma.booking.update({
+        const booking = await prisma.booking.update({
             where: { id: bookingId },
             data: {
                 status,
                 refundAmount: refundAmount || 0,
                 cancellationAdminNote: adminNote || null
-            }
+            },
+            include: { field: true }
         })
+
+        // Notify user about cancellation status change
+        const bookingDate = formatInEgyptDate(booking.startTime)
+        const bookingTime = formatInEgyptTime(booking.startTime)
+
+        const title = action === "APPROVE" ? "تم قبول طلب الإلغاء ✅" : "تم رفض طلب الإلغاء ❌"
+        const message = action === "APPROVE"
+            ? `تم قبول طلب إلغاء حجزك في ملعب ${booking.field.name} بتاريخ ${bookingDate} الساعة ${bookingTime}.`
+            : `تم رفض طلب إلغاء حجزك في ملعب ${booking.field.name} بتاريخ ${bookingDate} الساعة ${bookingTime}.`
+
+        await createNotification(booking.userId, title, message, "BOOKING")
 
         revalidatePath('/admin')
         revalidatePath('/dashboard')
