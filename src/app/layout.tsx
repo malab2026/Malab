@@ -28,7 +28,7 @@ export const viewport: Viewport = {
 import { Toaster } from "sonner";
 import { LocaleProvider } from "@/components/providers/locale-context";
 import { AuthProvider } from "@/components/providers/auth-provider";
-
+import { NotificationProvider } from "@/components/providers/notification-provider";
 import { CapacitorProvider } from "@/components/providers/capacitor-provider";
 
 export default function RootLayout({
@@ -42,12 +42,14 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}
       >
         <AuthProvider>
-          <LocaleProvider>
+          <NotificationProvider>
             <CapacitorProvider>
-              {children}
-              <Toaster position="top-center" richColors />
+              <LocaleProvider>
+                {children}
+                <Toaster position="top-center" richColors />
+              </LocaleProvider>
             </CapacitorProvider>
-          </LocaleProvider>
+          </NotificationProvider>
         </AuthProvider>
       </body>
     </html>

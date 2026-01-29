@@ -4,19 +4,38 @@ import { useState, useEffect, useRef } from 'react'
 import { Bell } from 'lucide-react'
 import { getNotifications, markNotificationAsRead } from '@/actions/notification-actions'
 import { useTranslation } from '@/components/providers/locale-context'
+import { useNotifications } from '@/components/providers/notification-provider'
 import { Button } from '@/components/ui/button'
 
 export function NotificationBell() {
     const { t, isRtl } = useTranslation()
+    const { showSystemNotification } = useNotifications()
     const [notifications, setNotifications] = useState<any[]>([])
     const [isOpen, setIsOpen] = useState(false)
     const [unreadCount, setUnreadCount] = useState(0)
     const dropdownRef = useRef<HTMLDivElement>(null)
+    const isFirstRun = useRef(true)
 
     const fetchNotifications = async () => {
         const data = await getNotifications()
         setNotifications(data)
-        setUnreadCount(data.filter((n: any) => !n.isRead).length)
+        const unread = data.filter((n: any) => !n.isRead)
+        setUnreadCount(unread.length)
+
+        // Trigger system notification for NEW unread notifications
+        if (unread.length > 0) {
+            const lastSeenId = localStorage.getItem('last_notification_id')
+            const latestNotification = unread[0]
+
+            if (latestNotification.id !== lastSeenId && !isFirstRun.current) {
+                await showSystemNotification(latestNotification.title, latestNotification.message)
+                localStorage.setItem('last_notification_id', latestNotification.id)
+            } else if (isFirstRun.current) {
+                // Initialize lastSeenId on first run without showing alert
+                localStorage.setItem('last_notification_id', latestNotification.id)
+                isFirstRun.current = false
+            }
+        }
     }
 
     useEffect(() => {
