@@ -79,12 +79,10 @@ export async function getFieldBookings(fieldId: string, startDate: string, endDa
 
 
 export async function createBooking(prevState: any, formData: FormData) {
-    console.log(`[${new Date().toISOString()}] ACTION START`)
 
     try {
         const session = await auth()
         if (!session || !session.user) {
-            console.log(`[${new Date().toISOString()}] No Session`)
             return { message: "You must be logged in to book." }
         }
 
@@ -97,13 +95,11 @@ export async function createBooking(prevState: any, formData: FormData) {
         }
 
         const slotsJson = formData.get("slots") as string
-        console.log(`[${new Date().toISOString()}] Slots JSON: ${slotsJson}`)
 
         let parsedSlots = []
         try {
             parsedSlots = JSON.parse(slotsJson || '[]')
         } catch (e: any) {
-            console.log(`[${new Date().toISOString()}] JSON Parse Error: ${e.message}`)
             return { message: "Invalid booking data format." }
         }
 
@@ -114,7 +110,6 @@ export async function createBooking(prevState: any, formData: FormData) {
             const duration = formData.get("duration")
             if (date && startTime) {
                 parsedSlots.push({ date, startTime, duration: Number(duration) || 1 })
-                console.log(`[${new Date().toISOString()}] Using fallback single slot`)
             }
         }
 
@@ -124,7 +119,6 @@ export async function createBooking(prevState: any, formData: FormData) {
         })
 
         if (!validatedFields.success) {
-            console.log(`[${new Date().toISOString()}] Validation Failed: ${validatedFields.error.message}`)
             return { message: "Validation failed for some slots." }
         }
 
@@ -170,7 +164,6 @@ export async function createBooking(prevState: any, formData: FormData) {
             })
 
             if (conflict) {
-                console.log(`[${new Date().toISOString()}] Conflict at ${slot.date} ${slot.startTime}`)
                 return { message: `Slot at ${slot.startTime} on ${slot.date} is already taken.` }
             }
 
@@ -203,9 +196,7 @@ export async function createBooking(prevState: any, formData: FormData) {
                 const base64String = buffer.toString('base64')
                 const mimeType = file.type || 'image/jpeg' // Default fallback
                 receiptUrl = `data:${mimeType};base64,${base64String}`
-                console.log(`[${new Date().toISOString()}] Generated Base64 Receipt (size: ${receiptUrl.length})`)
             } catch (error) {
-                console.log(`[${new Date().toISOString()}] Receipt Processing Error: ${error}`)
                 return { message: "Failed to process receipt." }
             }
         }
@@ -245,10 +236,8 @@ export async function createBooking(prevState: any, formData: FormData) {
                 }
             }
         })
-        console.log(`[${new Date().toISOString()}] Transaction Success: Created ${bookingData.length} bookings`)
     } catch (e: any) {
         if (e.message?.includes('NEXT_REDIRECT')) throw e;
-        console.log(`[${new Date().toISOString()}] Global Error: ${e.message}`)
         return { message: "An error occurred while creating your booking." }
     }
 

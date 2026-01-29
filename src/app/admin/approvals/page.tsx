@@ -34,6 +34,8 @@ export default async function AdminApprovalsPage() {
     )
 }
 
+import { BookingWithDetails } from "@/types"
+
 async function ApprovalsContent() {
     const [
         pendingBookings,
@@ -67,7 +69,7 @@ async function ApprovalsContent() {
             },
             orderBy: { createdAt: 'desc' }
         })
-    ]) as any
+    ]) as BookingWithDetails[][]
 
     return (
         <ApprovalsClient

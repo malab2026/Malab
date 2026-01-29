@@ -9,8 +9,9 @@ import { updateBookingStatus } from "@/actions/admin-actions"
 import { ProcessCancellationDialog } from "@/components/admin/process-cancellation-dialog"
 import { useTranslation } from "@/components/providers/locale-context"
 import { formatInEgyptDate, formatInEgyptTime } from "@/lib/utils"
+import { BookingWithDetails } from "@/types"
 
-export function AdminBookingCard({ booking, isAdmin = false, isCancelRequest = false }: { booking: any, isAdmin?: boolean, isCancelRequest?: boolean }) {
+export function AdminBookingCard({ booking, isAdmin = false, isCancelRequest = false }: { booking: BookingWithDetails, isAdmin?: boolean, isCancelRequest?: boolean }) {
     const { t } = useTranslation()
 
     return (

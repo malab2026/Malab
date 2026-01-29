@@ -5,11 +5,12 @@ import { CheckSquare, CheckCircle2 } from "lucide-react"
 import { AdminBookingCard } from "@/components/admin/admin-booking-card"
 import { AdminHistoryManager } from "@/components/admin/admin-history-manager"
 import { useTranslation } from "@/components/providers/locale-context"
+import { BookingWithDetails } from "@/types"
 
 interface ApprovalsClientProps {
-    pendingBookings: any[]
-    cancelRequests: any[]
-    historyBookings: any[]
+    pendingBookings: BookingWithDetails[]
+    cancelRequests: BookingWithDetails[]
+    historyBookings: BookingWithDetails[]
 }
 
 export function ApprovalsClient({ pendingBookings, cancelRequests, historyBookings }: ApprovalsClientProps) {

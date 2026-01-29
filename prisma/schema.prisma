@@ -58,6 +58,10 @@ model Field {
   bookings           Booking[]
   owner              User?     @relation("OwnerFields", fields: [ownerId], references: [id])
   club               Club?     @relation(fields: [clubId], references: [id], onDelete: SetNull)
+
+  @@index([clubId])
+  @@index([ownerId])
+  @@index([area])
 }
 
 model Booking {
@@ -77,6 +81,12 @@ model Booking {
   createdAt             DateTime  @default(now())
   field                 Field     @relation(fields: [fieldId], references: [id], onDelete: Cascade)
   user                  User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([fieldId])
+  @@index([status])
+  @@index([startTime])
+  @@index([isSettled])
 }
 
 model GlobalSettings {
@@ -99,4 +109,7 @@ model Notification {
   createdAt DateTime @default(now())
 
   user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
 }

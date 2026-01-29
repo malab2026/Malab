@@ -13,9 +13,7 @@ export default auth((req) => {
     const isLoginPage = req.nextUrl.pathname.startsWith('/login')
 
     if (isOnAdmin) {
-        console.log("[Middleware] Checking Admin Access. LoggedIn:", isLoggedIn, "Role:", req.auth?.user?.role);
         if (isLoggedIn && req.auth?.user?.role === 'admin') return null
-        console.log("[Middleware] Access Denied. Redirecting to /");
         return NextResponse.redirect(new URL('/', req.nextUrl))
     }
 
