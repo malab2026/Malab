@@ -6,6 +6,7 @@ import prisma from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 import { z } from "zod"
 import { redirect } from "next/navigation"
+import { sendWhatsAppAPI, formatPasswordResetMessage } from "@/lib/whatsapp"
 
 const RegisterSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -128,17 +129,29 @@ export async function sendWhatsAppReset(phone: string) {
 
         const settings = await prisma.globalSettings.findUnique({ where: { id: 'global' } })
 
-        // In a real app, you'd generate a secure token and save it to the DB
-        // For now, we'll generate a wa.me link with a message for the admin to reset it
-        // Or generate a temporary 6-digit code (simulated)
         const resetCode = Math.floor(100000 + Math.random() * 900000).toString()
+        const message = formatPasswordResetMessage(resetCode)
 
-        // Store code/token for validation (schema update would be better, but we can use a simple check or link)
-        // Let's assume the admin resets it manually via WhatsApp for now as requested "resettlement via WhatsApp"
+        // If automated WhatsApp is enabled and configured, send it!
+        if (settings?.whatsappEnabled && settings?.whatsappInstanceId && settings?.whatsappToken) {
+            await sendWhatsAppAPI(
+                user.phone,
+                message,
+                settings.whatsappInstanceId,
+                settings.whatsappToken
+            )
+            return {
+                success: true,
+                automated: true,
+                message: "تم إرسال كود إعادة التعيين إلى واتساب الخاص بك."
+            }
+        }
 
+        // Fallback to manual link if not configured
         return {
             success: true,
-            adminPhone: settings?.adminPhone || "201000000000",
+            automated: false,
+            adminPhone: settings?.adminPhone || "201009410112",
             message: `مرحباً، الاسم: ${user.name}\nرقم الهاتف: ${user.phone}\nأريد إعادة تعيين كلمة المرور الخاصة بي.`
         }
     } catch (e) {

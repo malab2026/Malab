@@ -15,9 +15,17 @@ interface GlobalSettingsFormProps {
     initialFee: number
     initialPhone: string
     initialWhatsappEnabled: boolean
+    initialInstanceId?: string | null
+    initialToken?: string | null
 }
 
-export function GlobalSettingsForm({ initialFee, initialPhone, initialWhatsappEnabled }: GlobalSettingsFormProps) {
+export function GlobalSettingsForm({
+    initialFee,
+    initialPhone,
+    initialWhatsappEnabled,
+    initialInstanceId,
+    initialToken
+}: GlobalSettingsFormProps) {
     const { t } = useTranslation()
     const [state, dispatch] = useActionState(updateGlobalSettings, null)
 
@@ -92,6 +100,34 @@ export function GlobalSettingsForm({ initialFee, initialPhone, initialWhatsappEn
                                 required
                             />
                             <p className="text-[9px] text-gray-400">Include country code without + (e.g., 20 for Egypt)</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="whatsappInstanceId" className="text-sm font-bold text-gray-700">
+                                    UltraMsg Instance ID
+                                </Label>
+                                <Input
+                                    id="whatsappInstanceId"
+                                    name="whatsappInstanceId"
+                                    defaultValue={initialInstanceId || ""}
+                                    placeholder="instanceXXXXX"
+                                    className="h-10 border-gray-200 focus:border-green-500 font-medium text-xs"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="whatsappToken" className="text-sm font-bold text-gray-700">
+                                    UltraMsg Token
+                                </Label>
+                                <Input
+                                    id="whatsappToken"
+                                    name="whatsappToken"
+                                    type="password"
+                                    defaultValue={initialToken || ""}
+                                    placeholder="token"
+                                    className="h-10 border-gray-200 focus:border-green-500 font-medium text-xs"
+                                />
+                            </div>
                         </div>
                     </div>
 

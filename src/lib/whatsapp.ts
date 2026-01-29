@@ -20,6 +20,42 @@ export function getWhatsAppChatLink(phone: string, message?: string) {
 }
 
 /**
+ * Sends an automated WhatsApp message via UltraMsg API.
+ */
+export async function sendWhatsAppAPI(phone: string, message: string, instanceId: string, token: string) {
+    try {
+        const cleanPhone = phone.replace(/\+/g, '').replace(/\s/g, '')
+
+        // UltraMsg API endpoint
+        const url = `https://api.ultramsg.com/${instanceId}/messages/chat`
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                token: token,
+                to: cleanPhone,
+                body: message,
+                priority: '10',
+            }),
+        })
+
+        const data = await response.json()
+        if (data.sent === "true" || data.success) {
+            return { success: true, messageId: data.id }
+        } else {
+            console.error("[WhatsApp API Error]", data)
+            return { success: false, error: data.message || "Failed to send message" }
+        }
+    } catch (e) {
+        console.error("[WhatsApp API Exception]", e)
+        return { success: false, error: "Network or Server Error" }
+    }
+}
+
+/**
  * Formats a message for booking confirmation.
  */
 export function formatBookingConfirmedMessage(fieldName: string, date: string, time: string) {

@@ -605,7 +605,14 @@ export async function getGlobalSettings() {
         const settings = await prisma.globalSettings.upsert({
             where: { id: 'global' },
             update: {},
-            create: { id: 'global', serviceFee: 10.0, adminPhone: "201009410112", whatsappEnabled: true }
+            create: {
+                id: 'global',
+                serviceFee: 10.0,
+                adminPhone: "201009410112",
+                whatsappEnabled: true,
+                whatsappInstanceId: null,
+                whatsappToken: null
+            }
         })
         return { success: true, settings }
     } catch (e) {
@@ -624,6 +631,8 @@ export async function updateGlobalSettings(prevState: any, formData: FormData) {
     const serviceFee = parseFloat(formData.get("serviceFee") as string)
     const adminPhone = formData.get("adminPhone") as string
     const whatsappEnabled = formData.get("whatsappEnabled") === "true"
+    const whatsappInstanceId = formData.get("whatsappInstanceId") as string || null
+    const whatsappToken = formData.get("whatsappToken") as string || null
 
     if (isNaN(serviceFee)) {
         return { message: "Invalid service fee amount", success: false }
@@ -632,8 +641,8 @@ export async function updateGlobalSettings(prevState: any, formData: FormData) {
     try {
         await prisma.globalSettings.upsert({
             where: { id: 'global' },
-            update: { serviceFee, adminPhone, whatsappEnabled },
-            create: { id: 'global', serviceFee, adminPhone, whatsappEnabled }
+            update: { serviceFee, adminPhone, whatsappEnabled, whatsappInstanceId, whatsappToken },
+            create: { id: 'global', serviceFee, adminPhone, whatsappEnabled, whatsappInstanceId, whatsappToken }
         })
 
         revalidatePath('/admin')

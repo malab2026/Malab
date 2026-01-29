@@ -59,7 +59,14 @@ async function UsersContent() {
         prisma.globalSettings.upsert({
             where: { id: 'global' },
             update: {},
-            create: { id: 'global', serviceFee: 10.0, adminPhone: "201009410112", whatsappEnabled: true }
+            create: {
+                id: 'global',
+                serviceFee: 10.0,
+                adminPhone: "201009410112",
+                whatsappEnabled: true,
+                whatsappInstanceId: null,
+                whatsappToken: null
+            }
         })
     ]) as any
 
@@ -82,6 +89,8 @@ async function UsersContent() {
                         initialFee={initialServiceFee}
                         initialPhone={initialPhone}
                         initialWhatsappEnabled={initialWhatsappEnabled}
+                        initialInstanceId={settings?.whatsappInstanceId}
+                        initialToken={settings?.whatsappToken}
                     />
                 </section>
 

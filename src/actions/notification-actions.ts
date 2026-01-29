@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma"
 import { auth } from "@/auth"
 import { revalidatePath } from "next/cache"
+import { sendWhatsAppAPI } from "@/lib/whatsapp"
 
 export async function getNotifications() {
     const session = await auth()
@@ -56,12 +57,15 @@ export async function createNotification(userId: string | null, title: string, m
 
         // WhatsApp Integration
         const settings = await prisma.globalSettings.findUnique({ where: { id: 'global' } })
-        if (settings?.whatsappEnabled && userId) {
+        if (settings?.whatsappEnabled && settings?.whatsappInstanceId && settings?.whatsappToken && userId) {
             const user = await prisma.user.findUnique({ where: { id: userId }, select: { phone: true } })
             if (user?.phone) {
-                console.log(`[WhatsApp] Triggering message to ${user.phone}: ${title} - ${message}`)
-                // In a production app, we would call an external API here
-                // e.g., sendWhatsAppAPI(user.phone, `${title}\n\n${message}`)
+                await sendWhatsAppAPI(
+                    user.phone,
+                    `${title}\n\n${message}`,
+                    settings.whatsappInstanceId,
+                    settings.whatsappToken
+                )
             }
         }
 
