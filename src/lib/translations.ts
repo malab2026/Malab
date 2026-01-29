@@ -172,6 +172,10 @@ export const translations = {
         settlementConfirmationPlatform: "عمولة المنصة (مخصومة بالفعل): {amount} ج.م",
         settlementConfirmationCheck: "هل أنت متأكد من تأكيد المحاسبة وتحويل الحالة لـ \"تمت المحاسبة\"؟",
         noUnsettledBookings: "لا توجد حجوزات في انتظار المحاسبة حالياً.",
+        selectAll: "اختيار الكل",
+        settleSelected: "محاسبة المختار ({count})",
+        itemsSelected: "{count} عناصر مختارة",
+        selectItemsToSettle: "يرجى اختيار الحجوزات التي ترغب في محاسبتها أولاً.",
     },
     en: {
         // Navbar
@@ -356,6 +360,10 @@ export const translations = {
         settlementConfirmationPlatform: "Platform Share already kept: {amount} EGP",
         settlementConfirmationCheck: "Are you sure you want to mark these as SETTLED?",
         noUnsettledBookings: "No unsettled bookings in this range.",
+        selectAll: "Select All",
+        settleSelected: "Settle Selected ({count})",
+        itemsSelected: "{count} items selected",
+        selectItemsToSettle: "Please select bookings you want to settle first.",
     }
 };
 
