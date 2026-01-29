@@ -22,6 +22,8 @@ export const translations = {
         youBookedThisBefore: "لقد حجزت هذا من قبل ⚽",
         myBookingHistory: "الحجوزات السابقة",
         fullHistory: "كل السجلات ←",
+        clubFields: "الملاعب المتاحة ({count})",
+        youBookedThis: "سبق حجزه ⚽",
 
         // Booking Details
         aboutField: "عن الملعب",
@@ -234,6 +236,8 @@ export const translations = {
         youBookedThisBefore: "YOU BOOKED THIS BEFORE ⚽",
         myBookingHistory: "Booking History",
         fullHistory: "MY FULL HISTORY →",
+        clubFields: "Available Fields ({count})",
+        youBookedThis: "Booked Before ⚽",
 
         // Booking Details
         aboutField: "About this Field",
