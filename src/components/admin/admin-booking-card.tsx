@@ -45,7 +45,7 @@ export function AdminBookingCard({ booking, isAdmin = false, isCancelRequest = f
 
                     {isCancelRequest && booking.cancellationReason && (
                         <p className="text-[11px] mt-3 p-2.5 bg-red-50 text-red-700 rounded-xl border border-red-100 italic font-medium">
-                            Reason: {booking.cancellationReason}
+                            {t('reason')}: {booking.cancellationReason}
                         </p>
                     )}
 
@@ -97,6 +97,7 @@ export function AdminBookingCard({ booking, isAdmin = false, isCancelRequest = f
 }
 
 function StatusBadge({ status }: { status: string }) {
+    const { t } = useTranslation()
     const styles = {
         PENDING: "bg-yellow-100 text-yellow-800",
         CONFIRMED: "bg-green-100 text-green-800",
@@ -106,9 +107,20 @@ function StatusBadge({ status }: { status: string }) {
         CANCELLED: "bg-gray-100 text-gray-800",
         BLOCKED: "bg-orange-100 text-orange-800 border-orange-200"
     }
+
+    const labels = {
+        PENDING: t('statusPending'),
+        CONFIRMED: t('statusConfirmed'),
+        REJECTED: t('statusRejected'),
+        CANCEL_REQUESTED: t('statusCancelRequested'),
+        CANCEL_APPROVED: t('statusCancelled'),
+        CANCELLED: t('statusCancelled'),
+        BLOCKED: t('statusBlocked')
+    }
+
     return (
         <Badge className={(styles[status as keyof typeof styles] || "") + " hover:none shadow-none border-0 px-3 py-1 rounded-full text-[10px] font-black tracking-tight"}>
-            {status.replace('_', ' ')}
+            {labels[status as keyof typeof labels] || status.replace('_', ' ')}
         </Badge>
     )
 }

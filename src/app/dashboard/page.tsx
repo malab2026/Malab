@@ -36,23 +36,26 @@ export default async function DashboardPage() {
             <Navbar />
 
             <div className="container mx-auto py-10 px-4">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
-                    <div className="px-1 py-4">
-                        <h1 className="text-3xl font-black text-white mb-1 drop-shadow-lg">My Bookings</h1>
-                        <p className="text-sm text-green-100 font-bold uppercase tracking-wider drop-shadow-sm">Manage your reservations and blocks</p>
-                    </div>
-                    <Button asChild className="bg-green-600 hover:bg-green-700 h-14 px-8 rounded-2xl font-black text-lg shadow-xl shadow-green-600/20 transition-all hover:scale-105 active:scale-95 border-0">
-                        <Link href="/fields">Book a New Field 🏟️</Link>
-                    </Button>
-                </div>
-
                 <DashboardHistoryManager bookings={bookings} />
             </div>
         </main>
     )
 }
 
+// Note: This StatusBadge is local to this file, we should probably unify them but for now let's localize it.
 function StatusBadge({ status }: { status: string }) {
+    // This is a server component, so we can't use useTranslation hook directly here. 
+    // Usually we'd pass the locale or use a server-side translation helper.
+    // However, DashboardPage is async and can access headers.
+    // But wait, the manager is a client component. Let's look at DashboardPage again.
+    const labels: Record<string, string> = {
+        PENDING: "قيد الانتظار",
+        CONFIRMED: "مقبول",
+        REJECTED: "مرفوض",
+        CANCEL_REQUESTED: "طلب إلغاء",
+        CANCELLED: "ملغي",
+    }
+
     const styles = {
         PENDING: "bg-yellow-100 text-yellow-800 hover:bg-yellow-100",
         CONFIRMED: "bg-green-100 text-green-800 hover:bg-green-100",
@@ -62,7 +65,7 @@ function StatusBadge({ status }: { status: string }) {
     }
     return (
         <Badge className={styles[status as keyof typeof styles] || ""}>
-            {status.replace('_', ' ')}
+            {labels[status] || status.replace('_', ' ')}
         </Badge>
     )
 }

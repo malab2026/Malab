@@ -128,6 +128,15 @@ export const translations = {
         reject: "رفض",
         download: "تحميل",
         viewFull: "عرض كامل",
+        reason: "السبب",
+        total: "إجمالي",
+        managementModule: "وحدة الإدارة",
+        approvalsHistory: "الاعتمادات والسجل",
+        manageApprovalsDesc: "إدارة طلبات الحجز وتذاكر الإلغاء.",
+        newBookingRequests: "طلبات حجز جديدة",
+        cancellationRequests: "طلبات الإلغاء",
+        inboxClear: "صندوق الوارد فارغ!",
+        noPendingApprovals: "لا توجد طلبات اعتماد أو إلغاء في الوقت الحالي.",
 
         // Finance
         financeTitle: "المالية والتسويات",
@@ -176,6 +185,31 @@ export const translations = {
         settleSelected: "محاسبة المختار ({count})",
         itemsSelected: "{count} عناصر مختارة",
         selectItemsToSettle: "يرجى اختيار الحجوزات التي ترغب في محاسبتها أولاً.",
+
+        // Dashboard & History
+        myBookings: "حجوزاتي",
+        manageReservations: "إدارة حجوزاتك وإغلاقاتك",
+        bookNewField: "حجز ملعب جديد 🏟️",
+        bookingHistoryTitle: "سجل الحجوزات",
+        recentActivity: "أحدث النشاطات",
+        noBookingsFound: "لم يتم العثور على حجوزات",
+        adjustFilters: "حاول تغيير التصفية أو اختيار الملعب.",
+        filterByStatus: "تصفية حسب الحالة",
+        allStadiums: "كل الملاعب",
+        filters: "الفلترة",
+        clear: "مسح",
+        viewReceipt: "عرض الإيصال",
+        edit: "تعديل",
+        cancellationPending: "طلب الإلغاء قيد المراجعة...",
+        manualBlock: "قفل يدوي",
+
+        // Statuses
+        statusPending: "قيد الانتظار",
+        statusConfirmed: "مقبول",
+        statusRejected: "مرفوض",
+        statusCancelRequested: "طلب إلغاء",
+        statusCancelled: "ملغي",
+        statusBlocked: "قفل يدوي",
     },
     en: {
         // Navbar
@@ -316,6 +350,15 @@ export const translations = {
         reject: "Reject",
         download: "Download",
         viewFull: "View Full",
+        reason: "Reason",
+        total: "Total",
+        managementModule: "Management Module",
+        approvalsHistory: "Approvals & History",
+        manageApprovalsDesc: "Manage booking requests and cancellation tickets.",
+        newBookingRequests: "New Booking Requests",
+        cancellationRequests: "Cancellation Requests",
+        inboxClear: "Inbox is Clear!",
+        noPendingApprovals: "No pending approvals or cancellation requests at the moment.",
 
         // Finance
         financeTitle: "Finance & Settlements",
@@ -364,6 +407,31 @@ export const translations = {
         settleSelected: "Settle Selected ({count})",
         itemsSelected: "{count} items selected",
         selectItemsToSettle: "Please select bookings you want to settle first.",
+
+        // Dashboard & History
+        myBookings: "My Bookings",
+        manageReservations: "Manage your reservations and blocks",
+        bookNewField: "Book a New Field 🏟️",
+        bookingHistoryTitle: "Booking History",
+        recentActivity: "Recent Activity",
+        noBookingsFound: "No Bookings Found",
+        adjustFilters: "Try adjusting your filters or stadium selection.",
+        filterByStatus: "Filter by Status",
+        allStadiums: "All Stadiums",
+        filters: "Filters",
+        clear: "Clear",
+        viewReceipt: "View Receipt",
+        edit: "Edit",
+        cancellationPending: "Cancellation pending review...",
+        manualBlock: "Manual Block",
+
+        // Statuses
+        statusPending: "Pending",
+        statusConfirmed: "Confirmed",
+        statusRejected: "Rejected",
+        statusCancelRequested: "Cancel Requested",
+        statusCancelled: "Cancelled",
+        statusBlocked: "Blocked",
     }
 };
 
