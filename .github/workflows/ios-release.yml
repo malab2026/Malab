@@ -57,14 +57,18 @@ jobs:
           find Pods -name "*-frameworks.sh" -exec sed -i '' 's/code_sign_if_enabled/echo "Skipping code signing"/g' {} +
           find Pods -name "*-frameworks.sh" -exec sed -i '' 's/codesign /echo "Skipping codesign" /g' {} +
 
-      - name: Sanitize & Validate Info.plist
+      - name: Patch Project for Manual Signing
         run: |
-          echo "🧹 Sanitizing Info.plist..."
-          # Force conversion to UTF-8 and strip any weird BOM or non-printable chars
-          iconv -f UTF-8 -t UTF-8//IGNORE ios/App/App/Info.plist > ios/App/App/Info.plist.tmp
-          mv ios/App/App/Info.plist.tmp ios/App/App/Info.plist
+          echo "🛠️ Patching project.pbxproj for Manual signing..."
+          sed -i '' 's/ProvisioningStyle = Automatic;/ProvisioningStyle = Manual;/g' ios/App/App.xcodeproj/project.pbxproj
+
+      - name: Normalize & Validate Info.plist
+        run: |
+          echo "🧹 Normalizing Info.plist..."
+          # Convert to XML1 format which is the most compatible
+          plutil -convert xml1 ios/App/App/Info.plist
           
-          # Validate with plutil
+          # Validate
           if ! plutil -lint ios/App/App/Info.plist; then
             echo "❌ Error: Info.plist is invalid!"
             cat ios/App/App/Info.plist
@@ -91,6 +95,8 @@ jobs:
             CODE_SIGN_ENTITLEMENTS="" \
             CODE_SIGN_STYLE=Manual \
             AD_HOC_CODE_SIGNING_ALLOWED=YES \
+            ALLOW_PROVISIONING_DEVICE_REGISTRATION=NO \
+            ALLOW_PROVISIONING_UPDATES=NO \
             COMPILER_INDEX_STORE_ENABLE=NO \
             ENABLE_USER_SCRIPT_SANDBOXING=NO \
             SKIP_INSTALL=NO
