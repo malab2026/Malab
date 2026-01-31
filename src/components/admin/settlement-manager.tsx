@@ -114,24 +114,24 @@ ${t('settlementConfirmationCheck')}
         <div className={`space-y-8 ${isRtl ? 'text-right' : 'text-left'}`} dir={isRtl ? 'rtl' : 'ltr'}>
             {/* Interpretation Cards */}
             <div className={`grid grid-cols-1 ${isAdmin ? 'md:grid-cols-4' : 'md:grid-cols-2'} gap-4`}>
-                <div className="bg-red-50/50 p-6 rounded-[2rem] border border-red-100/50 ring-2 ring-red-500/10 text-center">
+                <div className="bg-white p-6 rounded-[2rem] border border-red-100 ring-2 ring-red-500/10 text-center shadow-sm">
                     <p className="text-[10px] font-black text-red-400 uppercase tracking-widest mb-1">{t('pendingPayout')}</p>
                     <div className="text-2xl font-black text-red-700">{generalStats.pendingOwnerPayout.toLocaleString()} <span className="text-xs">{t('egp')}</span></div>
                     <p className="text-[10px] font-bold text-red-300 uppercase mt-1">{t('pendingPayoutDesc')}</p>
                 </div>
-                <div className="bg-blue-50/50 p-6 rounded-[2rem] border border-blue-100/50 text-center">
+                <div className="bg-white p-6 rounded-[2rem] border border-blue-100 ring-2 ring-blue-500/10 text-center shadow-sm">
                     <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">{t('alreadySettled')}</p>
                     <div className="text-2xl font-black text-blue-700">{generalStats.alreadySettledPayout.toLocaleString()} <span className="text-xs">{t('egp')}</span></div>
                     <p className="text-[10px] font-bold text-blue-300 uppercase mt-1">{t('alreadySettledDesc')}</p>
                 </div>
                 {isAdmin && (
                     <>
-                        <div className="bg-emerald-50/50 p-6 rounded-[2rem] border border-emerald-100/50 text-center">
+                        <div className="bg-white p-6 rounded-[2rem] border border-emerald-100 ring-2 ring-emerald-500/10 text-center shadow-sm">
                             <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1">{t('platformProfit')}</p>
                             <div className="text-2xl font-black text-emerald-700">{generalStats.platformProfit.toLocaleString()} <span className="text-xs">{t('egp')}</span></div>
                             <p className="text-[10px] font-bold text-emerald-300 uppercase mt-1">{t('platformProfitDesc')}</p>
                         </div>
-                        <div className="bg-gray-50 p-6 rounded-[2rem] border border-gray-100 text-center">
+                        <div className="bg-white p-6 rounded-[2rem] border border-gray-100 ring-2 ring-gray-500/10 text-center shadow-sm">
                             <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{t('totalCollections')}</p>
                             <div className="text-2xl font-black text-gray-700">{generalStats.totalCollections.toLocaleString()} <span className="text-xs">{t('egp')}</span></div>
                             <p className="text-[10px] font-bold text-gray-400 uppercase mt-1">{t('totalCollectionsDesc')}</p>
