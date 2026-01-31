@@ -48,7 +48,8 @@ async function ApprovalsContent() {
                 field: { select: { id: true, name: true, pricePerHour: true } },
                 user: { select: { id: true, name: true, email: true, phone: true } }
             },
-            orderBy: { createdAt: 'desc' }
+            orderBy: { createdAt: 'desc' },
+            take: 100 // Cap to prevent slow load
         }),
         prisma.booking.findMany({
             where: { status: 'CANCEL_REQUESTED' },
@@ -56,7 +57,8 @@ async function ApprovalsContent() {
                 field: { select: { id: true, name: true, pricePerHour: true } },
                 user: { select: { id: true, name: true, email: true, phone: true } }
             },
-            orderBy: { createdAt: 'desc' }
+            orderBy: { createdAt: 'desc' },
+            take: 100 // Cap to prevent slow load
         }),
         prisma.booking.findMany({
             where: {
