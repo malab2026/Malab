@@ -39,7 +39,7 @@ export function Navbar() {
                 <div className="container flex h-16 items-center justify-between px-1 md:px-4">
                     <div className="flex items-center gap-0.5 md:gap-4 shrink-0">
                         <Link href="/" className="flex items-center font-black text-2xl text-white tracking-tight shrink-0">
-                            <Image src="/logo.png" alt="MALA3EBNA" width={100} height={100} className="rounded-lg shadow-lg w-[45px] sm:w-[60px] md:w-[120px]" />
+                            <Image src="/logo.png" alt="MALA3EBNA" width={100} height={100} className="rounded-lg shadow-lg w-[45px] sm:w-[60px] md:w-[120px] mt-4" />
                         </Link>
                         {session && (
                             <NotificationBell />
