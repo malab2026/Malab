@@ -49,6 +49,22 @@ export default async function AdminFinancePage(props: { searchParams: Promise<an
 async function FinanceContent({ searchParams, clubs, fields }: { searchParams: any, clubs: any[], fields: any[] }) {
     const { fieldId, clubId, startDate, endDate } = searchParams
 
+    // Default to current month if no dates selected to optimize initial load
+    const today = new Date()
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0]
+
+    // Check if "all time" is explicitly requested (e.g. via specific flag) or just use default
+    // Ideally we default to "This Month" to be fast.
+    let effectiveStartDate = startDate
+    let effectiveEndDate = endDate
+
+    // Optimization: If no filters at all, default to this month.
+    // If user explicitly wants all, they might clear date input? 
+    // We'll trust the user to remove the default if they want, but for now apply it if param is missing.
+    if (!startDate && !endDate && !fieldId && !clubId) {
+        effectiveStartDate = firstDayOfMonth
+    }
+
     const where: any = {
         status: { in: ['CONFIRMED', 'CANCELLED'] }
     }
@@ -59,51 +75,47 @@ async function FinanceContent({ searchParams, clubs, fields }: { searchParams: a
     if (clubId && clubId !== 'all') {
         where.field = { clubId: clubId }
     }
-    if (startDate || endDate) {
+
+    if (effectiveStartDate || effectiveEndDate) {
         where.startTime = {}
-        if (startDate) where.startTime.gte = new Date(startDate)
-        if (endDate) where.startTime.lte = new Date(endDate + 'T23:59:59')
+        if (effectiveStartDate) where.startTime.gte = new Date(effectiveStartDate)
+        if (effectiveEndDate) where.startTime.lte = new Date(effectiveEndDate + 'T23:59:59')
     }
 
-    // 1. Get Aggregated Stats directly from DB (Fast)
-    const aggregations = await prisma.booking.aggregate({
-        where,
-        _sum: {
-            totalPrice: true,
-            serviceFee: true,
-            refundAmount: true
-        }
-    })
-
-    const settledCount = await prisma.booking.count({ where: { ...where, isSettled: true } })
-    const unsettledCount = await prisma.booking.count({ where: { ...where, isSettled: false } })
-
-    // 2. Fetch specific list for UI (Limited to 200)
-    const bookings = await prisma.booking.findMany({
-        where,
-        include: {
-            field: {
-                include: { club: true }
+    // Parallelize all DB queries for maximum speed
+    const [aggregations, settledCount, unsettledCount, bookings] = await Promise.all([
+        // 1. Aggregates
+        prisma.booking.aggregate({
+            where,
+            _sum: {
+                totalPrice: true,
+                serviceFee: true,
+                refundAmount: true
             }
-        },
-        orderBy: { startTime: 'desc' },
-        take: 200 // Limit to prevent crash
-    })
+        }),
+        // 2. Counts
+        prisma.booking.count({ where: { ...where, isSettled: true } }),
+        prisma.booking.count({ where: { ...where, isSettled: false } }),
+        // 3. List
+        prisma.booking.findMany({
+            where,
+            include: {
+                field: {
+                    include: { club: true }
+                }
+            },
+            orderBy: { startTime: 'desc' },
+            take: 200
+        })
+    ])
 
     // Calculate derived stats
     const totalRev = aggregations._sum.totalPrice || 0
     const totalRef = aggregations._sum.refundAmount || 0
     const totalFee = aggregations._sum.serviceFee || 0
 
-    // Revenue = Total collected (minus refunds)
     const netCollected = totalRev - totalRef
 
-    // Fees = Total Service Fees (approximate, assuming fully collected)
-    // Note: Technically fee should be min(fee, netCollected) per item, 
-    // but for large dataset aggregate, sum(fee) is close enough approx for overview,
-    // or we can just show Total Fees. 
-    // However, to match previous logic perfectly efficiently is hard without SQL.
-    // We will use the Sum of ServiceFee as "Platform Revenue" approx.
     const stats = {
         totalRevenue: netCollected,
         totalFees: totalFee,
