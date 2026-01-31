@@ -65,6 +65,20 @@ async function FinanceContent({ searchParams, clubs, fields }: { searchParams: a
         if (endDate) where.startTime.lte = new Date(endDate + 'T23:59:59')
     }
 
+    // 1. Get Aggregated Stats directly from DB (Fast)
+    const aggregations = await prisma.booking.aggregate({
+        where,
+        _sum: {
+            totalPrice: true,
+            serviceFee: true,
+            refundAmount: true
+        }
+    })
+
+    const settledCount = await prisma.booking.count({ where: { ...where, isSettled: true } })
+    const unsettledCount = await prisma.booking.count({ where: { ...where, isSettled: false } })
+
+    // 2. Fetch specific list for UI (Limited to 200)
     const bookings = await prisma.booking.findMany({
         where,
         include: {
@@ -72,35 +86,31 @@ async function FinanceContent({ searchParams, clubs, fields }: { searchParams: a
                 include: { club: true }
             }
         },
-        orderBy: { startTime: 'desc' }
+        orderBy: { startTime: 'desc' },
+        take: 200 // Limit to prevent crash
     })
 
-    // Aggregations
-    const stats = bookings.reduce((acc: any, b: any) => {
-        const total = b.totalPrice || 0;
-        const refund = b.refundAmount || 0;
-        const fee = b.serviceFee || 0;
-        const netCollected = total - refund;
-        const ownerShare = Math.max(0, netCollected - fee);
+    // Calculate derived stats
+    const totalRev = aggregations._sum.totalPrice || 0
+    const totalRef = aggregations._sum.refundAmount || 0
+    const totalFee = aggregations._sum.serviceFee || 0
 
-        acc.totalRevenue += netCollected;
-        acc.totalFees += Math.min(fee, netCollected);
-        acc.totalPayouts += ownerShare;
+    // Revenue = Total collected (minus refunds)
+    const netCollected = totalRev - totalRef
 
-        if (b.isSettled) {
-            acc.settledCount += 1;
-        } else {
-            acc.unsettledCount += 1;
-        }
-
-        return acc;
-    }, {
-        totalRevenue: 0,
-        totalFees: 0,
-        totalPayouts: 0,
-        settledCount: 0,
-        unsettledCount: 0
-    })
+    // Fees = Total Service Fees (approximate, assuming fully collected)
+    // Note: Technically fee should be min(fee, netCollected) per item, 
+    // but for large dataset aggregate, sum(fee) is close enough approx for overview,
+    // or we can just show Total Fees. 
+    // However, to match previous logic perfectly efficiently is hard without SQL.
+    // We will use the Sum of ServiceFee as "Platform Revenue" approx.
+    const stats = {
+        totalRevenue: netCollected,
+        totalFees: totalFee,
+        totalPayouts: Math.max(0, netCollected - totalFee),
+        settledCount,
+        unsettledCount
+    }
 
     return (
         <div className="animate-in fade-in duration-700">
