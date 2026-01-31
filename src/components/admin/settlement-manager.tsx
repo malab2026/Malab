@@ -113,7 +113,7 @@ ${t('settlementConfirmationCheck')}
     return (
         <div className={`space-y-8 ${isRtl ? 'text-right' : 'text-left'}`} dir={isRtl ? 'rtl' : 'ltr'}>
             {/* Interpretation Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className={`grid grid-cols-1 ${isAdmin ? 'md:grid-cols-4' : 'md:grid-cols-2'} gap-4`}>
                 <div className="bg-red-50/50 p-6 rounded-[2rem] border border-red-100/50 ring-2 ring-red-500/10 text-center">
                     <p className="text-[10px] font-black text-red-400 uppercase tracking-widest mb-1">{t('pendingPayout')}</p>
                     <div className="text-2xl font-black text-red-700">{generalStats.pendingOwnerPayout.toLocaleString()} <span className="text-xs">{t('egp')}</span></div>
@@ -124,16 +124,20 @@ ${t('settlementConfirmationCheck')}
                     <div className="text-2xl font-black text-blue-700">{generalStats.alreadySettledPayout.toLocaleString()} <span className="text-xs">{t('egp')}</span></div>
                     <p className="text-[10px] font-bold text-blue-300 uppercase mt-1">{t('alreadySettledDesc')}</p>
                 </div>
-                <div className="bg-emerald-50/50 p-6 rounded-[2rem] border border-emerald-100/50 text-center">
-                    <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1">{t('platformProfit')}</p>
-                    <div className="text-2xl font-black text-emerald-700">{generalStats.platformProfit.toLocaleString()} <span className="text-xs">{t('egp')}</span></div>
-                    <p className="text-[10px] font-bold text-emerald-300 uppercase mt-1">{t('platformProfitDesc')}</p>
-                </div>
-                <div className="bg-gray-50 p-6 rounded-[2rem] border border-gray-100 text-center">
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{t('totalCollections')}</p>
-                    <div className="text-2xl font-black text-gray-700">{generalStats.totalCollections.toLocaleString()} <span className="text-xs">{t('egp')}</span></div>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase mt-1">{t('totalCollectionsDesc')}</p>
-                </div>
+                {isAdmin && (
+                    <>
+                        <div className="bg-emerald-50/50 p-6 rounded-[2rem] border border-emerald-100/50 text-center">
+                            <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1">{t('platformProfit')}</p>
+                            <div className="text-2xl font-black text-emerald-700">{generalStats.platformProfit.toLocaleString()} <span className="text-xs">{t('egp')}</span></div>
+                            <p className="text-[10px] font-bold text-emerald-300 uppercase mt-1">{t('platformProfitDesc')}</p>
+                        </div>
+                        <div className="bg-gray-50 p-6 rounded-[2rem] border border-gray-100 text-center">
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{t('totalCollections')}</p>
+                            <div className="text-2xl font-black text-gray-700">{generalStats.totalCollections.toLocaleString()} <span className="text-xs">{t('egp')}</span></div>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase mt-1">{t('totalCollectionsDesc')}</p>
+                        </div>
+                    </>
+                )}
             </div>
 
             <div className={`flex justify-between items-center px-4 ${isRtl ? 'flex-row-reverse' : ''}`}>
@@ -227,10 +231,12 @@ ${t('settlementConfirmationCheck')}
                                             <div className="font-black text-gray-900 text-xl tracking-tight leading-none mb-1 whitespace-nowrap">
                                                 {ownerShare.toFixed(2)} <span className="text-xs text-gray-400">{t('egp')}</span>
                                             </div>
-                                            <div className={`flex gap-2 ${isRtl ? 'flex-row-reverse' : ''} whitespace-nowrap`}>
-                                                <span className="text-[10px] font-bold text-gray-400 uppercase">{t('grossAmount')}: {netCollected.toFixed(2)}</span>
-                                                <span className="text-[10px] font-bold text-blue-400 uppercase">{t('feeAmount')}: {fee}</span>
-                                            </div>
+                                            {isAdmin && (
+                                                <div className={`flex gap-2 ${isRtl ? 'flex-row-reverse' : ''} whitespace-nowrap`}>
+                                                    <span className="text-[10px] font-bold text-gray-400 uppercase">{t('grossAmount')}: {netCollected.toFixed(2)}</span>
+                                                    <span className="text-[10px] font-bold text-blue-400 uppercase">{t('feeAmount')}: {fee}</span>
+                                                </div>
+                                            )}
                                         </td>
                                         <td className={`px-8 py-6 ${isRtl ? 'text-left' : 'text-right'}`}>
                                             {booking.isSettled ? (

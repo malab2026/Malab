@@ -522,6 +522,7 @@ export async function getFinancialReport(filters: { startDate?: string, endDate?
                 endTime: true,
                 status: true,
                 totalPrice: true,
+                serviceFee: true,
                 refundAmount: true,
                 isSettled: true,
                 field: {
@@ -546,7 +547,13 @@ export async function getFinancialReport(filters: { startDate?: string, endDate?
 
         bookings.forEach((booking: any) => {
             const durationHours = (booking.endTime.getTime() - booking.startTime.getTime()) / (1000 * 60 * 60)
-            const gross = booking.totalPrice || (durationHours * booking.field.pricePerHour)
+            let gross = booking.totalPrice || (durationHours * booking.field.pricePerHour)
+
+            // If Owner, strictly remove global service fees from the calculation
+            if (session.user.role === 'owner') {
+                gross = gross - (booking.serviceFee || 0)
+            }
+
             const refund = booking.status === 'CANCELLED' ? (booking.refundAmount || 0) : 0
             const net = gross - refund
 
