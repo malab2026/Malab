@@ -26,8 +26,10 @@ export default async function AdminFinancePage(props: { searchParams: Promise<an
         redirect('/')
     }
 
-    const clubs = await prisma.club.findMany()
-    const fields = await prisma.field.findMany()
+    const [clubs, fields] = await Promise.all([
+        prisma.club.findMany(),
+        prisma.field.findMany()
+    ])
 
     return (
         <div className="min-h-screen bg-gray-50/30">
@@ -99,9 +101,21 @@ async function FinanceContent({ searchParams, clubs, fields }: { searchParams: a
         // 3. List
         prisma.booking.findMany({
             where,
-            include: {
+            select: {
+                id: true,
+                startTime: true,
+                endTime: true,
+                status: true,
+                totalPrice: true,
+                serviceFee: true,
+                refundAmount: true,
+                isSettled: true,
                 field: {
-                    include: { club: true }
+                    select: {
+                        id: true,
+                        name: true,
+                        club: { select: { id: true, name: true } }
+                    }
                 }
             },
             orderBy: { startTime: 'desc' },
