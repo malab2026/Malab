@@ -16,15 +16,20 @@ export function AdminBookingCard({ booking, isAdmin = false, isCancelRequest = f
 
     return (
         <Card className="flex flex-col md:flex-row items-center overflow-hidden border-l-4 border-l-transparent data-[cancel=true]:border-l-orange-500 bg-white shadow-sm hover:shadow-md transition-shadow duration-300 rounded-3xl" data-cancel={isCancelRequest}>
-            <div className="relative w-full md:w-32 h-32 shrink-0 bg-gray-100 flex items-center justify-center text-xs text-gray-400 group">
-                <Image
-                    src={`/api/receipt-image/${booking.id}`}
-                    alt={`Receipt Thumbnail for ${booking.id}`}
-                    fill
-                    className="object-cover transition-transform group-hover:scale-105"
-                    loading="lazy"
-                />
-                <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative w-full md:w-32 h-32 shrink-0 bg-blue-50/50 flex flex-col items-center justify-center text-xs text-blue-400 group border-r border-gray-50">
+                <span className="text-3xl mb-1">📄</span>
+                <span className="font-bold uppercase tracking-widest text-[8px]">{t('statusReceipt')}</span>
+
+                {booking.receiptUrl && (
+                    <Link
+                        href={`/receipt/${booking.id}`}
+                        target="_blank"
+                        className="absolute inset-0 bg-blue-600/90 opacity-0 group-hover:opacity-100 transition-all flex flex-col items-center justify-center text-white gap-1"
+                    >
+                        <span className="text-xl">👁️</span>
+                        <span className="font-black text-[10px] uppercase">{t('viewFull')}</span>
+                    </Link>
+                )}
             </div>
             <div className="flex-1 p-5 grid md:grid-cols-2 gap-4 w-full text-left">
                 <div>

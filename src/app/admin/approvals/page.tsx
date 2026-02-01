@@ -44,34 +44,54 @@ async function ApprovalsContent() {
     ] = await Promise.all([
         prisma.booking.findMany({
             where: { status: 'PENDING' },
-            include: {
+            select: {
+                id: true,
+                startTime: true,
+                endTime: true,
+                status: true,
+                totalPrice: true,
+                createdAt: true,
+                // receiptUrl EXCLUDED here because it's heavy base64
                 field: { select: { id: true, name: true, pricePerHour: true } },
                 user: { select: { id: true, name: true, email: true, phone: true } }
             },
             orderBy: { createdAt: 'desc' },
-            take: 100 // Cap to prevent slow load
+            take: 100
         }),
         prisma.booking.findMany({
             where: { status: 'CANCEL_REQUESTED' },
-            include: {
+            select: {
+                id: true,
+                startTime: true,
+                endTime: true,
+                status: true,
+                totalPrice: true,
+                cancellationReason: true,
+                createdAt: true,
                 field: { select: { id: true, name: true, pricePerHour: true } },
                 user: { select: { id: true, name: true, email: true, phone: true } }
             },
             orderBy: { createdAt: 'desc' },
-            take: 100 // Cap to prevent slow load
+            take: 100
         }),
         prisma.booking.findMany({
             where: {
                 status: { notIn: ['PENDING', 'CANCEL_REQUESTED'] }
             },
             take: 20,
-            include: {
+            select: {
+                id: true,
+                startTime: true,
+                endTime: true,
+                status: true,
+                totalPrice: true,
+                createdAt: true,
                 field: { select: { id: true, name: true, pricePerHour: true } },
                 user: { select: { id: true, name: true, email: true, phone: true } }
             },
             orderBy: { createdAt: 'desc' }
         })
-    ]) as BookingWithDetails[][]
+    ]) as any[][]
 
     return (
         <ApprovalsClient
