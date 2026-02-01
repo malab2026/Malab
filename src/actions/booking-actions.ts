@@ -180,7 +180,7 @@ export async function createBooking(prevState: any, formData: FormData) {
                 fieldId,
                 startTime: startDateTime,
                 endTime: endDateTime,
-                status: isBlock ? "BLOCKED" : (session.user.role === "admin" ? "CONFIRMED" : "PENDING"),
+                status: isBlock ? "BLOCKED" : "PENDING",
                 serviceFee,
                 totalPrice
             })
@@ -244,12 +244,10 @@ export async function createBooking(prevState: any, formData: FormData) {
         const bookingDate = firstSlot.date
         const bookingTime = firstSlot.startTime
 
-        const title = isBlock ? "تم حجز الملعب (إغلاق) 🔒" : (session.user.role === "admin" ? "تم تأكيد حجزك! ✅" : "تم استلام طلب حجزك ⏳")
+        const title = isBlock ? "تم حجز الملعب (إغلاق) 🔒" : "تم استلام طلب حجزك ⏳"
         const message = isBlock
             ? `تم إغلاق الملعب "${field.name}" بتاريخ ${bookingDate} الساعة ${bookingTime}.`
-            : (session.user.role === "admin"
-                ? `تم تأكيد حجزك في ملعب ${field.name} بتاريخ ${bookingDate} الساعة ${bookingTime}.`
-                : `تم استلام طلب حجزك في ملعب ${field.name} بتاريخ ${bookingDate} الساعة ${bookingTime}. يرجى انتظار التأكيد.`)
+            : `تم استلام طلب حجزك في ملعب ${field.name} بتاريخ ${bookingDate} الساعة ${bookingTime}. يرجى انتظار التأكيد.`
 
         await createNotification(session.user.id, title, message, "BOOKING")
 
