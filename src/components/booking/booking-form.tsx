@@ -266,8 +266,8 @@ export function BookingForm({
                         </div>
 
                         {isOwner && (
-                            <div className="p-4 bg-blue-50/50 border border-blue-100 rounded-xl">
-                                <p className="text-xs text-blue-700 font-bold flex items-center gap-2">
+                            <div className="p-4 bg-green-50/50 border border-green-100 rounded-xl">
+                                <p className="text-xs text-green-700 font-bold flex items-center gap-2">
                                     <span>ℹ️</span> {t('adminNote')}
                                 </p>
                             </div>

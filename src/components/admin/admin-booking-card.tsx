@@ -33,10 +33,11 @@ export function AdminBookingCard({ booking, isAdmin = false, isCancelRequest = f
             </div>
             <div className="flex-1 p-5 grid md:grid-cols-2 gap-4 w-full text-left">
                 <div>
-                    <h3 className="font-black text-gray-900 text-lg">{booking.field.name}</h3>
-                    <p className="text-sm font-bold text-blue-600 mb-2">
+                    <h3 className="font-black text-gray-900 text-lg mb-1">{booking.field.name}</h3>
+                    <div className="inline-flex items-center bg-green-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-sm mb-3 gap-1.5 uppercase tracking-tighter">
+                        <span>📅</span>
                         {formatInEgyptDate(booking.startTime)} • {formatInEgyptTime(booking.startTime)}
-                    </p>
+                    </div>
                     <div className="space-y-1">
                         <p className="text-xs text-gray-600 font-bold flex items-center gap-1.5">
                             <span className="opacity-50">👤</span> {booking.user.name}
@@ -50,24 +51,24 @@ export function AdminBookingCard({ booking, isAdmin = false, isCancelRequest = f
                     </div>
 
                     {isCancelRequest && booking.cancellationReason && (
-                        <p className="text-[11px] mt-3 p-2.5 bg-red-50 text-red-700 rounded-xl border border-red-100 italic font-medium">
+                        <p className="text-[11px] mt-3 p-2.5 bg-red-50 text-red-700 rounded-xl border border-red-100 italic font-medium text-right" dir="rtl">
                             {t('reason')}: {booking.cancellationReason}
                         </p>
                     )}
 
                     {(booking.receiptUrl || (booking as any).hasReceipt) && (
-                        <div className="mt-3">
-                            <div className="flex gap-4">
+                        <div className="mt-4">
+                            <div className="flex flex-wrap gap-2">
                                 <Link
                                     href={`/receipt/${booking.id}`}
                                     target="_blank"
-                                    className="text-blue-600 hover:text-blue-700 font-black text-xs flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-xl transition-all border border-blue-100/50 shadow-sm"
+                                    className="text-gray-800 hover:text-black font-black text-[10px] uppercase flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-xl transition-all border border-gray-100 shadow-sm"
                                 >
                                     <span>📄</span> {t('viewReceipt')}
                                 </Link>
                                 <a
                                     href={`/api/receipt-image/${booking.id}?download=true`}
-                                    className="text-green-600 hover:text-green-700 font-black text-xs flex items-center gap-2 bg-green-50 px-4 py-2 rounded-xl transition-all border border-green-100/50 shadow-sm"
+                                    className="text-emerald-700 hover:text-emerald-800 font-black text-[10px] uppercase flex items-center gap-2 bg-emerald-50 px-3 py-2 rounded-xl transition-all border border-emerald-100/50 shadow-sm"
                                     download
                                 >
                                     <span>⬇️</span> {t('download')}

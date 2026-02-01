@@ -125,7 +125,7 @@ async function FieldsContent() {
                                     className="object-cover group-hover:scale-110 transition-transform duration-700"
                                 />
                                 <div className="absolute top-4 right-4 group-hover:translate-x-0 translate-x-12 transition-transform duration-500">
-                                    <Badge className="bg-white/90 backdrop-blur-sm text-gray-900 border-0 font-black shadow-sm h-8">
+                                    <Badge className="bg-green-600 text-white border-0 font-black shadow-sm h-8">
                                         {field.pricePerHour} EGP/hr
                                     </Badge>
                                 </div>
