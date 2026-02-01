@@ -123,7 +123,21 @@ async function FinanceContent({ searchParams, clubs, fields }: { searchParams: a
         })
     ])
 
-    // Calculate derived stats
+    // Optimized check for receipts without fetching massive base64 blobs
+    const allBookingIds = bookings.map(b => b.id)
+    const bookingsWithReceipts = await prisma.booking.findMany({
+        where: {
+            id: { in: allBookingIds },
+            NOT: [
+                { receiptUrl: null },
+                { receiptUrl: "" }
+            ]
+        },
+        select: { id: true }
+    })
+    const receiptSet = new Set(bookingsWithReceipts.map(b => b.id))
+    const enhancedBookings = bookings.map(b => ({ ...b, hasReceipt: receiptSet.has(b.id) }))
+
     const totalRev = aggregations._sum.totalPrice || 0
     const totalRef = aggregations._sum.refundAmount || 0
     const totalFee = aggregations._sum.serviceFee || 0
@@ -159,7 +173,7 @@ async function FinanceContent({ searchParams, clubs, fields }: { searchParams: a
                     </div>
                 </div>
 
-                <SettlementManager bookings={bookings} isAdmin={true} />
+                <SettlementManager bookings={enhancedBookings} isAdmin={true} />
             </div>
         </div>
     )

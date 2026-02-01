@@ -577,7 +577,7 @@ export async function getFinancialReport(filters: { startDate?: string, endDate?
             totalNet,
             totalBookings: aggregations._count.id,
             fieldBreakdown: {} as Record<string, any>,
-            bookings: bookings
+            bookings: enhancedBookings
         }
 
         // Generate Field Breakdown (only for the fetched set or we'd need another groupBy)

@@ -20,7 +20,7 @@ export function AdminBookingCard({ booking, isAdmin = false, isCancelRequest = f
                 <span className="text-3xl mb-1">📄</span>
                 <span className="font-bold uppercase tracking-widest text-[8px]">{t('statusReceipt')}</span>
 
-                {booking.receiptUrl && (
+                {(booking.receiptUrl || (booking as any).hasReceipt) && (
                     <Link
                         href={`/receipt/${booking.id}`}
                         target="_blank"
