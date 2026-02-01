@@ -93,11 +93,27 @@ async function ApprovalsContent() {
         })
     ]) as any[][]
 
+    // Optimized check for receipts without fetching massive base64 blobs
+    const allBookingIds = [...pendingBookings, ...cancelRequests, ...historyBookings].map(b => b.id)
+    const bookingsWithReceipts = await prisma.booking.findMany({
+        where: {
+            id: { in: allBookingIds },
+            NOT: [
+                { receiptUrl: null },
+                { receiptUrl: "" }
+            ]
+        },
+        select: { id: true }
+    })
+    const receiptSet = new Set(bookingsWithReceipts.map(b => b.id))
+
+    const enhance = (b: any) => ({ ...b, hasReceipt: receiptSet.has(b.id) })
+
     return (
         <ApprovalsClient
-            pendingBookings={pendingBookings}
-            cancelRequests={cancelRequests}
-            historyBookings={historyBookings}
+            pendingBookings={pendingBookings.map(enhance)}
+            cancelRequests={cancelRequests.map(enhance)}
+            historyBookings={historyBookings.map(enhance)}
         />
     )
 }

@@ -212,6 +212,7 @@ export const translations = {
         statusCancelRequested: "طلب إلغاء",
         statusCancelled: "ملغي",
         statusBlocked: "قفل يدوي",
+        statusReceipt: "إيصال التحويل",
     },
     en: {
         // Navbar
@@ -436,6 +437,7 @@ export const translations = {
         statusCancelRequested: "Cancel Requested",
         statusCancelled: "Cancelled",
         statusBlocked: "Blocked",
+        statusReceipt: "Payment Receipt",
     }
 };
 

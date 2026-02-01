@@ -55,13 +55,21 @@ export function AdminBookingCard({ booking, isAdmin = false, isCancelRequest = f
                         </p>
                     )}
 
-                    {booking.receiptUrl && (
+                    {(booking.receiptUrl || (booking as any).hasReceipt) && (
                         <div className="mt-3">
                             <div className="flex gap-4">
-                                <Link href={`/receipt/${booking.id}`} target="_blank" className="text-blue-600 hover:text-blue-700 font-black text-[10px] flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-lg transition-colors">
-                                    <span>📄</span> {t('viewFull')}
+                                <Link
+                                    href={`/receipt/${booking.id}`}
+                                    target="_blank"
+                                    className="text-blue-600 hover:text-blue-700 font-black text-xs flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-xl transition-all border border-blue-100/50 shadow-sm"
+                                >
+                                    <span>📄</span> {t('viewReceipt')}
                                 </Link>
-                                <a href={`/api/receipt-image/${booking.id}?download=true`} className="text-green-600 hover:text-green-700 font-black text-[10px] flex items-center gap-1 bg-green-50 px-2 py-1 rounded-lg transition-colors" download>
+                                <a
+                                    href={`/api/receipt-image/${booking.id}?download=true`}
+                                    className="text-green-600 hover:text-green-700 font-black text-xs flex items-center gap-2 bg-green-50 px-4 py-2 rounded-xl transition-all border border-green-100/50 shadow-sm"
+                                    download
+                                >
                                     <span>⬇️</span> {t('download')}
                                 </a>
                             </div>
