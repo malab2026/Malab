@@ -27,21 +27,27 @@ export function NotificationBell() {
             const lastSeenId = localStorage.getItem('last_notification_id')
             const latestNotification = unread[0]
 
-            if (latestNotification.id !== lastSeenId && !isFirstRun.current) {
-                await showSystemNotification(latestNotification.title, latestNotification.message)
-                localStorage.setItem('last_notification_id', latestNotification.id)
-            } else if (isFirstRun.current) {
-                // Initialize lastSeenId on first run without showing alert
-                localStorage.setItem('last_notification_id', latestNotification.id)
-                isFirstRun.current = false
+            // Logic: Show alert if it's a NEW notification ID
+            // BUT also allow showing it on first run IF it was created within the last 2 minutes
+            const isVeryRecent = (new Date().getTime() - new Date(latestNotification.createdAt).getTime()) < 120000
+
+            if (latestNotification.id !== lastSeenId) {
+                if (!isFirstRun.current || isVeryRecent) {
+                    await showSystemNotification(latestNotification.title, latestNotification.message)
+                    localStorage.setItem('last_notification_id', latestNotification.id)
+                } else if (isFirstRun.current) {
+                    // Just initialize without alert for old notifications
+                    localStorage.setItem('last_notification_id', latestNotification.id)
+                }
             }
         }
+        isFirstRun.current = false
     }
 
     useEffect(() => {
         fetchNotifications()
-        // Poll for new notifications every 60 seconds
-        const interval = setInterval(fetchNotifications, 60000)
+        // Poll for new notifications every 15 seconds for more "real-time" feel
+        const interval = setInterval(fetchNotifications, 15000)
         return () => clearInterval(interval)
     }, [])
 
