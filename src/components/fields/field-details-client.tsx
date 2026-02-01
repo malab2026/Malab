@@ -36,10 +36,16 @@ export function FieldDetailsClient({ field, initialBookings, serviceFee, userRol
                                     fill
                                     className="object-cover transition-transform duration-700 hover:scale-105"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-6 md:p-10">
-                                    <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight">
-                                        {isRtl ? field.name : (field.nameEn || field.name)}
-                                    </h1>
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end p-6 md:p-10">
+                                    <div className="space-y-1">
+                                        <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight drop-shadow-lg">
+                                            {isRtl ? field.name : (field.nameEn || field.name)}
+                                        </h1>
+                                        <div className="flex items-center gap-2 text-white/90 font-bold text-sm md:text-base drop-shadow-md">
+                                            <span>📍</span>
+                                            <span>{isRtl ? field.address : (field.addressEn || field.address)}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
