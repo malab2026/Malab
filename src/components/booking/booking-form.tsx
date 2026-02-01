@@ -254,20 +254,37 @@ export function BookingForm({
                         </div>
                     </div>
 
-                    {!isOwner ? (
-                        <div className="space-y-4 border rounded-lg p-4 bg-yellow-50 border-yellow-200">
-                            <h3 className="font-semibold text-yellow-800">{t('paymentInstructions')}</h3>
-                            <p className="text-sm text-yellow-700 leading-relaxed font-medium">
+                    <div className="space-y-4 border rounded-2xl p-6 bg-white border-gray-100 shadow-sm">
+                        <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
+                            <span>💳</span> {t('paymentInstructions')}
+                        </h3>
+
+                        <div className="p-4 bg-yellow-50/50 border border-yellow-100 rounded-xl space-y-2">
+                            <p className="text-sm text-yellow-800 leading-relaxed font-bold">
                                 {t('transferText', { amount: totalPrice, fee: totalServiceFee })}
                             </p>
-                            <div className="space-y-2">
-                                <Label htmlFor="receipt">{t('uploadReceipt')}</Label>
+                        </div>
+
+                        {isOwner && (
+                            <div className="p-4 bg-blue-50/50 border border-blue-100 rounded-xl">
+                                <p className="text-xs text-blue-700 font-bold flex items-center gap-2">
+                                    <span>ℹ️</span> {t('adminNote')}
+                                </p>
+                            </div>
+                        )}
+
+                        <div className="space-y-3 pt-2">
+                            <Label htmlFor="receipt" className="text-sm font-black text-gray-700 uppercase tracking-tight flex items-center gap-2">
+                                📸 {t('uploadReceipt')} {isOwner && <span className="text-[10px] text-gray-400 normal-case">({t('optional')})</span>}
+                            </Label>
+                            <div className="relative group">
                                 <Input
                                     type="file"
                                     id="receipt"
                                     name="receipt"
                                     accept="image/*"
-                                    required
+                                    required={!isOwner}
+                                    className="h-14 py-4 rounded-xl border-dashed border-2 border-gray-200 hover:border-green-500 hover:bg-green-50/10 cursor-pointer transition-all file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-green-50 file:text-green-700 group-hover:bg-gray-50/50"
                                     onChange={(e) => {
                                         const file = e.target.files?.[0];
                                         if (file) {
@@ -279,18 +296,28 @@ export function BookingForm({
                                         }
                                     }}
                                 />
-                                {receiptPreview && (
-                                    <div className="mt-2 relative h-40 w-full border rounded overflow-hidden">
-                                        <img src={receiptPreview} alt="Receipt preview" className="object-contain w-full h-full" />
-                                    </div>
-                                )}
                             </div>
+
+                            {receiptPreview && (
+                                <div className="mt-4 relative h-48 w-full border-2 border-gray-100 rounded-2xl overflow-hidden bg-gray-50 flex items-center justify-center p-2">
+                                    <img src={receiptPreview} alt="Receipt preview" className="max-w-full max-h-full object-contain rounded-lg" />
+                                    <Button
+                                        type="button"
+                                        variant="destructive"
+                                        size="icon"
+                                        className="absolute top-2 right-2 h-8 w-8 rounded-full shadow-lg"
+                                        onClick={() => {
+                                            setReceiptPreview(null);
+                                            const input = document.getElementById('receipt') as HTMLInputElement;
+                                            if (input) input.value = '';
+                                        }}
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            )}
                         </div>
-                    ) : (
-                        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800">
-                            <strong>{t('adminNote')}</strong>
-                        </div>
-                    )}
+                    </div>
 
                     <div className="flex gap-4">
                         <Button
