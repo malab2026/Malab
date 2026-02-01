@@ -15,10 +15,14 @@ export default async function AdminAccountsPage({
     searchParams: Promise<{ startDate?: string, endDate?: string, fieldId?: string }>
 }) {
     const params = await searchParams
-    const report = await getFinancialReport(params)
-    const fields = await prisma.field.findMany({
-        select: { id: true, name: true }
-    })
+
+    // Parallelize core data fetching
+    const [report, fields] = await Promise.all([
+        getFinancialReport(params),
+        prisma.field.findMany({
+            select: { id: true, name: true }
+        })
+    ])
 
     return (
         <main className="min-h-screen pb-10">

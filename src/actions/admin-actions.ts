@@ -507,7 +507,14 @@ export async function getFinancialReport(filters: { startDate?: string, endDate?
         where.field = { ownerId: session.user.id }
     }
 
-    if (startDate || endDate) {
+    // PERFORMANCE: Default to current month if NO filters are applied at all
+    // This prevents loading all historical data and causing slow page loads
+    const hasAnyFilter = startDate || endDate || fieldId
+    if (!hasAnyFilter) {
+        const now = new Date()
+        const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+        where.startTime = { gte: firstDayOfMonth }
+    } else if (startDate || endDate) {
         where.startTime = {}
         if (startDate) where.startTime.gte = new Date(`${startDate}T00:00:00`)
         if (endDate) where.startTime.lte = new Date(`${endDate}T23:59:59`)
@@ -574,26 +581,26 @@ export async function getFinancialReport(filters: { startDate?: string, endDate?
         }
 
         // Generate Field Breakdown (only for the fetched set or we'd need another groupBy)
-        // For accurate full stats per field, we use a groupBy query
-        const fieldStats = await prisma.booking.groupBy({
-            by: ['fieldId'],
-            where,
-            _sum: {
-                totalPrice: true,
-                serviceFee: true,
-                refundAmount: true
-            },
-            _count: {
-                id: true
-            }
-        })
+        // Parallelize hydration and stats grouping
+        const [fieldStats, fieldNames] = await Promise.all([
+            prisma.booking.groupBy({
+                by: ['fieldId'],
+                where,
+                _sum: {
+                    totalPrice: true,
+                    serviceFee: true,
+                    refundAmount: true
+                },
+                _count: {
+                    id: true
+                }
+            }),
+            prisma.field.findMany({
+                where: { clubId: where.clubId }, // Use efficient filtering
+                select: { id: true, name: true }
+            })
+        ])
 
-        // Hydrate Field Names map
-        const fieldIds = fieldStats.map(f => f.fieldId)
-        const fieldNames = await prisma.field.findMany({
-            where: { id: { in: fieldIds } },
-            select: { id: true, name: true }
-        })
         const fieldNameMap = fieldNames.reduce((acc, curr) => ({ ...acc, [curr.id]: curr.name }), {} as any)
 
         // Build Breakdown Object

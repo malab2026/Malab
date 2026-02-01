@@ -55,18 +55,21 @@ export async function createNotification(userId: string | null, title: string, m
             }
         })
 
-        // WhatsApp Integration
+        // WhatsApp Integration - NON-BLOCKING (Fire and Forget)
         const settings = await prisma.globalSettings.findUnique({ where: { id: 'global' } })
         if (settings?.whatsappEnabled && settings?.whatsappInstanceId && settings?.whatsappToken && userId) {
-            const user = await prisma.user.findUnique({ where: { id: userId }, select: { phone: true } })
-            if (user?.phone) {
-                await sendWhatsAppAPI(
-                    user.phone,
-                    `${title}\n\n${message}`,
-                    settings.whatsappInstanceId,
-                    settings.whatsappToken
-                )
-            }
+            prisma.user.findUnique({ where: { id: userId }, select: { phone: true } })
+                .then(user => {
+                    if (user?.phone) {
+                        sendWhatsAppAPI(
+                            user.phone,
+                            `${title}\n\n${message}`,
+                            settings.whatsappInstanceId!,
+                            settings.whatsappToken!
+                        ).catch(err => console.error("Non-blocking WhatsApp Error:", err))
+                    }
+                })
+                .catch(err => console.error("Error fetching user phone for WhatsApp:", err))
         }
 
         revalidatePath('/')

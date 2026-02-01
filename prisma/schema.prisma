@@ -19,6 +19,8 @@ model User {
   bookings  Booking[]
   fields    Field[]   @relation("OwnerFields")
   notifications Notification[]
+
+  @@index([createdAt])
 }
 
 model Club {
@@ -62,6 +64,7 @@ model Field {
   @@index([clubId])
   @@index([ownerId])
   @@index([area])
+  @@index([createdAt])
 }
 
 model Booking {
