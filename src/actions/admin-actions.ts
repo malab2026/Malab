@@ -570,6 +570,21 @@ export async function getFinancialReport(filters: { startDate?: string, endDate?
 
         const totalNet = totalGross - totalRefunds
 
+        // Optimized check for receipts without fetching massive base64 blobs
+        const allBookingIds = bookings.map(b => b.id)
+        const bookingsWithReceipts = await prisma.booking.findMany({
+            where: { 
+                id: { in: allBookingIds },
+                NOT: [
+                    { receiptUrl: null },
+                    { receiptUrl: "" }
+                ]
+            },
+            select: { id: true }
+        })
+        const receiptSet = new Set(bookingsWithReceipts.map(b => b.id))
+        const enhancedBookings = bookings.map(b => ({ ...b, hasReceipt: receiptSet.has(b.id) }))
+
         // 3. Construct the report
         const report: any = {
             totalGross,
