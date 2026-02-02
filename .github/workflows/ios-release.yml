@@ -57,37 +57,39 @@ jobs:
           find Pods -name "*-frameworks.sh" -exec sed -i '' 's/code_sign_if_enabled/echo "Skipping code signing"/g' {} +
           find Pods -name "*-frameworks.sh" -exec sed -i '' 's/codesign /echo "Skipping codesign" /g' {} +
 
-      - name: Create & Run Project Patch Script
+      - name: Patch iOS Project for Unsigned Build
         run: |
-          echo "🐍 Creating patch script..."
-          cat << 'EOF' > patch_project.py
-          import re, os
+          echo "🛠️ Patching Project for Unsigned CI environment..."
+          python3 << 'EOF'
+          import os
           path = "ios/App/App.xcodeproj/project.pbxproj"
           if os.path.exists(path):
               with open(path, "r") as f: content = f.read()
-              # Inject mandatory unsigned flags into all buildSettings blocks
-              content = re.sub(r"(buildSettings = \{)", r"\1\n\t\t\t\tCODE_SIGNING_ALLOWED = NO;\n\t\t\t\tCODE_SIGNING_REQUIRED = NO;\n\t\t\t\tCODE_SIGN_IDENTITY = \"\";\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = \"\";\n\t\t\t\tDEVELOPMENT_TEAM = \"\";", content)
-              # Override Provisioning Style
-              content = content.replace("ProvisioningStyle = Automatic;", "ProvisioningStyle = Manual;")
-              content = content.replace("CODE_SIGN_STYLE = Automatic;", "CODE_SIGN_STYLE = Manual;")
+              
+              # 1. Force Manual Provisioning
+              content = content.replace('ProvisioningStyle = Automatic;', 'ProvisioningStyle = Manual;')
+              content = content.replace('CODE_SIGN_STYLE = Automatic;', 'CODE_SIGN_STYLE = Manual;')
+              
+              # 2. Strip any existing Team IDs and Profiles to prevent resolution errors
+              import re
+              content = re.sub(r'DEVELOPMENT_TEAM = [^;]+;', 'DEVELOPMENT_TEAM = "";', content)
+              content = re.sub(r'PROVISIONING_PROFILE_SPECIFIER = [^;]+;', 'PROVISIONING_PROFILE_SPECIFIER = "";', content)
+              
+              # 3. Inject global signing disable flags into buildSettings
+              # We only add the most essential ones to avoid breaking the pbxproj structure
+              if "CODE_SIGNING_ALLOWED = NO;" not in content:
+                  content = content.replace('buildSettings = {', 'buildSettings = {\n\t\t\t\tCODE_SIGNING_ALLOWED = NO;\n\t\t\t\tCODE_SIGNING_REQUIRED = NO;')
+              
               with open(path, "w") as f: f.write(content)
-              print("✅ Project patched successfully.")
+              print("✅ pbxproj patched.")
           else:
-              print("❌ project.pbxproj not found!")
-              exit(1)
+              print("❌ pbxproj not found!")
           EOF
-          python3 patch_project.py
-
-      - name: Normalize & Validate Info.plist
-        run: |
-          echo "🧹 Normalizing Info.plist..."
-          plutil -convert xml1 ios/App/App/Info.plist
-          plutil -lint ios/App/App/Info.plist || (cat ios/App/App/Info.plist && exit 1)
 
       - name: Build Unsigned App
         run: |
           cd ios/App
-          # Minimalist build for maximum compatibility with unsigned environments
+          # Use xcodebuild with explicit flags to override any project-level settings
           xcodebuild build \
             -workspace App.xcworkspace \
             -scheme App \
@@ -98,9 +100,10 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
+            PROVISIONING_PROFILE_SPECIFIER="" \
+            DEVELOPMENT_TEAM="" \
             DISABLE_CODE_SIGNING=YES \
             COMPILER_INDEX_STORE_ENABLE=NO \
-            ENABLE_USER_SCRIPT_SANDBOXING=NO \
             SKIP_INSTALL=NO
 
       - name: Package MALA3EBNA IPA
