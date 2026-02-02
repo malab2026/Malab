@@ -98,47 +98,49 @@ jobs:
             COMPILER_INDEX_STORE_ENABLE=NO \
             SKIP_INSTALL=NO
 
-      - name: Package MALA3EBNA IPA
+      - name: Package artifacts
         run: |
           echo "📂 Finding built App.app..."
           APP_PATH=$(find build -name "App.app" -type d | head -n 1)
-          
           if [ -z "$APP_PATH" ]; then
-            echo "❌ Error: App.app not found in build directory!"
+            echo "❌ Error: App.app not found!"
             exit 1
           fi
-          
-          echo "✅ Found App at: $APP_PATH"
           mkdir Payload
           cp -r "$APP_PATH" Payload/
           zip -r MALA3EBNA.ipa Payload
-
-      - name: Create Source Code Zip (Fallback)
-        run: |
-          # Create a clean zip for Mac users to build manually
+          # Create source zip for manual build
           zip -r Malaeb-iOS-Source.zip ios package.json capacitor.config.ts src public
+
+      - name: Upload IPA Task Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MALA3EBNA-IPA-Package
+          path: |
+            MALA3EBNA.ipa
+            Malaeb-iOS-Source.zip
+          retention-days: 7
 
       - name: Get Version
         id: version
         run: echo "version=$(date +'%Y.%m.%d-%H%M')" >> $GITHUB_OUTPUT
 
-      - name: Upload Release Assets
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/heads/main')
         with:
           tag_name: ios-v${{ steps.version.outputs.version }}
           name: MALA3EBNA iOS v${{ steps.version.outputs.version }}
           body: |
             ## 🍎 MALA3EBNA - iOS Release (Unsigned)
             
-            This release contains both an Unsigned IPA and the Source Code for manual building.
-            
             ### 📥 Download Options
             
             1. **MALA3EBNA.ipa** (Unsigned)
-               - Use **AltStore** or **Sideloadly** on your computer to install this.
+               - Use **AltStore** or **Sideloadly** to install this.
             
             2. **Malaeb-iOS-Source.zip** (Source Code)
-               - Best for Mac users. Download, unzip, and run `pod install` in `ios/App`, then build in Xcode.
+               - For manual build in Xcode (Mac).
             
             ---
             🏟️ Built with ❤️ for football lovers
