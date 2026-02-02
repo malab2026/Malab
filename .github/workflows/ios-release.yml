@@ -43,45 +43,38 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync ios
 
-      - name: Install CocoaPods & Patch Signing
+      - name: Install CocoaPods
         run: |
           cd ios/App
-          # Clean old pods
-          rm -rf Pods
-          rm -f Podfile.lock
           pod install --repo-update
-          
-          # CRITICAL: Patch Pods to COMPLETELY ignore code signing.
-          # This is the most common cause of 'Code 65' in automated CI.
-          echo "🛠️ Patching Pods for No-Signing build..."
-          find Pods -name "*-frameworks.sh" -exec sed -i '' 's/code_sign_if_enabled/echo "Skipping code signing"/g' {} +
-          find Pods -name "*-frameworks.sh" -exec sed -i '' 's/codesign /echo "Skipping codesign" /g' {} +
 
-      - name: Patch iOS Project for Unsigned Build
+      - name: Patch iOS Project for CI (Ad-Hoc Signing)
         run: |
-          echo "🛠️ Patching Project for Unsigned CI environment..."
+          echo "🛠️ Patching Project for Ad-Hoc signing (No certificates required)..."
           python3 << 'EOF'
-          import os
+          import os, re
           path = "ios/App/App.xcodeproj/project.pbxproj"
           if os.path.exists(path):
               with open(path, "r") as f: content = f.read()
               
-              # 1. Force Manual Provisioning
+              # 1. Force Manual Provisioning & Ad-Hoc Identity
               content = content.replace('ProvisioningStyle = Automatic;', 'ProvisioningStyle = Manual;')
               content = content.replace('CODE_SIGN_STYLE = Automatic;', 'CODE_SIGN_STYLE = Manual;')
               
-              # 2. Strip any existing Team IDs and Profiles to prevent resolution errors
-              import re
+              # Use '-' for Ad-Hoc signing which doesn't require a real identity on macOS
+              content = re.sub(r'CODE_SIGN_IDENTITY = "[^"]*";', 'CODE_SIGN_IDENTITY = "-";', content)
+              content = re.sub(r'CODE_SIGN_IDENTITY\[sdk=iphoneos\*\] = "[^"]*";', 'CODE_SIGN_IDENTITY[sdk=iphoneos*] = "-";', content)
+              
+              # 2. Clear Team IDs and Profiles
               content = re.sub(r'DEVELOPMENT_TEAM = [^;]+;', 'DEVELOPMENT_TEAM = "";', content)
               content = re.sub(r'PROVISIONING_PROFILE_SPECIFIER = [^;]+;', 'PROVISIONING_PROFILE_SPECIFIER = "";', content)
               
-              # 3. Inject global signing disable flags into buildSettings
-              # We only add the most essential ones to avoid breaking the pbxproj structure
-              if "CODE_SIGNING_ALLOWED = NO;" not in content:
-                  content = content.replace('buildSettings = {', 'buildSettings = {\n\t\t\t\tCODE_SIGNING_ALLOWED = NO;\n\t\t\t\tCODE_SIGNING_REQUIRED = NO;')
+              # 3. Enable Ad-Hoc signing globally in buildSettings
+              if "AD_HOC_CODE_SIGNING_ALLOWED" not in content:
+                  content = content.replace('buildSettings = {', 'buildSettings = {\n\t\t\t\tAD_HOC_CODE_SIGNING_ALLOWED = YES;')
               
               with open(path, "w") as f: f.write(content)
-              print("✅ pbxproj patched.")
+              print("✅ pbxproj patched successfully.")
           else:
               print("❌ pbxproj not found!")
           EOF
@@ -89,7 +82,7 @@ jobs:
       - name: Build Unsigned App
         run: |
           cd ios/App
-          # Use xcodebuild with explicit flags to override any project-level settings
+          # Using Ad-Hoc signing (-) avoids 'Code 65' and allows framework embedding
           xcodebuild build \
             -workspace App.xcworkspace \
             -scheme App \
@@ -97,12 +90,11 @@ jobs:
             -sdk iphoneos \
             -destination 'generic/platform=iOS' \
             -derivedDataPath ../../build \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_ALLOWED=YES \
+            CODE_SIGN_IDENTITY="-" \
             PROVISIONING_PROFILE_SPECIFIER="" \
             DEVELOPMENT_TEAM="" \
-            DISABLE_CODE_SIGNING=YES \
+            AD_HOC_CODE_SIGNING_ALLOWED=YES \
             COMPILER_INDEX_STORE_ENABLE=NO \
             SKIP_INSTALL=NO
 
