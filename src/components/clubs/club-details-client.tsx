@@ -50,7 +50,7 @@ export function ClubDetailsClient({ club, bookedFieldIds }: ClubDetailsClientPro
                                     src={club.logoUrl}
                                     alt={club.name}
                                     fill
-                                    className="object-contain p-3"
+                                    className="object-cover"
                                 />
                             </div>
                         )}

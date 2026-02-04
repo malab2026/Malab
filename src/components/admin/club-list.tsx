@@ -39,7 +39,7 @@ export function ClubList({ clubs }: ClubListProps) {
                             <tr key={club.id} className="hover:bg-gray-50/30 transition-colors group">
                                 <td className="px-8 py-6">
                                     <div className="flex items-center gap-4">
-                                        <div className="relative w-12 h-12 rounded-2xl overflow-hidden border border-gray-100 shadow-sm bg-white shrink-0">
+                                        <div className="relative w-16 h-16 rounded-2xl overflow-hidden border border-gray-100 shadow-sm bg-white shrink-0">
                                             {club.logoUrl ? (
                                                 <img src={club.logoUrl} alt={club.name} className="object-cover w-full h-full" />
                                             ) : (
