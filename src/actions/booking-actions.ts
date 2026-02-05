@@ -291,23 +291,26 @@ export async function createBooking(prevState: any, formData: FormData) {
                 }
             }
 
-            // Send Email Notifications (Non-blocking)
+            // Send Email Notifications (Collect promises to await before redirect)
             if (settings?.emailEnabled && settings?.emailApiKey && settings?.emailFromAddress) {
                 const { sendBookingNotificationEmail } = await import('@/lib/email')
                 const userName = session.user.name || 'مستخدم'
+                const emailPromises: Promise<any>[] = []
 
                 // Notify Field Owner via Email
                 const ownerEmail = fieldWithOwner?.owner?.email
                 if (ownerEmail) {
-                    sendBookingNotificationEmail(
-                        ownerEmail,
-                        userName,
-                        field.name,
-                        bookingDate,
-                        bookingTime,
-                        settings.emailApiKey,
-                        settings.emailFromAddress
-                    ).catch(err => console.error('Email Owner Notification Error:', err))
+                    emailPromises.push(
+                        sendBookingNotificationEmail(
+                            ownerEmail,
+                            userName,
+                            field.name,
+                            bookingDate,
+                            bookingTime,
+                            settings.emailApiKey,
+                            settings.emailFromAddress
+                        ).catch(err => console.error('Email Owner Notification Error:', err))
+                    )
                 }
 
                 // Notify All Admins via Email
@@ -318,29 +321,38 @@ export async function createBooking(prevState: any, formData: FormData) {
 
                 admins.forEach(admin => {
                     if (admin.email) {
-                        sendBookingNotificationEmail(
-                            admin.email,
-                            userName,
-                            field.name,
-                            bookingDate,
-                            bookingTime,
-                            settings.emailApiKey!,
-                            settings.emailFromAddress!
-                        ).catch(err => console.error('Email Admin Notification Error:', err))
+                        emailPromises.push(
+                            sendBookingNotificationEmail(
+                                admin.email,
+                                userName,
+                                field.name,
+                                bookingDate,
+                                bookingTime,
+                                settings.emailApiKey!,
+                                settings.emailFromAddress!
+                            ).catch(err => console.error('Email Admin Notification Error:', err))
+                        )
                     }
                 })
 
                 // Notify Customer via Email
                 if (session.user.email) {
-                    sendBookingNotificationEmail(
-                        session.user.email,
-                        userName,
-                        field.name,
-                        bookingDate,
-                        bookingTime,
-                        settings.emailApiKey,
-                        settings.emailFromAddress
-                    ).catch(err => console.error('Email Customer Notification Error:', err))
+                    emailPromises.push(
+                        sendBookingNotificationEmail(
+                            session.user.email,
+                            userName,
+                            field.name,
+                            bookingDate,
+                            bookingTime,
+                            settings.emailApiKey,
+                            settings.emailFromAddress
+                        ).catch(err => console.error('Email Customer Notification Error:', err))
+                    )
+                }
+
+                // Await all email notifications before redirection to prevent serverless function termination
+                if (emailPromises.length > 0) {
+                    await Promise.allSettled(emailPromises)
                 }
             }
         }
