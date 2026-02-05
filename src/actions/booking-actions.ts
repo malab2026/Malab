@@ -251,6 +251,44 @@ export async function createBooking(prevState: any, formData: FormData) {
 
         await createNotification(session.user.id, title, message, "BOOKING")
 
+        // Notify Owner and Admin via WhatsApp (Non-blocking)
+        if (!isBlock) {
+            const fieldWithOwner = await prisma.field.findUnique({
+                where: { id: fieldId },
+                select: {
+                    owner: { select: { phone: true, name: true } }
+                }
+            })
+
+            const settings = await prisma.globalSettings.findUnique({ where: { id: 'global' } })
+
+            if (settings?.whatsappEnabled && settings?.whatsappInstanceId && settings?.whatsappToken) {
+                const { sendWhatsAppAPI } = await import('@/lib/whatsapp')
+                const userName = session.user.name || 'مستخدم'
+                const ownerMessage = `🔔 حجز جديد!\n\n👤 العميل: ${userName}\n🏟️ الملعب: ${field.name}\n📅 التاريخ: ${bookingDate}\n⏰ الوقت: ${bookingTime}\n\nيرجى مراجعة لوحة التحكم للموافقة.`
+
+                // Notify Field Owner
+                if (fieldWithOwner?.owner?.phone) {
+                    sendWhatsAppAPI(
+                        fieldWithOwner.owner.phone,
+                        ownerMessage,
+                        settings.whatsappInstanceId,
+                        settings.whatsappToken
+                    ).catch(err => console.error('WhatsApp Owner Notification Error:', err))
+                }
+
+                // Notify Admin
+                if (settings.adminPhone) {
+                    sendWhatsAppAPI(
+                        settings.adminPhone,
+                        ownerMessage,
+                        settings.whatsappInstanceId,
+                        settings.whatsappToken
+                    ).catch(err => console.error('WhatsApp Admin Notification Error:', err))
+                }
+            }
+        }
+
     } catch (e: any) {
         if (e.message?.includes('NEXT_REDIRECT')) throw e;
         return { message: "An error occurred while creating your booking." }
