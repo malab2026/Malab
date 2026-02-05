@@ -297,6 +297,15 @@ export async function createBooking(prevState: any, formData: FormData) {
                 const userName = session.user.name || 'مستخدم'
                 const emailPromises: Promise<any>[] = []
 
+                // Prepare SMTP config if available
+                const smtpConfig = (settings.emailSmtpHost && settings.emailSmtpUser && settings.emailSmtpPass) ? {
+                    host: settings.emailSmtpHost,
+                    port: settings.emailSmtpPort || 587,
+                    user: settings.emailSmtpUser,
+                    pass: settings.emailSmtpPass,
+                    secure: settings.emailSmtpSecure || false
+                } : null
+
                 // Notify Field Owner via Email
                 const ownerEmail = fieldWithOwner?.owner?.email
                 if (ownerEmail) {
@@ -308,7 +317,8 @@ export async function createBooking(prevState: any, formData: FormData) {
                             bookingDate,
                             bookingTime,
                             settings.emailApiKey,
-                            settings.emailFromAddress
+                            settings.emailFromAddress,
+                            smtpConfig
                         ).catch(err => console.error('Email Owner Notification Error:', err))
                     )
                 }
@@ -328,8 +338,9 @@ export async function createBooking(prevState: any, formData: FormData) {
                                 field.name,
                                 bookingDate,
                                 bookingTime,
-                                settings.emailApiKey!,
-                                settings.emailFromAddress!
+                                settings.emailApiKey,
+                                settings.emailFromAddress,
+                                smtpConfig
                             ).catch(err => console.error('Email Admin Notification Error:', err))
                         )
                     }
@@ -345,7 +356,8 @@ export async function createBooking(prevState: any, formData: FormData) {
                             bookingDate,
                             bookingTime,
                             settings.emailApiKey,
-                            settings.emailFromAddress
+                            settings.emailFromAddress,
+                            smtpConfig
                         ).catch(err => console.error('Email Customer Notification Error:', err))
                     )
                 }

@@ -20,6 +20,11 @@ interface GlobalSettingsFormProps {
     initialEmailEnabled: boolean
     initialEmailApiKey?: string | null
     initialEmailFromAddress?: string | null
+    initialEmailSmtpHost?: string | null
+    initialEmailSmtpPort?: number | null
+    initialEmailSmtpUser?: string | null
+    initialEmailSmtpPass?: string | null
+    initialEmailSmtpSecure?: boolean | null
 }
 
 export function GlobalSettingsForm({
@@ -30,7 +35,12 @@ export function GlobalSettingsForm({
     initialToken,
     initialEmailEnabled,
     initialEmailApiKey,
-    initialEmailFromAddress
+    initialEmailFromAddress,
+    initialEmailSmtpHost,
+    initialEmailSmtpPort,
+    initialEmailSmtpUser,
+    initialEmailSmtpPass,
+    initialEmailSmtpSecure
 }: GlobalSettingsFormProps) {
     const { t } = useTranslation()
     const [state, dispatch] = useActionState(updateGlobalSettings, null)
@@ -171,22 +181,93 @@ export function GlobalSettingsForm({
                                 placeholder="noreply@yourdomain.com"
                                 className="h-10 border-gray-200 focus:border-green-500 font-medium text-xs"
                             />
-                            <p className="text-[9px] text-gray-400">Must be verified in Resend dashboard</p>
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="emailApiKey" className="text-sm font-bold text-gray-700">
-                                Resend API Key
-                            </Label>
-                            <Input
-                                id="emailApiKey"
-                                name="emailApiKey"
-                                type="password"
-                                defaultValue={initialEmailApiKey || ""}
-                                placeholder="re_xxxxxxxxxxxx"
-                                className="h-10 border-gray-200 focus:border-green-500 font-medium text-xs"
-                            />
-                            <p className="text-[9px] text-gray-400">Get your API key from resend.com/api-keys</p>
+                        <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 space-y-4">
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Provider Configuration</p>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="emailApiKey" className="text-xs font-bold text-gray-700">
+                                    Resend API Key (Optional)
+                                </Label>
+                                <Input
+                                    id="emailApiKey"
+                                    name="emailApiKey"
+                                    type="password"
+                                    defaultValue={initialEmailApiKey || ""}
+                                    placeholder="re_xxxxxxxxxxxx"
+                                    className="h-10 border-gray-200 focus:border-green-500 font-medium text-xs bg-white"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-2">
+                                    <Label htmlFor="emailSmtpHost" className="text-xs font-bold text-gray-700">
+                                        SMTP Host
+                                    </Label>
+                                    <Input
+                                        id="emailSmtpHost"
+                                        name="emailSmtpHost"
+                                        defaultValue={initialEmailSmtpHost || ""}
+                                        placeholder="smtp.gmail.com"
+                                        className="h-10 border-gray-200 focus:border-green-500 font-medium text-xs bg-white"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="emailSmtpPort" className="text-xs font-bold text-gray-700">
+                                        SMTP Port
+                                    </Label>
+                                    <Input
+                                        id="emailSmtpPort"
+                                        name="emailSmtpPort"
+                                        type="number"
+                                        defaultValue={initialEmailSmtpPort || 587}
+                                        className="h-10 border-gray-200 focus:border-green-500 font-medium text-xs bg-white"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="emailSmtpUser" className="text-xs font-bold text-gray-700">
+                                    SMTP User (Gmail Address)
+                                </Label>
+                                <Input
+                                    id="emailSmtpUser"
+                                    name="emailSmtpUser"
+                                    type="email"
+                                    defaultValue={initialEmailSmtpUser || ""}
+                                    placeholder="your-email@gmail.com"
+                                    className="h-10 border-gray-200 focus:border-green-500 font-medium text-xs bg-white"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="emailSmtpPass" className="text-xs font-bold text-gray-700">
+                                    SMTP Password / App Password
+                                </Label>
+                                <Input
+                                    id="emailSmtpPass"
+                                    name="emailSmtpPass"
+                                    type="password"
+                                    defaultValue={initialEmailSmtpPass || ""}
+                                    placeholder="app password"
+                                    className="h-10 border-gray-200 focus:border-green-500 font-medium text-xs bg-white"
+                                />
+                            </div>
+
+                            <div className="flex items-center justify-between">
+                                <Label htmlFor="emailSmtpSecure" className="text-xs font-bold text-gray-700">
+                                    Use SSL/TLS (Secure)
+                                </Label>
+                                <input type="hidden" name="emailSmtpSecure" value={initialEmailSmtpSecure ? "true" : "false"} />
+                                <Switch
+                                    defaultChecked={initialEmailSmtpSecure || false}
+                                    onCheckedChange={(checked) => {
+                                        const input = document.querySelector('input[name="emailSmtpSecure"]') as HTMLInputElement;
+                                        if (input) input.value = checked ? "true" : "false";
+                                    }}
+                                />
+                            </div>
                         </div>
                     </div>
 

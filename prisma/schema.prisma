@@ -102,6 +102,11 @@ model GlobalSettings {
   emailEnabled       Boolean  @default(false)
   emailApiKey        String?
   emailFromAddress   String?
+  emailSmtpHost      String?
+  emailSmtpPort      Int?     @default(587)
+  emailSmtpUser      String?
+  emailSmtpPass      String?
+  emailSmtpSecure    Boolean  @default(false)
   updatedAt          DateTime @updatedAt
 }
 

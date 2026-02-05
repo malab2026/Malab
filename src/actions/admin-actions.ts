@@ -281,6 +281,14 @@ export async function updateBookingStatus(bookingId: string, status: "CONFIRMED"
                 const { sendBookingConfirmationEmail, sendBookingRejectionEmail } = await import('@/lib/email')
                 const emailFunction = status === "CONFIRMED" ? sendBookingConfirmationEmail : sendBookingRejectionEmail
 
+                const smtpConfig = (settings.emailSmtpHost && settings.emailSmtpUser && settings.emailSmtpPass) ? {
+                    host: settings.emailSmtpHost,
+                    port: settings.emailSmtpPort || 587,
+                    user: settings.emailSmtpUser,
+                    pass: settings.emailSmtpPass,
+                    secure: settings.emailSmtpSecure || false
+                } : null
+
                 emailFunction(
                     user.email,
                     user.name || 'عميل',
@@ -288,7 +296,8 @@ export async function updateBookingStatus(bookingId: string, status: "CONFIRMED"
                     bookingDate,
                     bookingTime,
                     settings.emailApiKey,
-                    settings.emailFromAddress
+                    settings.emailFromAddress,
+                    smtpConfig
                 ).catch(err => console.error('Email Notification Error:', err))
             }
         }
@@ -711,7 +720,12 @@ export async function getGlobalSettings() {
                 whatsappToken: null,
                 emailEnabled: false,
                 emailApiKey: null,
-                emailFromAddress: null
+                emailFromAddress: null,
+                emailSmtpHost: null,
+                emailSmtpPort: 587,
+                emailSmtpUser: null,
+                emailSmtpPass: null,
+                emailSmtpSecure: false
             }
         })
         return { success: true, settings }
@@ -737,6 +751,12 @@ export async function updateGlobalSettings(prevState: any, formData: FormData) {
     const emailApiKey = formData.get("emailApiKey") as string || null
     const emailFromAddress = formData.get("emailFromAddress") as string || null
 
+    const emailSmtpHost = formData.get("emailSmtpHost") as string || null
+    const emailSmtpPort = parseInt(formData.get("emailSmtpPort") as string) || 587
+    const emailSmtpUser = formData.get("emailSmtpUser") as string || null
+    const emailSmtpPass = formData.get("emailSmtpPass") as string || null
+    const emailSmtpSecure = formData.get("emailSmtpSecure") === "true"
+
     if (isNaN(serviceFee)) {
         return { message: "Invalid service fee amount", success: false }
     }
@@ -744,8 +764,8 @@ export async function updateGlobalSettings(prevState: any, formData: FormData) {
     try {
         await prisma.globalSettings.upsert({
             where: { id: 'global' },
-            update: { serviceFee, adminPhone, whatsappEnabled, whatsappInstanceId, whatsappToken, emailEnabled, emailApiKey, emailFromAddress },
-            create: { id: 'global', serviceFee, adminPhone, whatsappEnabled, whatsappInstanceId, whatsappToken, emailEnabled, emailApiKey, emailFromAddress }
+            update: { serviceFee, adminPhone, whatsappEnabled, whatsappInstanceId, whatsappToken, emailEnabled, emailApiKey, emailFromAddress, emailSmtpHost, emailSmtpPort, emailSmtpUser, emailSmtpPass, emailSmtpSecure },
+            create: { id: 'global', serviceFee, adminPhone, whatsappEnabled, whatsappInstanceId, whatsappToken, emailEnabled, emailApiKey, emailFromAddress, emailSmtpHost, emailSmtpPort, emailSmtpUser, emailSmtpPass, emailSmtpSecure }
         })
 
         revalidatePath('/admin')

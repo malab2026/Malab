@@ -79,6 +79,11 @@ async function UsersContent() {
     const initialEmailEnabled = settings?.emailEnabled ?? false
     const initialEmailApiKey = settings?.emailApiKey ?? null
     const initialEmailFromAddress = settings?.emailFromAddress ?? null
+    const initialEmailSmtpHost = settings?.emailSmtpHost ?? null
+    const initialEmailSmtpPort = settings?.emailSmtpPort ?? 587
+    const initialEmailSmtpUser = settings?.emailSmtpUser ?? null
+    const initialEmailSmtpPass = settings?.emailSmtpPass ?? null
+    const initialEmailSmtpSecure = settings?.emailSmtpSecure ?? false
 
     return (
         <div className="grid lg:grid-cols-12 gap-8 animate-in fade-in duration-700">
@@ -100,6 +105,11 @@ async function UsersContent() {
                         initialEmailEnabled={initialEmailEnabled}
                         initialEmailApiKey={initialEmailApiKey}
                         initialEmailFromAddress={initialEmailFromAddress}
+                        initialEmailSmtpHost={initialEmailSmtpHost}
+                        initialEmailSmtpPort={initialEmailSmtpPort}
+                        initialEmailSmtpUser={initialEmailSmtpUser}
+                        initialEmailSmtpPass={initialEmailSmtpPass}
+                        initialEmailSmtpSecure={initialEmailSmtpSecure}
                     />
                 </section>
 
