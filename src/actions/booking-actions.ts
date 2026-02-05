@@ -306,6 +306,10 @@ export async function createBooking(prevState: any, formData: FormData) {
                     secure: settings.emailSmtpSecure || false
                 } : null
 
+                // Default email settings
+                const emailApiKey = settings.emailApiKey || null
+                const emailFromAddress = settings.emailFromAddress || 'noreply@malaeb.com'
+
                 // Notify Field Owner via Email
                 const ownerEmail = fieldWithOwner?.owner?.email
                 if (ownerEmail) {
@@ -316,8 +320,8 @@ export async function createBooking(prevState: any, formData: FormData) {
                             field.name,
                             bookingDate,
                             bookingTime,
-                            settings.emailApiKey,
-                            settings.emailFromAddress,
+                            emailApiKey,
+                            emailFromAddress,
                             smtpConfig
                         ).catch(err => console.error('Email Owner Notification Error:', err))
                     )
@@ -338,8 +342,8 @@ export async function createBooking(prevState: any, formData: FormData) {
                                 field.name,
                                 bookingDate,
                                 bookingTime,
-                                settings.emailApiKey,
-                                settings.emailFromAddress,
+                                emailApiKey,
+                                emailFromAddress,
                                 smtpConfig
                             ).catch(err => console.error('Email Admin Notification Error:', err))
                         )
@@ -355,8 +359,8 @@ export async function createBooking(prevState: any, formData: FormData) {
                             field.name,
                             bookingDate,
                             bookingTime,
-                            settings.emailApiKey,
-                            settings.emailFromAddress,
+                            emailApiKey,
+                            emailFromAddress,
                             smtpConfig
                         ).catch(err => console.error('Email Customer Notification Error:', err))
                     )

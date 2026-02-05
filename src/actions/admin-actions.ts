@@ -289,14 +289,17 @@ export async function updateBookingStatus(bookingId: string, status: "CONFIRMED"
                     secure: settings.emailSmtpSecure || false
                 } : null
 
+                const emailApiKey = settings.emailApiKey || null
+                const emailFromAddress = settings.emailFromAddress || 'noreply@malaeb.com'
+
                 emailFunction(
                     user.email,
                     user.name || 'عميل',
                     booking.field.name,
                     bookingDate,
                     bookingTime,
-                    settings.emailApiKey,
-                    settings.emailFromAddress,
+                    emailApiKey,
+                    emailFromAddress,
                     smtpConfig
                 ).catch(err => console.error('Email Notification Error:', err))
             }
@@ -714,7 +717,7 @@ export async function getGlobalSettings() {
             create: {
                 id: 'global',
                 serviceFee: 10.0,
-                adminPhone: "201009410112",
+                adminPhone: "201020155988",
                 whatsappEnabled: true,
                 whatsappInstanceId: null,
                 whatsappToken: null,

@@ -95,7 +95,7 @@ model Booking {
 model GlobalSettings {
   id                 String   @id @default("global")
   serviceFee         Float    @default(10.0)
-  adminPhone         String   @default("201009410112")
+  adminPhone         String   @default("201020155988")
   whatsappEnabled    Boolean  @default(true)
   whatsappInstanceId String?
   whatsappToken      String?

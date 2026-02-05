@@ -21,7 +21,7 @@ async function main() {
             name: 'User Admin',
             password: adminPassword,
             role: 'admin',
-            phone: '01009410112',
+            phone: '01020155988',
         }
     ]
 
