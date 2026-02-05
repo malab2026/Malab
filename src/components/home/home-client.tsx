@@ -123,7 +123,7 @@ function ClubCard({ club, isBooked }: any) {
                             src={club.logoUrl}
                             alt={displayName}
                             fill
-                            className="object-contain p-4 group-hover:scale-110 transition-transform duration-300"
+                            className="object-cover group-hover:scale-110 transition-transform duration-300"
                         />
                     ) : (
                         <Building2 className="h-20 w-20 text-green-300" />
