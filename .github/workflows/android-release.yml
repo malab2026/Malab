@@ -61,17 +61,16 @@ jobs:
 
       - name: Sign Android Release (AAB)
         id: sign_app
+        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
         uses: r0adkll/sign-android-release@v1
-        if: env.HAS_KEYSTORE == 'true'
-        env:
-          HAS_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
-          BUILD_TOOLS_VERSION: "34.0.0"
         with:
           releaseDirectory: android/app/build/outputs/bundle/release
           signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "34.0.0"
 
       - name: Get Version
         id: version
