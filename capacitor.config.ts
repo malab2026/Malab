@@ -1,5 +1,5 @@
 import type { CapacitorConfig } from '@capacitor/cli';
-// Trigger Build: 2026-02-05 - v1.1.2
+// Trigger Build: 2026-02-05 - v1.1.3
 const config: CapacitorConfig = {
   appId: 'com.malaeb.booking',
   appName: 'MALA3EBNA',
