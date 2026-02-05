@@ -65,7 +65,10 @@ async function UsersContent() {
                 adminPhone: "201009410112",
                 whatsappEnabled: true,
                 whatsappInstanceId: null,
-                whatsappToken: null
+                whatsappToken: null,
+                emailEnabled: false,
+                emailApiKey: null,
+                emailFromAddress: null
             }
         })
     ]) as any
@@ -73,6 +76,9 @@ async function UsersContent() {
     const initialServiceFee = settings?.serviceFee ?? 10
     const initialPhone = settings?.adminPhone ?? "201009410112"
     const initialWhatsappEnabled = settings?.whatsappEnabled ?? true
+    const initialEmailEnabled = settings?.emailEnabled ?? false
+    const initialEmailApiKey = settings?.emailApiKey ?? null
+    const initialEmailFromAddress = settings?.emailFromAddress ?? null
 
     return (
         <div className="grid lg:grid-cols-12 gap-8 animate-in fade-in duration-700">
@@ -91,6 +97,9 @@ async function UsersContent() {
                         initialWhatsappEnabled={initialWhatsappEnabled}
                         initialInstanceId={settings?.whatsappInstanceId}
                         initialToken={settings?.whatsappToken}
+                        initialEmailEnabled={initialEmailEnabled}
+                        initialEmailApiKey={initialEmailApiKey}
+                        initialEmailFromAddress={initialEmailFromAddress}
                     />
                 </section>
 

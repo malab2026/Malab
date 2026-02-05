@@ -41,9 +41,9 @@ export function WeeklySchedule({ existingBookings, selectedSlots, onSlotSelect, 
         }
     }, [weekDays, selectedDay])
 
-    // Generate hours from 8 AM to 2 AM (next day)
+    // Generate hours from 8 AM to 4 AM (next day)
     const hours = useMemo(() => {
-        return Array.from({ length: 19 }).map((_, i) => {
+        return Array.from({ length: 21 }).map((_, i) => {
             const h = (i + 8) % 24
             return `${h.toString().padStart(2, '0')}:00`
         })

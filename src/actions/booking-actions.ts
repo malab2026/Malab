@@ -57,13 +57,16 @@ export async function checkAvailability(fieldId: string, slots: any[]) {
 
 export async function getFieldBookings(fieldId: string, startDate: string, endDate: string) {
     try {
+        const searchEndDate = new Date(`${endDate}T23:59:59`)
+        searchEndDate.setHours(searchEndDate.getHours() + 6) // Include early morning slots of the next day
+
         const bookings = await prisma.booking.findMany({
             where: {
                 fieldId,
                 status: { in: OCCUPYING_STATUSES },
                 startTime: {
                     gte: new Date(`${startDate}T00:00:00`),
-                    lte: new Date(`${endDate}T23:59:59`),
+                    lte: searchEndDate,
                 },
             },
             select: {
@@ -256,7 +259,7 @@ export async function createBooking(prevState: any, formData: FormData) {
             const fieldWithOwner = await prisma.field.findUnique({
                 where: { id: fieldId },
                 select: {
-                    owner: { select: { phone: true, name: true } }
+                    owner: { select: { phone: true, email: true, name: true } }
                 }
             })
 
@@ -285,6 +288,59 @@ export async function createBooking(prevState: any, formData: FormData) {
                         settings.whatsappInstanceId,
                         settings.whatsappToken
                     ).catch(err => console.error('WhatsApp Admin Notification Error:', err))
+                }
+            }
+
+            // Send Email Notifications (Non-blocking)
+            if (settings?.emailEnabled && settings?.emailApiKey && settings?.emailFromAddress) {
+                const { sendBookingNotificationEmail } = await import('@/lib/email')
+                const userName = session.user.name || 'مستخدم'
+
+                // Notify Field Owner via Email
+                const ownerEmail = fieldWithOwner?.owner?.email
+                if (ownerEmail) {
+                    sendBookingNotificationEmail(
+                        ownerEmail,
+                        userName,
+                        field.name,
+                        bookingDate,
+                        bookingTime,
+                        settings.emailApiKey,
+                        settings.emailFromAddress
+                    ).catch(err => console.error('Email Owner Notification Error:', err))
+                }
+
+                // Notify All Admins via Email
+                const admins = await prisma.user.findMany({
+                    where: { role: 'admin' },
+                    select: { email: true }
+                })
+
+                admins.forEach(admin => {
+                    if (admin.email) {
+                        sendBookingNotificationEmail(
+                            admin.email,
+                            userName,
+                            field.name,
+                            bookingDate,
+                            bookingTime,
+                            settings.emailApiKey!,
+                            settings.emailFromAddress!
+                        ).catch(err => console.error('Email Admin Notification Error:', err))
+                    }
+                })
+
+                // Notify Customer via Email
+                if (session.user.email) {
+                    sendBookingNotificationEmail(
+                        session.user.email,
+                        userName,
+                        field.name,
+                        bookingDate,
+                        bookingTime,
+                        settings.emailApiKey,
+                        settings.emailFromAddress
+                    ).catch(err => console.error('Email Customer Notification Error:', err))
                 }
             }
         }

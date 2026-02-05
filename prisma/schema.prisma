@@ -99,6 +99,9 @@ model GlobalSettings {
   whatsappEnabled    Boolean  @default(true)
   whatsappInstanceId String?
   whatsappToken      String?
+  emailEnabled       Boolean  @default(false)
+  emailApiKey        String?
+  emailFromAddress   String?
   updatedAt          DateTime @updatedAt
 }
 

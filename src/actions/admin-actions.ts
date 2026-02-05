@@ -273,6 +273,26 @@ export async function updateBookingStatus(bookingId: string, status: "CONFIRMED"
 
         await createNotification(booking.userId, title, message, "BOOKING")
 
+        // Send Email Notification (Non-blocking)
+        const settings = await prisma.globalSettings.findUnique({ where: { id: 'global' } })
+        if (settings?.emailEnabled && settings?.emailApiKey && settings?.emailFromAddress) {
+            const user = await prisma.user.findUnique({ where: { id: booking.userId }, select: { email: true, name: true } })
+            if (user?.email) {
+                const { sendBookingConfirmationEmail, sendBookingRejectionEmail } = await import('@/lib/email')
+                const emailFunction = status === "CONFIRMED" ? sendBookingConfirmationEmail : sendBookingRejectionEmail
+
+                emailFunction(
+                    user.email,
+                    user.name || 'عميل',
+                    booking.field.name,
+                    bookingDate,
+                    bookingTime,
+                    settings.emailApiKey,
+                    settings.emailFromAddress
+                ).catch(err => console.error('Email Notification Error:', err))
+            }
+        }
+
         revalidatePath('/admin')
         revalidatePath('/dashboard')
         revalidatePath(`/fields/${booking.fieldId}`)
@@ -573,7 +593,7 @@ export async function getFinancialReport(filters: { startDate?: string, endDate?
         // Optimized check for receipts without fetching massive base64 blobs
         const allBookingIds = bookings.map(b => b.id)
         const bookingsWithReceipts = await prisma.booking.findMany({
-            where: { 
+            where: {
                 id: { in: allBookingIds },
                 NOT: [
                     { receiptUrl: null },
@@ -688,7 +708,10 @@ export async function getGlobalSettings() {
                 adminPhone: "201009410112",
                 whatsappEnabled: true,
                 whatsappInstanceId: null,
-                whatsappToken: null
+                whatsappToken: null,
+                emailEnabled: false,
+                emailApiKey: null,
+                emailFromAddress: null
             }
         })
         return { success: true, settings }
@@ -710,6 +733,9 @@ export async function updateGlobalSettings(prevState: any, formData: FormData) {
     const whatsappEnabled = formData.get("whatsappEnabled") === "true"
     const whatsappInstanceId = formData.get("whatsappInstanceId") as string || null
     const whatsappToken = formData.get("whatsappToken") as string || null
+    const emailEnabled = formData.get("emailEnabled") === "true"
+    const emailApiKey = formData.get("emailApiKey") as string || null
+    const emailFromAddress = formData.get("emailFromAddress") as string || null
 
     if (isNaN(serviceFee)) {
         return { message: "Invalid service fee amount", success: false }
@@ -718,8 +744,8 @@ export async function updateGlobalSettings(prevState: any, formData: FormData) {
     try {
         await prisma.globalSettings.upsert({
             where: { id: 'global' },
-            update: { serviceFee, adminPhone, whatsappEnabled, whatsappInstanceId, whatsappToken },
-            create: { id: 'global', serviceFee, adminPhone, whatsappEnabled, whatsappInstanceId, whatsappToken }
+            update: { serviceFee, adminPhone, whatsappEnabled, whatsappInstanceId, whatsappToken, emailEnabled, emailApiKey, emailFromAddress },
+            create: { id: 'global', serviceFee, adminPhone, whatsappEnabled, whatsappInstanceId, whatsappToken, emailEnabled, emailApiKey, emailFromAddress }
         })
 
         revalidatePath('/admin')

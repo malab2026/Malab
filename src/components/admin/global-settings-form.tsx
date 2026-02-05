@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Settings, CheckCircle2, AlertCircle, MessageCircle, Phone } from "lucide-react"
+import { Settings, CheckCircle2, AlertCircle, MessageCircle, Phone, Mail } from "lucide-react"
 
 import { useTranslation } from "@/components/providers/locale-context"
 
@@ -17,6 +17,9 @@ interface GlobalSettingsFormProps {
     initialWhatsappEnabled: boolean
     initialInstanceId?: string | null
     initialToken?: string | null
+    initialEmailEnabled: boolean
+    initialEmailApiKey?: string | null
+    initialEmailFromAddress?: string | null
 }
 
 export function GlobalSettingsForm({
@@ -24,7 +27,10 @@ export function GlobalSettingsForm({
     initialPhone,
     initialWhatsappEnabled,
     initialInstanceId,
-    initialToken
+    initialToken,
+    initialEmailEnabled,
+    initialEmailApiKey,
+    initialEmailFromAddress
 }: GlobalSettingsFormProps) {
     const { t } = useTranslation()
     const [state, dispatch] = useActionState(updateGlobalSettings, null)
@@ -128,6 +134,59 @@ export function GlobalSettingsForm({
                                     className="h-10 border-gray-200 focus:border-green-500 font-medium text-xs"
                                 />
                             </div>
+                        </div>
+                    </div>
+
+                    <hr className="border-gray-100" />
+
+                    {/* Email Configuration */}
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <div className="space-y-0.5">
+                                <Label className="text-sm font-bold text-gray-700 flex items-center gap-2">
+                                    <Mail className="h-4 w-4 text-blue-600" />
+                                    Email Notifications
+                                </Label>
+                                <p className="text-[10px] text-gray-400 font-medium">Send booking alerts via email</p>
+                            </div>
+                            <input type="hidden" name="emailEnabled" value={initialEmailEnabled ? "true" : "false"} />
+                            <Switch
+                                defaultChecked={initialEmailEnabled}
+                                onCheckedChange={(checked) => {
+                                    const input = document.querySelector('input[name="emailEnabled"]') as HTMLInputElement;
+                                    if (input) input.value = checked ? "true" : "false";
+                                }}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="emailFromAddress" className="text-sm font-bold text-gray-700">
+                                From Email Address
+                            </Label>
+                            <Input
+                                id="emailFromAddress"
+                                name="emailFromAddress"
+                                type="email"
+                                defaultValue={initialEmailFromAddress || ""}
+                                placeholder="noreply@yourdomain.com"
+                                className="h-10 border-gray-200 focus:border-green-500 font-medium text-xs"
+                            />
+                            <p className="text-[9px] text-gray-400">Must be verified in Resend dashboard</p>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="emailApiKey" className="text-sm font-bold text-gray-700">
+                                Resend API Key
+                            </Label>
+                            <Input
+                                id="emailApiKey"
+                                name="emailApiKey"
+                                type="password"
+                                defaultValue={initialEmailApiKey || ""}
+                                placeholder="re_xxxxxxxxxxxx"
+                                className="h-10 border-gray-200 focus:border-green-500 font-medium text-xs"
+                            />
+                            <p className="text-[9px] text-gray-400">Get your API key from resend.com/api-keys</p>
                         </div>
                     </div>
 
