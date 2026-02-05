@@ -1,4 +1,4 @@
-name: Android Release (Unsigned)
+name: Android Release (Production Build)
 
 on:
   push:
