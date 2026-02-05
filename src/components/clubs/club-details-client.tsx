@@ -45,7 +45,7 @@ export function ClubDetailsClient({ club, bookedFieldIds }: ClubDetailsClientPro
 
                     <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
                         {club.logoUrl && (
-                            <div className="relative w-48 h-48 rounded-3xl overflow-hidden bg-white shadow-2xl border-4 border-white/20 shrink-0">
+                            <div className="relative w-80 h-80 rounded-3xl overflow-hidden bg-white shadow-2xl border-4 border-white/20 shrink-0">
                                 <Image
                                     src={club.logoUrl}
                                     alt={club.name}
