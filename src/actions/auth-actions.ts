@@ -159,3 +159,28 @@ export async function sendWhatsAppReset(phone: string) {
         return { success: false, message: "Database Error" }
     }
 }
+
+export async function deleteAccount() {
+    const { auth, signOut } = await import("@/auth")
+    const session = await auth()
+
+    if (!session?.user) {
+        return { success: false, message: "Not authenticated" }
+    }
+
+    try {
+        // Delete all related data first if not handled by cascade
+        // Prisma schema usually handles cascade delete for relations if configured, 
+        // but let's be safe and let Prisma handle the user deletion which typically cascades.
+
+        await prisma.user.delete({
+            where: { id: session.user.id }
+        })
+
+        await signOut({ redirectTo: '/' })
+        return { success: true }
+    } catch (error) {
+        console.error("Error deleting account:", error)
+        return { success: false, message: "Failed to delete account" }
+    }
+}

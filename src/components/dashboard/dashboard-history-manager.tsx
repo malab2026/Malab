@@ -12,6 +12,7 @@ import Link from "next/link"
 import { formatInEgyptDate, formatInEgyptTime } from "@/lib/utils"
 import { CancellationRequestButton } from "@/components/booking/cancellation-request-button"
 import { cancelBooking } from "@/actions/booking-actions"
+import { DeleteAccountButton } from "./delete-account-button"
 
 import { useTranslation } from "@/components/providers/locale-context"
 
@@ -223,7 +224,10 @@ export function DashboardHistoryManager({ bookings }: DashboardHistoryManagerPro
                         <p className="text-white/60 font-bold">{t('adjustFilters')}</p>
                     </div>
                 )}
+                )}
             </div>
+
+            <DeleteAccountButton />
         </div>
     )
 }

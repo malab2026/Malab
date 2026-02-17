@@ -438,6 +438,14 @@ export const translations = {
         statusCancelled: "Cancelled",
         statusBlocked: "Blocked",
         statusReceipt: "Payment Receipt",
+
+        // Account
+        dangerZone: "Danger Zone",
+        deleteAccount: "Delete Account",
+        deleteAccountDescription: "Once you delete your account, there is no going back. Please be certain.",
+        deleteAccountConfirm: "Are you sure you want to delete your account? This action cannot be undone and all your data will be properly removed.",
+        deleting: "Deleting...",
+        accountDeleted: "Account deleted successfully",
     }
 };
 
