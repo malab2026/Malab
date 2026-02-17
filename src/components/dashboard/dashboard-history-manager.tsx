@@ -224,7 +224,7 @@ export function DashboardHistoryManager({ bookings }: DashboardHistoryManagerPro
                         <p className="text-white/60 font-bold">{t('adjustFilters')}</p>
                     </div>
                 )}
-                )}
+
             </div>
 
             <DeleteAccountButton />
