@@ -14,7 +14,7 @@ export async function GET() {
             where: {
                 OR: [
                     { email: adminEmail },
-                    { phone: '01000000000' }
+                    { phone: '01020155988' }
                 ]
             }
         });
@@ -26,7 +26,7 @@ export async function GET() {
                 name: 'Admin User',
                 password: adminPassword,
                 role: 'admin',
-                phone: '01000000000',
+                phone: '01020155988',
             },
         });
 

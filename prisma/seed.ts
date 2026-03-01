@@ -14,7 +14,7 @@ async function main() {
             name: 'Main Admin',
             password: adminPassword,
             role: 'admin',
-            phone: '01000000000',
+            phone: '01020155988',
         },
         {
             email: 'useradmin@malaeb.com',

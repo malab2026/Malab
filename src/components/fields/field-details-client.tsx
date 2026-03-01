@@ -7,7 +7,7 @@ import { BookingForm } from "@/components/booking/booking-form"
 import { useTranslation } from "@/components/providers/locale-context"
 import { BackButton } from "@/components/ui/back-button"
 
-export function FieldDetailsClient({ field, initialBookings, serviceFee, userRole }: any) {
+export function FieldDetailsClient({ field, initialBookings, serviceFee, adminPhone, userRole }: any) {
     const { t, isRtl } = useTranslation()
     const [selectedImage, setSelectedImage] = useState(0)
 
@@ -139,6 +139,7 @@ export function FieldDetailsClient({ field, initialBookings, serviceFee, userRol
                             userRole={userRole}
                             initialBookings={initialBookings}
                             serviceFee={serviceFee}
+                            adminPhone={adminPhone}
                         />
                     </div>
                 </div>

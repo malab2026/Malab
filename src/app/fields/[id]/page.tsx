@@ -54,6 +54,7 @@ export default async function FieldDetailsPage({ params }: { params: Promise<{ i
         update: {},
         create: { id: 'global', serviceFee: 10.0 }
     })
+    const adminPhone = settings.adminPhone || "01000000000"
     const serviceFee = settings.serviceFee
 
     return (
@@ -61,6 +62,7 @@ export default async function FieldDetailsPage({ params }: { params: Promise<{ i
             field={field}
             initialBookings={initialBookings}
             serviceFee={serviceFee}
+            adminPhone={adminPhone}
             userRole={session.user.role}
         />
     )

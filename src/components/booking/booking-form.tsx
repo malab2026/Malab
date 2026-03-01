@@ -16,12 +16,14 @@ export function BookingForm({
     field,
     userRole,
     initialBookings = [],
-    serviceFee: initialServiceFee = 10
+    serviceFee: initialServiceFee = 10,
+    adminPhone = "01020155988"
 }: {
     field: any,
     userRole: string,
     initialBookings?: any[],
-    serviceFee?: number
+    serviceFee?: number,
+    adminPhone?: string
 }) {
     const { t, locale } = useTranslation()
     const [step, setStep] = useState(1)
@@ -261,7 +263,7 @@ export function BookingForm({
 
                         <div className="p-4 bg-yellow-50/50 border border-yellow-100 rounded-xl space-y-2">
                             <p className="text-sm text-yellow-800 leading-relaxed font-bold">
-                                {t('transferText', { amount: totalPrice, fee: totalServiceFee })}
+                                {t('transferText', { amount: totalPrice, fee: totalServiceFee, phone: adminPhone })}
                             </p>
                         </div>
 
