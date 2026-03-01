@@ -151,7 +151,7 @@ export async function sendWhatsAppReset(phone: string) {
         return {
             success: true,
             automated: false,
-            adminPhone: settings?.adminPhone || "201020155988",
+            adminPhone: settings?.adminPhone || "01020155988",
             message: `مرحباً، الاسم: ${user.name}\nرقم الهاتف: ${user.phone}\nأريد إعادة تعيين كلمة المرور الخاصة بي.`
         }
     } catch (e) {

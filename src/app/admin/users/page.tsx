@@ -62,7 +62,7 @@ async function UsersContent() {
             create: {
                 id: 'global',
                 serviceFee: 10.0,
-                adminPhone: "201020155988",
+                adminPhone: "01020155988",
                 whatsappEnabled: true,
                 whatsappInstanceId: null,
                 whatsappToken: null,
@@ -74,7 +74,7 @@ async function UsersContent() {
     ]) as any
 
     const initialServiceFee = settings?.serviceFee ?? 10
-    const initialPhone = settings?.adminPhone ?? "201020155988"
+    const initialPhone = settings?.adminPhone ?? "01020155988"
     const initialWhatsappEnabled = settings?.whatsappEnabled ?? true
     const initialEmailEnabled = settings?.emailEnabled ?? false
     const initialEmailApiKey = settings?.emailApiKey ?? null

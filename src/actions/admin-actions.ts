@@ -717,7 +717,7 @@ export async function getGlobalSettings() {
             create: {
                 id: 'global',
                 serviceFee: 10.0,
-                adminPhone: "201020155988",
+                adminPhone: "01020155988",
                 whatsappEnabled: true,
                 whatsappInstanceId: null,
                 whatsappToken: null,
