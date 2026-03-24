@@ -2,10 +2,10 @@
 
 import { useActionState, useEffect, useState } from "react"
 import { useFormStatus } from "react-dom"
-import { authenticate, sendWhatsAppReset } from "@/actions/auth-actions"
+import { authenticate, sendEmailReset } from "@/actions/auth-actions"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { MessageCircle, Loader2 } from "lucide-react"
+import { Mail, Loader2 } from "lucide-react"
 import {
     Dialog,
     DialogContent,
@@ -47,22 +47,25 @@ export function LoginForm() {
         }
     }, [state, router])
 
-    const handleWhatsAppReset = async () => {
-        if (!resetPhone || resetPhone.length < 10) {
-            toast.error("Please enter a valid phone number")
+    const handleEmailReset = async () => {
+        if (!resetPhone) {
+            toast.error(t('enterEmailOrPhone'))
             return
         }
 
         setIsResetLoading(true)
-        const result = await sendWhatsAppReset(resetPhone)
-        setIsResetLoading(false)
-
-        if (result.success) {
-            const link = getWhatsAppChatLink(result.adminPhone as string, result.message as string)
-            window.open(link, '_blank')
-            setResetDialogOpen(false)
-        } else {
-            toast.error(result.message)
+        try {
+            const result = await sendEmailReset(resetPhone)
+            if (result.success) {
+                toast.success(result.message)
+                setResetDialogOpen(false)
+            } else {
+                toast.error(result.message)
+            }
+        } catch (error) {
+            toast.error("An error occurred")
+        } finally {
+            setIsResetLoading(false)
         }
     }
 
@@ -98,23 +101,23 @@ export function LoginForm() {
                         </DialogHeader>
                         <div className="space-y-4 py-4">
                             <div className="space-y-2">
-                                <Label htmlFor="reset-phone">{t('phoneNumber')}</Label>
+                                <Label htmlFor="reset-identifier">{t('enterEmailOrPhone')}</Label>
                                 <Input
-                                    id="reset-phone"
-                                    type="tel"
+                                    id="reset-identifier"
+                                    type="text"
                                     value={resetPhone}
                                     onChange={(e) => setResetPhone(e.target.value)}
-                                    placeholder="01xxxxxxxxx"
+                                    placeholder="example@mail.com / 01xxxxxxxxx"
                                 />
                             </div>
                             <Button
                                 type="button"
-                                onClick={handleWhatsAppReset}
-                                className="w-full bg-green-600 hover:bg-green-700 font-bold gap-2 text-white"
+                                onClick={handleEmailReset}
+                                className="w-full bg-blue-600 hover:bg-blue-700 font-bold gap-2 text-white"
                                 disabled={isResetLoading}
                             >
-                                {isResetLoading ? <Loader2 className="animate-spin h-4 w-4" /> : <MessageCircle className="h-4 w-4" />}
-                                {t('sendCodeWhatsApp')}
+                                {isResetLoading ? <Loader2 className="animate-spin h-4 w-4" /> : <Mail className="h-4 w-4" />}
+                                {t('sendCodeEmail')}
                             </Button>
                         </div>
                     </DialogContent>

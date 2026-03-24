@@ -211,3 +211,51 @@ export async function sendBookingRejectionEmail(
     `
     return sendEmail({ to, subject: '❌ تم رفض حجزك - Booking Rejected', html, fromAddress, apiKey, smtp })
 }
+
+/**
+ * Sends a password reset email to the user
+ */
+export async function sendPasswordResetEmail(
+    to: string,
+    customerName: string,
+    resetLink: string,
+    apiKey: string | null,
+    fromAddress: string,
+    smtp?: SmtpConfig | null
+) {
+    const html = `
+        <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb;">
+            <div style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); padding: 30px; border-radius: 12px; text-align: center; margin-bottom: 20px;">
+                <h1 style="color: white; margin: 0; font-size: 28px;">⚽ ملاعبنا</h1>
+                <p style="color: #dbeafe; margin: 10px 0 0 0; font-size: 16px;">إعادة تعيين كلمة المرور</p>
+            </div>
+            
+            <div style="background-color: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h2 style="color: #2563eb; margin-top: 0; font-size: 24px;">🔐 طلب تغيير كلمة المرور</h2>
+                <p style="color: #6b7280; font-size: 16px; line-height: 1.6;">مرحباً ${customerName}،</p>
+                <p style="color: #6b7280; font-size: 16px; line-height: 1.6;">لقد تلقينا طلباً لإعادة تعيين كلمة المرور الخاصة بحسابك في ملاعبنا. إذا لم تقم بهذا الطلب، يمكنك تجاهل هذا البريد بأمان.</p>
+                
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="${resetLink}" style="background-color: #2563eb; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; display: inline-block; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);">إعادة تعيين كلمة المرور</a>
+                </div>
+                
+                <p style="color: #9ca3af; font-size: 14px; margin-top: 20px;">هذا الرابط صالح لمدة ساعة واحدة فقط.</p>
+                <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;" />
+                <p style="color: #9ca3af; font-size: 12px;">إذا كنت تواجه مشكلة في النقر على الزر، انسخ الرابط التالي والصقه في متصفحك:</p>
+                <p style="color: #3b82f6; font-size: 12px; word-break: break-all;">${resetLink}</p>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px; color: #9ca3af; font-size: 12px;">
+                <p>هذه رسالة تلقائية، يرجى عدم الرد عليها</p>
+            </div>
+        </div>
+    `
+    return sendEmail({ 
+        to, 
+        subject: '🔐 إعادة تعيين كلمة المرور - Password Reset Request', 
+        html, 
+        fromAddress, 
+        apiKey, 
+        smtp 
+    })
+}

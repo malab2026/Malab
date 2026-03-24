@@ -124,6 +124,16 @@ export const translations = {
         resetPasswordTitle: "إعادة تعيين كلمة المرور",
         enterPhoneToReset: "أدخل رقم هاتفك لإرسال كود الاستعادة",
         sendCodeWhatsApp: "إرسال الكود عبر واتساب",
+        sendCodeEmail: "إرسال رابط الاستعادة عبر البريد",
+        resetPasswordPageTitle: "ضبط كلمة مرور جديدة",
+        newPassword: "كلمة المرور الجديدة",
+        confirmNewPassword: "تأكيد كلمة المرور الجديدة",
+        resetButton: "تحديث كلمة المرور",
+        passwordResetSuccess: "تم إعادة تعيين كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول.",
+        passwordMismatch: "كلمات المرور غير متطابقة.",
+        invalidToken: "رمز الاستعادة غير صالح أو منتهي الصلاحية.",
+        resettingPassword: "جاري التحديث...",
+        enterEmailOrPhone: "أدخل البريد الإلكتروني أو رقم الهاتف",
 
         // Admin Actions
         confirm: "تأكيد",
@@ -349,6 +359,16 @@ export const translations = {
         resetPasswordTitle: "Reset Password",
         enterPhoneToReset: "Enter your phone number to receive recovery code",
         sendCodeWhatsApp: "Send Code via WhatsApp",
+        sendCodeEmail: "Send Reset Link via Email",
+        resetPasswordPageTitle: "Set New Password",
+        newPassword: "New Password",
+        confirmNewPassword: "Confirm New Password",
+        resetButton: "Update Password",
+        passwordResetSuccess: "Password reset successfully. You can now log in.",
+        passwordMismatch: "Passwords do not match.",
+        invalidToken: "Invalid or expired reset token.",
+        resettingPassword: "Updating...",
+        enterEmailOrPhone: "Enter email or phone number",
 
         // Admin Actions
         confirm: "Confirm",

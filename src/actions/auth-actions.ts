@@ -7,6 +7,8 @@ import bcrypt from "bcryptjs"
 import { z } from "zod"
 import { redirect } from "next/navigation"
 import { sendWhatsAppAPI, formatPasswordResetMessage } from "@/lib/whatsapp"
+import { sendPasswordResetEmail } from "@/lib/email"
+import crypto from "crypto"
 
 const RegisterSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -157,6 +159,104 @@ export async function sendWhatsAppReset(phone: string) {
     } catch (e) {
         console.error(e)
         return { success: false, message: "Database Error" }
+    }
+}
+
+export async function sendEmailReset(emailOrPhone: string) {
+    try {
+        // 1. Find user by email or phone
+        const user = await prisma.user.findFirst({
+            where: {
+                OR: [
+                    { email: emailOrPhone.trim() },
+                    { phone: emailOrPhone.trim() }
+                ]
+            },
+            select: { id: true, name: true, email: true }
+        })
+
+        if (!user || !user.email) {
+            return { 
+                success: false, 
+                message: user ? "حسابك لا يحتوي على بريد إلكتروني مسجل. يرجى التواصل مع الدعم." : "لم يتم العثور على حساب بهذا البريد أو الهاتف." 
+            }
+        }
+
+        // 2. Generate secure token
+        const resetToken = crypto.randomBytes(32).toString('hex')
+        const resetTokenExpires = new Date(Date.now() + 3600000) // 1 hour
+
+        // 3. Save to DB
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { resetToken, resetTokenExpires }
+        })
+
+        // 4. Send email
+        const settings = await prisma.globalSettings.findUnique({ where: { id: 'global' } })
+        
+        if (!settings?.emailEnabled) {
+            return { success: false, message: "خدمة البريد الإلكتروني غير مفعلة حالياً." }
+        }
+
+        const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000"
+        const resetLink = `${baseUrl}/reset-password?token=${resetToken}`
+
+        const result = await sendPasswordResetEmail(
+            user.email,
+            user.name || "مستخدم ملاعبنا",
+            resetLink,
+            settings.emailApiKey,
+            settings.emailFromAddress || "noreply@malaebna.com",
+            settings.emailSmtpHost ? {
+                host: settings.emailSmtpHost,
+                port: settings.emailSmtpPort || 587,
+                user: settings.emailSmtpUser || "",
+                pass: settings.emailSmtpPass || "",
+                secure: settings.emailSmtpSecure || false
+            } : null
+        )
+
+        if (!result.success) {
+            return { success: false, message: "فشل إرسال البريد الإلكتروني. يرجى المحاولة لاحقاً." }
+        }
+
+        return { success: true, message: "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني." }
+
+    } catch (e) {
+        console.error(e)
+        return { success: false, message: "حدث خطأ أثناء معالجة طلبك." }
+    }
+}
+
+export async function resetPassword(token: string, newPassword: string) {
+    try {
+        // 1. Find user by token
+        const user = await prisma.user.findUnique({
+            where: { resetToken: token }
+        })
+
+        if (!user || !user.resetTokenExpires || user.resetTokenExpires < new Date()) {
+            return { success: false, message: "الرابط غير صالح أو انتهت صلاحيته." }
+        }
+
+        // 2. Hash new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10)
+
+        // 3. Update user and clear token
+        await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                password: hashedPassword,
+                resetToken: null,
+                resetTokenExpires: null
+            }
+        })
+
+        return { success: true, message: "تم تغيير كلمة المرور بنجاح." }
+    } catch (e) {
+        console.error(e)
+        return { success: false, message: "فشل تغيير كلمة المرور." }
     }
 }
 
