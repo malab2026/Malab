@@ -143,6 +143,7 @@ function ResetPasswordForm() {
 }
 
 export default function ResetPasswordPage() {
+    console.log('[ResetPasswordPage] Page loaded')
     return (
         <div className="flex min-h-screen items-center justify-center px-4 bg-gradient-to-br from-blue-50 to-white py-12">
             <Card className="mx-auto max-w-md w-full shadow-2xl border-none ring-1 ring-gray-200">
