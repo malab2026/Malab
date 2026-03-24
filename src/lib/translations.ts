@@ -134,6 +134,10 @@ export const translations = {
         invalidToken: "رمز الاستعادة غير صالح أو منتهي الصلاحية.",
         resettingPassword: "جاري التحديث...",
         enterEmailOrPhone: "أدخل البريد الإلكتروني أو رقم الهاتف",
+        changePassword: "تغيير كلمة المرور",
+        currentPassword: "كلمة المرور الحالية",
+        saving: "جاري الحفظ...",
+        save: "حفظ",
 
         // Admin Actions
         confirm: "تأكيد",
@@ -369,6 +373,10 @@ export const translations = {
         invalidToken: "Invalid or expired reset token.",
         resettingPassword: "Updating...",
         enterEmailOrPhone: "Enter email or phone number",
+        changePassword: "Change Password",
+        currentPassword: "Current Password",
+        saving: "Saving...",
+        save: "Save",
 
         // Admin Actions
         confirm: "Confirm",

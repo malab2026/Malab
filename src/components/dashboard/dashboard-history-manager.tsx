@@ -13,6 +13,7 @@ import { formatInEgyptDate, formatInEgyptTime } from "@/lib/utils"
 import { CancellationRequestButton } from "@/components/booking/cancellation-request-button"
 import { cancelBooking } from "@/actions/booking-actions"
 import { DeleteAccountButton } from "./delete-account-button"
+import { ChangePasswordButton } from "./change-password-button"
 
 import { useTranslation } from "@/components/providers/locale-context"
 
@@ -226,6 +227,8 @@ export function DashboardHistoryManager({ bookings }: DashboardHistoryManagerPro
                 )}
 
             </div>
+
+            <ChangePasswordButton />
 
             <DeleteAccountButton />
         </div>

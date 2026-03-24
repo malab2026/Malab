@@ -199,7 +199,7 @@ export async function sendEmailReset(emailOrPhone: string) {
             return { success: false, message: "خدمة البريد الإلكتروني غير مفعلة حالياً." }
         }
 
-        const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000"
+        const baseUrl = process.env.NEXTAUTH_URL || "https://malaeb-booking.vercel.app"
         const resetLink = `${baseUrl}/reset-password?token=${resetToken}`
 
         const result = await sendPasswordResetEmail(
@@ -282,5 +282,62 @@ export async function deleteAccount() {
     } catch (error) {
         console.error("Error deleting account:", error)
         return { success: false, message: "Failed to delete account" }
+    }
+}
+
+export async function changePassword(
+    prevState: any,
+    formData: FormData,
+) {
+    const { auth } = await import("@/auth")
+    const session = await auth()
+
+    if (!session?.user) {
+        return { success: false, message: "Not authenticated" }
+    }
+
+    const currentPassword = formData.get('currentPassword') as string
+    const newPassword = formData.get('newPassword') as string
+    const confirmPassword = formData.get('confirmPassword') as string
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+        return { success: false, message: "All fields are required" }
+    }
+
+    if (newPassword !== confirmPassword) {
+        return { success: false, message: "New passwords do not match" }
+    }
+
+    if (newPassword.length < 6) {
+        return { success: false, message: "Password must be at least 6 characters" }
+    }
+
+    try {
+        // Get the user with their current password
+        const user = await prisma.user.findUnique({
+            where: { id: session.user.id }
+        })
+
+        if (!user) {
+            return { success: false, message: "User not found" }
+        }
+
+        // Verify current password
+        const passwordsMatch = await bcrypt.compare(currentPassword, user.password)
+        if (!passwordsMatch) {
+            return { success: false, message: "Current password is incorrect" }
+        }
+
+        // Hash new password and update
+        const hashedPassword = await bcrypt.hash(newPassword, 10)
+        await prisma.user.update({
+            where: { id: session.user.id },
+            data: { password: hashedPassword }
+        })
+
+        return { success: true, message: "Password changed successfully" }
+    } catch (error) {
+        console.error("Error changing password:", error)
+        return { success: false, message: "Failed to change password" }
     }
 }
