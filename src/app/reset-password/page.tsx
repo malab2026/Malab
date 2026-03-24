@@ -143,7 +143,6 @@ function ResetPasswordForm() {
 }
 
 export default function ResetPasswordPage() {
-    console.log('[ResetPasswordPage] Page loaded')
     return (
         <div className="flex min-h-screen items-center justify-center px-4 bg-gradient-to-br from-blue-50 to-white py-12">
             <Card className="mx-auto max-w-md w-full shadow-2xl border-none ring-1 ring-gray-200">
@@ -153,7 +152,7 @@ export default function ResetPasswordPage() {
                             <Lock className="h-6 w-6 text-white" />
                         </div>
                     </div>
-                    <CardTitle className="text-2xl font-bold tracking-tight text-gray-900">إعادة تعيين كلمة المرور</CardTitle>
+                    <CardTitle className="text-2xl font-bold tracking-tight text-gray-900">إعادة تعيين كلمة المرور - Malaebna</CardTitle>
                     <CardDescription className="text-gray-500">
                         أدخل كلمة المرور الجديدة لحسابك في ملاعبنا
                     </CardDescription>
