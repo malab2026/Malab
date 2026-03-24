@@ -199,7 +199,7 @@ export async function sendEmailReset(emailOrPhone: string) {
             return { success: false, message: "خدمة البريد الإلكتروني غير مفعلة حالياً." }
         }
 
-        const baseUrl = process.env.NEXTAUTH_URL || "https://malaeb-booking.vercel.app"
+        const baseUrl = process.env.NEXTAUTH_URL || "https://malab-theta.vercel.app"
         const resetLink = `${baseUrl}/reset-password?token=${resetToken}`
 
         const result = await sendPasswordResetEmail(
