@@ -59,34 +59,38 @@ export default function PrivacyPolicy() {
             </section>
 
             <section className="mb-6">
-                <h2 className="text-xl font-semibold mb-3">6. حذف البيانات</h2>
+                <h2 className="text-xl font-semibold mb-3">6. الاحتفاظ بالبيانات (Data Retention)</h2>
                 <p className="mb-2">
-                    يحق لك طلب حذف حسابك وبياناتك الشخصية في أي وقت. يمكنك القيام بذلك من خلال إعدادات التطبيق أو عن طريق التواصل معنا مباشرة.
+                    نحتفظ ببياناتك الشخصية طالما كان حسابك نشطًا أو حسب الحاجة لتزويدك بالخدمات. يتم الاحتفاظ بالمعلومات الشخصية الأساسية المرتبطة بالحساب ما دمت مسجلاً لدينا. سيتم الاحتفاظ ببيانات الحجوزات والسجلات المالية لأغراض تنظيمية وقانونية حتى انتهاء مدتِها القانونية المطلوبة. بمجرد انتهاء الغرض من جمع هذه البيانات أو في حال طلبك إغلاق وحذف الحساب، سيتم إزالة بياناتك الشخصية نهائياً من خوادمنا ولن نتمكن من استرجاعها.
                 </p>
             </section>
 
             <section className="mb-6" id="deletion">
-                <h2 className="text-xl font-semibold mb-3">7. حذف الحساب والبيانات (Account Deletion)</h2>
+                <h2 className="text-xl font-semibold mb-3">7. حذف البيانات والحساب (Data Deletion)</h2>
                 <p className="mb-2">
-                    نلتزم في "ملاعبنا" بمنحك التحكم الكامل في بياناتك. يمكنك طلب حذف حسابك وبياناتك نهائياً في أي وقت.
+                    نلتزم في "ملاعبنا" بمنحك التحكم الكامل في بياناتك، ويحق لك طلب حذف بياناتك الشخصية في أي وقت وبسهولة وتامة.
                 </p>
 
-                <h3 className="font-semibold mt-4 mb-2">خطوات حذف الحساب (How to delete your account):</h3>
+                <h3 className="font-semibold mt-4 mb-2">كيفية طلب حذف بياناتك (How to request data deletion):</h3>
                 <ul className="list-decimal list-inside space-y-2 mb-4">
-                    <li><strong>من داخل التطبيق:</strong> اذهب إلى "لوحة التحكم" (Dashboard) {'>'} انزل لأسفل الصفحة {'>'} اضغط على زر "حذف الحساب" (Delete Account) {'>'} أكد الحذف.</li>
-                    <li><strong>عن طريق الويب:</strong> إذا لم يعد لديك التطبيق، يمكنك طلب الحذف بإرسال بريد إلكتروني إلى <a href="mailto:support@malaeb-booking.com" className="text-blue-600">support@malaeb-booking.com</a> بعنوان "طلب حذف حساب".</li>
+                    <li><strong>من داخل التطبيق:</strong> يمكنك التوجه إلى إعدادات حسابك في "لوحة التحكم" (Dashboard)، ثم الانتقال إلى أسفل الصفحة للضغط على خيار "حذف الحساب" (Delete Account)، بمجرد التأكيد، يتم مسح معلومات تسجيل الدخول.</li>
+                    <li><strong>من خلال الويب (تواصل مباشر):</strong> إذا كنت قد قمت بإلغاء تثبيت التطبيق وتود إزالة بياناتك من قاعدة بياناتنا، قم بإرسال طلب يحمل عنوان "طلب حذف بيانات" إلى البريد الإلكتروني <a href="mailto:support@malaeb-booking.com" className="text-blue-600 underline">support@malaeb-booking.com</a> من بريدك المُسجل بحسابك، وسنقوم بتنفيذ طلبك وإزالة البيانات المطلوبة في غضون 7 أيام من تاريخ الاستلام.</li>
                 </ul>
 
-                <h3 className="font-semibold mt-4 mb-2">البيانات التي سيتم حذفها (Types of data deleted):</h3>
-                <p className="mb-2">عند تأكيد الحذف، سيتم إزالة البيانات التالية بشكل فوري ونهائي:</p>
+                <h3 className="font-semibold mt-4 mb-2">ما هي البيانات التي تُحذف؟ (What data gets deleted?)</h3>
+                <p className="mb-2">بمجرد إجراء الحذف، يتم إزالة ما يلي نهائياً وتلقائياً عبر النظام:</p>
                 <ul className="list-disc list-inside space-y-1 mb-4">
-                    <li>الاسم ورقم الهاتف (Name & Phone Number).</li>
-                    <li>سجل الحجوزات السابقة (Booking History).</li>
-                    <li>أي بيانات تعريفية أخرى مرتبطة بحسابك.</li>
+                    <li>أسمك الشخصي، بريدك الإلكتروني، ورقم هاتفك (Name, Email, Phone Number).</li>
+                    <li>المعلومات المرتبطة بجهازك وملفك الشخصي.</li>
                 </ul>
+
+                <h3 className="font-semibold mt-4 mb-2">ما الذي قد يتم الاحتفاظ به؟ (What gets retained?)</h3>
+                <p className="text-sm text-gray-700 mb-2">
+                    وفقاً للوائح التنظيمية، قد تحتفظ المنصة ببعض السجلات الخاصة بالحجوزات والمعاملات المالية التي تمت من قبل بشكل مجهول (بدون بيانات شخصية تشير إليك) لأغراض الضرائب والامتثال للقوانين المحلية.
+                </p>
 
                 <p className="text-sm text-red-600 font-bold mt-2">
-                    تنبيه: لا نحتفظ بأي بيانات للمستخدم بعد تأكيد طلب الحذف.
+                    تنبيه: لا يمكن التراجع عن خطوة حذف الحساب، ولن نستطيع استرداد أي من معلوماتك بعد إتمام الطلب.
                 </p>
             </section>
 
