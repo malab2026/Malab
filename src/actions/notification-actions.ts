@@ -97,3 +97,30 @@ export async function broadcastNotification(title: string, message: string, type
         console.error("Error broadcasting notification:", e)
     }
 }
+
+/**
+ * Sends an in-app notification to ALL admins in the system
+ */
+export async function notifyAllAdmins(title: string, message: string, type: string) {
+    try {
+        const admins = await prisma.user.findMany({
+            where: { role: 'admin' },
+            select: { id: true }
+        })
+
+        if (admins.length === 0) return
+
+        await prisma.notification.createMany({
+            data: admins.map(admin => ({
+                userId: admin.id,
+                title,
+                message,
+                type
+            }))
+        })
+
+        revalidatePath('/')
+    } catch (e) {
+        console.error("Error notifying admins:", e)
+    }
+}

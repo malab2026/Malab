@@ -8,7 +8,7 @@ import { writeFile } from "fs/promises"
 import path from "path"
 import { z } from "zod"
 import * as fs from "fs"
-import { createNotification } from "./notification-actions"
+import { createNotification, notifyAllAdmins } from "./notification-actions"
 import { formatInEgyptDate, formatInEgyptTime } from "@/lib/utils"
 
 const SlotSchema = z.object({
@@ -253,6 +253,16 @@ export async function createBooking(prevState: any, formData: FormData) {
             : `تم استلام طلب حجزك في ملعب ${field.name} بتاريخ ${bookingDate} الساعة ${bookingTime}. يرجى انتظار التأكيد.`
 
         await createNotification(session.user.id, title, message, "BOOKING")
+
+        // Notify ALL admins with in-app notification about new booking
+        if (!isBlock) {
+            const userName = session.user.name || 'مستخدم'
+            await notifyAllAdmins(
+                "🔔 حجز جديد يحتاج مراجعة",
+                `طلب حجز جديد من ${userName} في ملعب ${field.name} بتاريخ ${bookingDate} الساعة ${bookingTime}.`,
+                "BOOKING"
+            )
+        }
 
         // Notify Owner and Admin via WhatsApp (Non-blocking)
         if (!isBlock) {
