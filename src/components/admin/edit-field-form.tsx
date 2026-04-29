@@ -47,22 +47,28 @@ export function EditFieldForm({ field, owners, clubs }: { field: any, owners: an
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="price">Price per Hour (EGP)</Label>
                             <Input id="price" name="price" type="number" defaultValue={field.pricePerHour} required />
                             {state?.errors?.price && <p className="text-red-500 text-xs">{state.errors.price[0]}</p>}
                         </div>
                         <div className="space-y-2">
+                            <Label htmlFor="contactPhone">WhatsApp Number</Label>
+                            <Input id="contactPhone" name="contactPhone" defaultValue={field.contactPhone || ''} placeholder="e.g. 01012345678" />
+                            {state?.errors?.contactPhone && <p className="text-red-500 text-xs">{state.errors.contactPhone[0]}</p>}
+                        </div>
+                        <div className="space-y-2">
                             <Label htmlFor="address">Detailed Address (Arabic)</Label>
                             <Input id="address" name="address" defaultValue={field.address || ''} placeholder="مثلاً: بنها، بالقرب من الاستاد" />
                             {state?.errors?.address && <p className="text-red-500 text-xs">{state.errors.address[0]}</p>}
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="addressEn">Detailed Address (English)</Label>
-                            <Input id="addressEn" name="addressEn" defaultValue={field.addressEn || ''} placeholder="e.g. Benha, near Stadium" />
-                            {state?.errors?.addressEn && <p className="text-red-500 text-xs">{state.errors.addressEn[0]}</p>}
-                        </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                        <Label htmlFor="addressEn">Detailed Address (English)</Label>
+                        <Input id="addressEn" name="addressEn" defaultValue={field.addressEn || ''} placeholder="e.g. Benha, near Stadium" />
+                        {state?.errors?.addressEn && <p className="text-red-500 text-xs">{state.errors.addressEn[0]}</p>}
                     </div>
 
                     <div className="space-y-2">

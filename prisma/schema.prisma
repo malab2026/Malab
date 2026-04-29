@@ -55,6 +55,7 @@ model Field {
   imageUrl           String?
   imageUrl2          String?
   imageUrl3          String?
+  contactPhone       String?
   cancellationPolicy String?   @default("No cancellation policy specified.")
   cancellationPolicyEn String?
   ownerId            String?

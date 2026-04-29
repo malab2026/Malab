@@ -93,16 +93,30 @@ export function FieldDetailsClient({ field, initialBookings, serviceFee, adminPh
                                         </p>
                                     )}
                                 </div>
-                                {field.locationUrl && (
-                                    <a
-                                        href={field.locationUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="w-full md:w-auto text-center bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-md active:scale-95"
-                                    >
-                                        {isRtl ? "خرائط Google 🗺️" : "Open Maps 🗺️"}
-                                    </a>
-                                )}
+                                <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                                    {field.contactPhone && (
+                                        <a
+                                            href={`https://wa.me/${field.contactPhone.replace(/\s+/g, '')}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex-1 sm:flex-none text-center bg-green-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-green-600 transition-all shadow-md active:scale-95 flex items-center justify-center gap-2"
+                                        >
+                                            <span className="text-xl">💬</span>
+                                            {isRtl ? "تواصل واتساب" : "WhatsApp"}
+                                        </a>
+                                    )}
+                                    {field.locationUrl && (
+                                        <a
+                                            href={field.locationUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex-1 sm:flex-none text-center bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-md active:scale-95 flex items-center justify-center gap-2"
+                                        >
+                                            <span className="text-xl">🗺️</span>
+                                            {isRtl ? "خرائط Google" : "Open Maps"}
+                                        </a>
+                                    )}
+                                </div>
                             </div>
                         </div>
 

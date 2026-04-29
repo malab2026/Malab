@@ -22,7 +22,7 @@ interface DashboardHistoryManagerProps {
 }
 
 export function DashboardHistoryManager({ bookings }: DashboardHistoryManagerProps) {
-    const { t } = useTranslation()
+    const { t, isRtl } = useTranslation()
     const [selectedStatuses, setSelectedStatuses] = useState<string[]>([])
     const [selectedFieldId, setSelectedFieldId] = useState<string>("all")
     const [showFilters, setShowFilters] = useState(false)
@@ -182,9 +182,20 @@ export function DashboardHistoryManager({ bookings }: DashboardHistoryManagerPro
                             <div className="flex flex-wrap items-center justify-between gap-4 mt-6">
                                 <div className="flex items-center gap-4">
                                     {booking.receiptUrl && (
-                                        <Link href={`/receipt/${booking.id}`} target="_blank" className="text-green-600 hover:text-green-700 text-sm font-black flex items-center gap-1 bg-green-50 px-3 py-2 rounded-xl border border-green-100">
+                                        <Link href={`/receipt/${booking.id}`} target="_blank" className="text-green-600 hover:text-green-700 text-sm font-black flex items-center gap-1 bg-green-50 px-3 py-2 rounded-xl border border-green-100 transition-all hover:scale-105 active:scale-95">
                                             <span>📄</span> {t('viewReceipt')}
                                         </Link>
+                                    )}
+                                    
+                                    {booking.field.contactPhone && (
+                                        <a 
+                                            href={`https://wa.me/${booking.field.contactPhone.replace(/\s+/g, '')}`} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="text-white hover:text-white text-sm font-black flex items-center gap-1 bg-green-500 px-3 py-2 rounded-xl border border-green-600 transition-all hover:scale-105 active:scale-95 shadow-md"
+                                        >
+                                            <span className="text-base">💬</span> {t('contactOwner') || (isRtl ? "تواصل" : "Contact")}
+                                        </a>
                                     )}
 
                                     {booking.status === 'CONFIRMED' && (

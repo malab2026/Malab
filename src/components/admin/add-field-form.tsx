@@ -36,13 +36,17 @@ export function AddFieldForm({ owners, clubs }: { owners: any[], clubs?: any[] }
                         </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="price">Price per Hour (EGP)</Label>
-                        <Input id="price" name="price" type="number" min="0" placeholder="200" required />
-                        {state?.errors?.price && <p className="text-red-500 text-xs">{state.errors.price[0]}</p>}
-                    </div>
-
-                    <div className="grid md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="price">Price per Hour (EGP)</Label>
+                            <Input id="price" name="price" type="number" min="0" placeholder="200" required />
+                            {state?.errors?.price && <p className="text-red-500 text-xs">{state.errors.price[0]}</p>}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="contactPhone">WhatsApp Number for Contact</Label>
+                            <Input id="contactPhone" name="contactPhone" placeholder="e.g. 01012345678" />
+                            {state?.errors?.contactPhone && <p className="text-red-500 text-xs">{state.errors.contactPhone[0]}</p>}
+                        </div>
                         <div className="space-y-2">
                             <Label htmlFor="address">Detailed Address (Arabic)</Label>
                             <Input id="address" name="address" placeholder="مثلاً: بنها، بالقرب من الاستاد" required />

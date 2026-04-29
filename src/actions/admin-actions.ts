@@ -26,6 +26,7 @@ const FieldSchema = z.object({
     newManagerEmail: z.string().email().optional().or(z.literal('')).nullable(),
     newManagerPassword: z.string().min(6).optional().or(z.literal('')).nullable(),
     clubId: z.string().optional().or(z.literal('')).nullable(),
+    contactPhone: z.string().optional().or(z.literal('')).nullable(),
 })
 
 export async function createField(prevState: any, formData: FormData) {
@@ -55,6 +56,7 @@ export async function createField(prevState: any, formData: FormData) {
         newManagerEmail: formData.get("newManagerEmail"),
         newManagerPassword: formData.get("newManagerPassword"),
         clubId: formData.get("clubId"),
+        contactPhone: formData.get("contactPhone"),
     })
 
     if (!validatedFields.success) {
@@ -68,7 +70,7 @@ export async function createField(prevState: any, formData: FormData) {
     const {
         name, nameEn, price, address, addressEn, locationUrl, description, descriptionEn,
         cancellationPolicy, cancellationPolicyEn,
-        ownerId, newManagerName, newManagerEmail, newManagerPassword
+        ownerId, newManagerName, newManagerEmail, newManagerPassword, contactPhone
     } = validatedFields.data
 
     let finalOwnerId = ownerId || null
@@ -145,6 +147,7 @@ export async function createField(prevState: any, formData: FormData) {
                 imageUrl3: images[2] || null,
                 ownerId: finalOwnerId,
                 clubId: clubId || null,
+                contactPhone: contactPhone || null,
             }
         } as any)
     } catch (e) {
@@ -184,6 +187,7 @@ export async function updateField(fieldId: string, prevState: any, formData: For
         cancellationPolicyEn: formData.get("cancellationPolicyEn"),
         ownerId: formData.get("ownerId"),
         clubId: formData.get("clubId"),
+        contactPhone: formData.get("contactPhone"),
     })
 
     if (!validatedFields.success) {
@@ -195,7 +199,7 @@ export async function updateField(fieldId: string, prevState: any, formData: For
     }
 
     const { name, nameEn, price, address, addressEn, locationUrl, description, descriptionEn,
-        cancellationPolicy, cancellationPolicyEn, ownerId, clubId } = validatedFields.data
+        cancellationPolicy, cancellationPolicyEn, ownerId, clubId, contactPhone } = validatedFields.data
 
     // Handle Multiple Image Uploads (Base64) - Only update if new image provided
     const imageUpdates: any = {}
@@ -234,6 +238,7 @@ export async function updateField(fieldId: string, prevState: any, formData: For
                 ...imageUpdates,
                 ownerId: ownerId || null,
                 clubId: clubId || null,
+                contactPhone: contactPhone || null,
             }
         } as any)
     } catch (e) {
