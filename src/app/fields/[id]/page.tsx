@@ -57,7 +57,7 @@ export default async function FieldDetailsPage({ params }: { params: Promise<{ i
         create: { id: 'global', serviceFee: 10.0 }
     })
     const adminPhone = settings.adminPhone || "01000000000"
-    const serviceFee = settings.serviceFee
+    const serviceFee = field.commissionType === 'CUSTOM' ? field.customCommission : settings.serviceFee
 
     return (
         <FieldDetailsClient
