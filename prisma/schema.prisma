@@ -56,6 +56,7 @@ model Field {
   imageUrl2          String?
   imageUrl3          String?
   contactPhone       String?
+  paymentPhone       String?
   commissionType     String    @default("GLOBAL") // GLOBAL, CUSTOM
   customCommission   Float     @default(0)
   cancellationPolicy String?   @default("No cancellation policy specified.")

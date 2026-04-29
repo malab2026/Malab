@@ -48,7 +48,7 @@ export function EditFieldForm({ field, owners, clubs }: { field: any, owners: an
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="price">Price per Hour (EGP)</Label>
                             <Input id="price" name="price" type="number" defaultValue={field.pricePerHour} required />
@@ -58,6 +58,11 @@ export function EditFieldForm({ field, owners, clubs }: { field: any, owners: an
                             <Label htmlFor="contactPhone">WhatsApp Number</Label>
                             <Input id="contactPhone" name="contactPhone" defaultValue={field.contactPhone || ''} placeholder="e.g. 01012345678" />
                             {state?.errors?.contactPhone && <p className="text-red-500 text-xs">{state.errors.contactPhone[0]}</p>}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="paymentPhone">Payment Number (Vodafone Cash)</Label>
+                            <Input id="paymentPhone" name="paymentPhone" defaultValue={field.paymentPhone || ''} placeholder="e.g. 01012345678" />
+                            {state?.errors?.paymentPhone && <p className="text-red-500 text-xs">{state.errors.paymentPhone[0]}</p>}
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="address">Detailed Address (Arabic)</Label>
