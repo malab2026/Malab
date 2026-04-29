@@ -128,7 +128,15 @@ export async function createBooking(prevState: any, formData: FormData) {
         }
 
         const { fieldId, slots } = validatedFields.data
-        const field = await prisma.field.findUnique({ where: { id: fieldId }, select: { name: true, pricePerHour: true } })
+        const field = await prisma.field.findUnique({ 
+            where: { id: fieldId }, 
+            select: { 
+                name: true, 
+                pricePerHour: true,
+                commissionType: true,
+                customCommission: true
+            } 
+        })
         if (!field) return { message: "Field not found." }
 
         // Group slots into continuous blocks to apply service fee correctly on server-side
@@ -144,6 +152,9 @@ export async function createBooking(prevState: any, formData: FormData) {
             create: { id: 'global', serviceFee: 10.0 }
         })
         const globalServiceFee = settings.serviceFee
+
+        // Determine which service fee to use
+        const fieldServiceFee = field.commissionType === 'CUSTOM' ? field.customCommission : globalServiceFee
 
         const isBlock = formData.get("isBlock") === "true"
         const isRecurring = formData.get("isRecurring") === "true" && isBlock
@@ -174,7 +185,7 @@ export async function createBooking(prevState: any, formData: FormData) {
 
             // Determine if this is the start of a new block
             const isNewBlock = startDateTime.getTime() !== lastEndTimestamp
-            const serviceFee = isNewBlock ? globalServiceFee : 0
+            const serviceFee = isNewBlock ? fieldServiceFee : 0
             const slotPrice = field.pricePerHour * slot.duration
             const totalPrice = slotPrice + serviceFee
 

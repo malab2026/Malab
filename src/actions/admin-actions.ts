@@ -27,6 +27,8 @@ const FieldSchema = z.object({
     newManagerPassword: z.string().min(6).optional().or(z.literal('')).nullable(),
     clubId: z.string().optional().or(z.literal('')).nullable(),
     contactPhone: z.string().optional().or(z.literal('')).nullable(),
+    commissionType: z.enum(['GLOBAL', 'CUSTOM']).optional().default('GLOBAL'),
+    customCommission: z.coerce.number().optional().default(0),
 })
 
 export async function createField(prevState: any, formData: FormData) {
@@ -57,6 +59,8 @@ export async function createField(prevState: any, formData: FormData) {
         newManagerPassword: formData.get("newManagerPassword"),
         clubId: formData.get("clubId"),
         contactPhone: formData.get("contactPhone"),
+        commissionType: formData.get("commissionType"),
+        customCommission: formData.get("customCommission"),
     })
 
     if (!validatedFields.success) {
@@ -70,7 +74,8 @@ export async function createField(prevState: any, formData: FormData) {
     const {
         name, nameEn, price, address, addressEn, locationUrl, description, descriptionEn,
         cancellationPolicy, cancellationPolicyEn,
-        ownerId, newManagerName, newManagerEmail, newManagerPassword, contactPhone
+        ownerId, newManagerName, newManagerEmail, newManagerPassword, contactPhone,
+        commissionType, customCommission
     } = validatedFields.data
 
     let finalOwnerId = ownerId || null
@@ -148,6 +153,8 @@ export async function createField(prevState: any, formData: FormData) {
                 ownerId: finalOwnerId,
                 clubId: clubId || null,
                 contactPhone: contactPhone || null,
+                commissionType: commissionType || "GLOBAL",
+                customCommission: customCommission || 0,
             }
         } as any)
     } catch (e) {
@@ -188,6 +195,8 @@ export async function updateField(fieldId: string, prevState: any, formData: For
         ownerId: formData.get("ownerId"),
         clubId: formData.get("clubId"),
         contactPhone: formData.get("contactPhone"),
+        commissionType: formData.get("commissionType"),
+        customCommission: formData.get("customCommission"),
     })
 
     if (!validatedFields.success) {
@@ -199,7 +208,7 @@ export async function updateField(fieldId: string, prevState: any, formData: For
     }
 
     const { name, nameEn, price, address, addressEn, locationUrl, description, descriptionEn,
-        cancellationPolicy, cancellationPolicyEn, ownerId, clubId, contactPhone } = validatedFields.data
+        cancellationPolicy, cancellationPolicyEn, ownerId, clubId, contactPhone, commissionType, customCommission } = validatedFields.data
 
     // Handle Multiple Image Uploads (Base64) - Only update if new image provided
     const imageUpdates: any = {}
@@ -239,6 +248,8 @@ export async function updateField(fieldId: string, prevState: any, formData: For
                 ownerId: ownerId || null,
                 clubId: clubId || null,
                 contactPhone: contactPhone || null,
+                commissionType: commissionType || "GLOBAL",
+                customCommission: customCommission || 0,
             }
         } as any)
     } catch (e) {

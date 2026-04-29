@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation"
 
 export function AddFieldForm({ owners, clubs }: { owners: any[], clubs?: any[] }) {
     const [state, dispatch] = useActionState(createField, null)
+    const [commType, setCommType] = useState('GLOBAL')
     const router = useRouter()
 
     // Reset form via key or manually if needed, for simplicity we rely on dispatch result
@@ -103,34 +104,62 @@ export function AddFieldForm({ owners, clubs }: { owners: any[], clubs?: any[] }
 
                     <div className="space-y-4 pt-4 border-t">
                         <h3 className="text-sm font-semibold text-gray-700">Manager Access</h3>
-                        <div className="space-y-2">
-                            <Label htmlFor="ownerId">Assign to Owner (Optional)</Label>
-                            <select
-                                id="ownerId"
-                                name="ownerId"
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                                <option value="">No Owner (Admin Managed)</option>
-                                {owners.map((owner: any) => (
-                                    <option key={owner.id} value={owner.id}>{owner.name} ({owner.email})</option>
-                                ))}
-                            </select>
-                            {state?.errors?.ownerId && <p className="text-red-500 text-xs">{state.errors.ownerId[0]}</p>}
-                        </div>
+                        <div className="grid md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="ownerId">Assign to Owner (Optional)</Label>
+                                <select
+                                    id="ownerId"
+                                    name="ownerId"
+                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    <option value="">No Owner (Admin Managed)</option>
+                                    {owners.map((owner: any) => (
+                                        <option key={owner.id} value={owner.id}>{owner.name} ({owner.email})</option>
+                                    ))}
+                                </select>
+                                {state?.errors?.ownerId && <p className="text-red-500 text-xs">{state.errors.ownerId[0]}</p>}
+                            </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="clubId">Assign to Club (Optional)</Label>
-                            <select
-                                id="clubId"
-                                name="clubId"
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                                <option value="">No Club (Independent Field)</option>
-                                {clubs?.map((club: any) => (
-                                    <option key={club.id} value={club.id}>{club.name}</option>
-                                ))}
-                            </select>
-                            {state?.errors?.clubId && <p className="text-red-500 text-xs">{state.errors.clubId[0]}</p>}
+                            <div className="space-y-2">
+                                <Label htmlFor="clubId">Assign to Club (Optional)</Label>
+                                <select
+                                    id="clubId"
+                                    name="clubId"
+                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    <option value="">No Club (Independent Field)</option>
+                                    {clubs?.map((club: any) => (
+                                        <option key={club.id} value={club.id}>{club.name}</option>
+                                    ))}
+                                </select>
+                                {state?.errors?.clubId && <p className="text-red-500 text-xs">{state.errors.clubId[0]}</p>}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4 pt-4 border-t">
+                        <h3 className="text-sm font-semibold text-gray-700">Accounting System</h3>
+                        <div className="grid md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="commissionType">Commission Policy</Label>
+                                <select
+                                    id="commissionType"
+                                    name="commissionType"
+                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    onChange={(e) => setCommType(e.target.value)}
+                                >
+                                    <option value="GLOBAL">Global System Policy (10 EGP)</option>
+                                    <option value="CUSTOM">Custom Commission per Booking</option>
+                                </select>
+                            </div>
+
+                            {commType === 'CUSTOM' && (
+                                <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+                                    <Label htmlFor="customCommission">Custom Commission Amount (EGP)</Label>
+                                    <Input id="customCommission" name="customCommission" type="number" min="0" placeholder="20" required />
+                                    {state?.errors?.customCommission && <p className="text-red-500 text-xs">{state.errors.customCommission[0]}</p>}
+                                </div>
+                            )}
                         </div>
                     </div>
 
