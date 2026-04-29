@@ -59,7 +59,8 @@ export default async function FieldDetailsPage({ params }: { params: Promise<{ i
         create: { id: 'global', serviceFee: 10.0 }
     })
     const adminPhone = settings.adminPhone || "01000000000"
-    const serviceFee = field.commissionType === 'CUSTOM' ? field.customCommission : settings.serviceFee
+    // For CUSTOM fields, service fee is paid by owner (recorded in DB) but not shown/charged to client
+    const serviceFee = field.commissionType === 'CUSTOM' ? 0 : settings.serviceFee
 
     return (
         <FieldDetailsClient

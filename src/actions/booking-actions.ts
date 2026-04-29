@@ -187,7 +187,9 @@ export async function createBooking(prevState: any, formData: FormData) {
             const isNewBlock = startDateTime.getTime() !== lastEndTimestamp
             const serviceFee = isNewBlock ? fieldServiceFee : 0
             const slotPrice = field.pricePerHour * slot.duration
-            const totalPrice = slotPrice + serviceFee
+            
+            // If CUSTOM commission, the fee is deducted from owner, not added to client
+            const totalPrice = field.commissionType === 'CUSTOM' ? slotPrice : (slotPrice + serviceFee)
 
             bookingData.push({
                 userId: session.user.id,
