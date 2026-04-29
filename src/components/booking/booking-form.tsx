@@ -267,6 +267,14 @@ export function BookingForm({
                             </p>
                         </div>
 
+                        {field.contactPhone && (
+                            <div className="p-4 bg-blue-50/50 border border-blue-100 rounded-xl">
+                                <p className="text-sm text-blue-800 font-bold flex items-center gap-2">
+                                    <span>💬</span> {t('contactOwnerWhatsApp', { phone: field.contactPhone })}
+                                </p>
+                            </div>
+                        )}
+
                         {isOwner && (
                             <div className="p-4 bg-green-50/50 border border-green-100 rounded-xl">
                                 <p className="text-xs text-green-700 font-bold flex items-center gap-2">

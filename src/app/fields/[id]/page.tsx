@@ -35,6 +35,7 @@ export default async function FieldDetailsPage({ params }: { params: Promise<{ i
             cancellationPolicy: true,
             cancellationPolicyEn: true,
             ownerId: true,
+            contactPhone: true,
         }
     } as any)
 
